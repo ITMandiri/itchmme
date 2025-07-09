@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/sockets/ITMSoupBinTCPBridgeSocketCtl.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/sockets/ITMSoupBinTCPBridgeSocketChannel.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/packetformat/ITMSoupBinTCPBridgePacketFormat.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/backup/ITMSoupBinTCPBridgeBackupParser.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/structs/ITMSoupBinTCPMsgServerHeartbeatPacket.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/packetbuilder/ITMSoupBinTCPBridgePacketBuilder.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/backup/ITMSoupBinTCPBridgeBackupConsts.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/dynamicstruct/ITMSoupBinTCPDynStructParser.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/sockets/ITMSoupBinTCPBridgeSocketListener.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/sockets/ITMSoupBinTCPBridgeSocketConsts.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/consts/ITMSoupBinTCPBridgeConsts.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/lib/ITMSoupBinTCPBridge/src/com/itm/soupbintcp/bridge/startup/ITMSoupBinTCPBridgeTester.java</file>
+        </group>
+    </open-files>
+</project-private>
