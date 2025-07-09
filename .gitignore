@@ -8,5 +8,11 @@
 /ITMSoupBinTCPBridge/build/
 /ITMSoupBinTCPBridge/dist/
 /ITMSoupBinTCPBridge/logs/
-
-
+/ITMDevCCDatabase/build/
+/ITMDevCCDatabase/dist/
+/ITMDevCCFileAccess/build/
+/ITMDevCCFileAccess/dist/
+/ITMDevCCFileLogger/build/
+/ITMDevCCFileLogger/dist/
+/ITMDevCSSocket/build/
+/ITMDevCSSocket/dist/
