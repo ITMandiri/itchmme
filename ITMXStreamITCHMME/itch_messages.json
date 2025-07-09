@@ -1,0 +1,1262 @@
+{
+	"itch": {
+		"version": "2020-01-13",
+		"specification": "1.13.0",
+		"messages": [
+			{
+				"type": "T",
+				"name": "Time Stamp - Seconds",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "T",
+						"type": "Alpha",
+						"notes": "Time Stamp -Seconds Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Second",
+						"offset":1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Number of seconds since midnight of the first day of the system cycle.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "S",
+				"name": "System Event Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "S",
+						"type": "Alpha",
+						"notes": "System Event Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Nanoseconds since last Time Stamp seconds message.",
+						"source": ""
+					},
+					{
+						"name": "Event",
+						"offset": 5,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Event Code. The system supports the following event codes on a daily basis: “O” = Start of Messages. Outside of time stamp messages, the start of day message is the first message sent in any trading day. “C” = End of Messages. This is always the last message sent in any trading day.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "L",
+				"name": "Price Tick Size Table",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "L",
+						"type": "Alpha",
+						"notes": "Tick Size Table.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Nanoseconds since last Time Stamp seconds message.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 5,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "The order book to which this entry belongs.",
+						"source": ""
+					},
+					{
+						"name": "Tick Size",
+						"offset": 9,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Tick Size for the given price range.",
+						"source": ""
+					},
+					{
+						"name": "Price From",
+						"offset": 17,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Start of price range for this entry.",
+						"source": ""
+					},
+					{
+						"name": "Price To",
+						"offset": 25,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "End of price range for this entry. Zero (0) means infinity.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "R",
+				"name": "Order Book Directory",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "R",
+						"type": "Alpha",
+						"notes": "Order Book Directory.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 5,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Denotes the primary identifier of an order book. Expired Order book IDs may be reused for new instruments.",
+						"source": ""
+					},
+					{
+						"name": "Symbol",
+						"offset": 9,
+						"len": 32,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Order book short name.",
+						"source": ""
+					},
+					{
+						"name": "Long Name",
+						"offset": 41,
+						"len": 64,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Human-readable long name of order book.",
+						"source": ""
+					},
+					{
+						"name": "ISIN",
+						"offset": 105,
+						"len": 12,
+						"value": "",
+						"type": "Alpha",
+						"notes": "ISIN code identifying the Asset the order book belongs to.",
+						"source": ""
+					},
+					{
+						"name": "Financial Product",
+						"offset": 117,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "The financial product category the order book belongs to. Supported values: 0 = Not Applicable, 1 = Derivative - Option, 2 = Derivative - Forward, 3 = Derivative - Future, 4 = Bond, 5 = Equity, 6 = Entitlement - Warrant, 7 = Entitlement - Right, 8 = Entitlement - Daily Leverage Certificate, 9 = Currency, 10 = Index, 11 = Combination, 12 = Energy, 13 = Metal, 14 = CIV - ETF, 15 = CIV - Business Trust, 16 = CIV - Investment Fund, 17 = CIV - REIT, 18 = Sukuk.",
+						"source": ""
+					},
+					{
+						"name": "Trading Currency",
+						"offset": 118,
+						"len": 3,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Trading currency. Field not applicable for combination order books.",
+						"source": ""
+					},
+					{
+						"name": "Decimals In Price",
+						"offset": 121,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Number of decimals used in price for this order book. A value of 256 means that the instrument is traded in fractions (each fraction is 1/256).",
+						"source": ""
+					},
+					{
+						"name": "Decimals In Nominal Value",
+						"offset": 123,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Number of decimals in Nominal Value.",
+						"source": ""
+					},
+					{
+						"name": "Round Lot Size",
+						"offset": 125,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Indicates the quantity that represents a round lot for the issue.",
+						"source": ""
+					},
+					{
+						"name": "Nominal Value",
+						"offset": 129,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Nominal value.",
+						"source": ""
+					},
+					{
+						"name": "Number Of Legs",
+						"offset": 137,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Number of legs. NOTE: Only applicable for combination instruments.",
+						"source": ""
+					},
+					{
+						"name": "Underlying Order Book Id",
+						"offset": 138,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "The Underlying Asset ID (level 0) related to the Order Book.",
+						"source": ""
+					},
+					{
+						"name": "Strike Price",
+						"offset": 142,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Only applicable for derivative instruments.",
+						"source": ""
+					},
+					{
+						"name": "Expiration Date",
+						"offset": 150,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Date of expiration. Applicable for Derivative and Entitlement instruments such as Warrants.",
+						"source": ""
+					},
+					{
+						"name": "Decimals In Strike Price",
+						"offset": 154,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Number of decimals used in Strike Price for this order book. Only applicable for derivative instruments.",
+						"source": ""
+					},
+					{
+						"name": "Option Type",
+						"offset": 156,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 1 = Call, 2 = Put.",
+						"source": ""
+					},
+					{
+						"name": "Decimals In Quantity",
+						"offset": 157,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "This value defines the number of decimals used in Quantity for this order book.",
+						"source": ""
+					},
+					{
+						"name": "Test Order Book",
+						"offset": 159,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "If true, the order book is dedicated for Production Realtime Verification. Supported values: 1 = Yes, 2 = No.",
+						"source": ""
+					},
+					{
+						"name": "Quantity Expressed In",
+						"offset": 160,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Defines if quantities for this order book are expressed in units or lots. Supported values: 1 = Units, 2 = Lots.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "Z",
+				"name": "Equilibrium Price Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "Z",
+						"type": "Alpha",
+						"notes": "Equilibrium Price Message.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 5,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book ID.",
+						"source": ""
+					},
+					{
+						"name": "Bid Quantity",
+						"offset": 9,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Quantity at equilibrium price on the bid side.",
+						"source": ""
+					},
+					{
+						"name": "Ask Quantity",
+						"offset": 17,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Quantity at equilibrium price on the ask side.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 25,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Equilibrium Price.",
+						"source": ""
+					},
+					{
+						"name": "Best Bid Price",
+						"offset": 33,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Best Bid Price.",
+						"source": ""
+					},
+					{
+						"name": "Best Ask Price",
+						"offset": 41,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Best Ask Price.",
+						"source": ""
+					},
+					{
+						"name": "Best Bid Quantity",
+						"offset": 49,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Best Bid Quantity.",
+						"source": ""
+					},
+					{
+						"name": "Best Ask Quantity",
+						"offset": 57,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Best Ask Quantity.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "O",
+				"name": "Order Book State Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "O",
+						"type": "Alpha",
+						"notes": "Order Book State Message.",
+						"source": ""
+					},
+					{
+						"name": "Nanos",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Nanoseconds portion of the timestamp.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 5,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Orderbook identifier.",
+						"source": ""
+					},
+					{
+						"name": "State Name",
+						"offset": 9,
+						"len": 20,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Name of the order book session state.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "A",
+				"name": "Add Order",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "A",
+						"type": "Alpha",
+						"notes": "Add Order.",
+						"source": ""
+					},
+					{
+						"name": "Nanos",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Order Id",
+						"offset": 5,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The identifier assigned to the new order. The number is only unique per Order book and side.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 13,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 17,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Side of the order. Supported values: B = buy order, S = sell order.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Position",
+						"offset": 18,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Rank within order book. For details, see Appendix A, How to Build an Order Book.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 22,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The visible quantity of the order.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 30,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "The display price of the new order.",
+						"source": ""
+					},
+					{
+						"name": "Exchange Order Type",
+						"offset": 38,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Additional order attributes. Applicable types may be defined by the marketplace. This field is a bit map. Multiple values may be set simultaneously. Supported values: 0 = Not applicable, 2 = Short sell, 4 = Market bid, 8192 = Bait (implied order).",
+						"source": ""
+					},
+					{
+						"name": "Quantity Condition",
+						"offset": 40,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 1 = Quantity Restricted, 2 = No restriction.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "E",
+				"name": "Order Executed",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "E",
+						"type": "Alpha",
+						"notes": "Order Executed.",
+						"source": ""
+					},
+					{
+						"name": "Nanos",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Order Id",
+						"offset": 5,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The order ID is associated with the executed order.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 13,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 17,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Supported values: B = buy order, S = sell order.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 18,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The quantity being executed.",
+						"source": ""
+					},
+					{
+						"name": "Match Id",
+						"offset": 26,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Assigned by the system to each match executed.",
+						"source": ""
+					},
+					{
+						"name": "Combo Group Id",
+						"offset": 34,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Used to group combination order book executions and the trades in the constituent order books together. See Appendix C for details.",
+						"source": ""
+					},
+					{
+						"name": "Owner",
+						"offset": 38,
+						"len": 7,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Participant ID, owner. Will be set to blank (space) for anonymous markets.",
+						"source": ""
+					},
+					{
+						"name": "Counter Party",
+						"offset": 45,
+						"len": 7,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Participant ID, owner. Will be set to blank (space) for anonymous markets.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "C",
+				"name": "Order Executed with Price",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "C",
+						"type": "Alpha",
+						"notes": "Order Executed with Price.",
+						"source": ""
+					},
+					{
+						"name": "Nanos",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Order Id",
+						"offset": 5,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The order ID is associated with the executed order.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 13,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 17,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Supported values: B = buy order, S = sell order.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 18,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The quantity being executed.",
+						"source": ""
+					},
+					{
+						"name": "Match Id",
+						"offset": 26,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Assigned by the system to each match executed.",
+						"source": ""
+					},
+					{
+						"name": "Combo Group Id",
+						"offset": 34,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Used to group combination order book executions and the trades in the constituent order books together. See Appendix C for details.",
+						"source": ""
+					},
+					{
+						"name": "Owner",
+						"offset": 38,
+						"len": 7,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Participant ID, owner. Will be set to blank (space) for anonymous markets.",
+						"source": ""
+					},
+					{
+						"name": "Counter Party",
+						"offset": 45,
+						"len": 7,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Participant ID, counterparty. Will be set to blank (space) for anonymous markets.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 52,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Trade price.",
+						"source": ""
+					},
+					{
+						"name": "Cross",
+						"offset": 60,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Trade at cross. Supported values: Y = yes, N = no.",
+						"source": ""
+					},
+					{
+						"name": "Printable",
+						"offset": 61,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Indicates if the trade should be included in trade tickers and volume calculations. Supported values: N = non-printable, Y = printable.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "P",
+				"name": "Trade",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "P",
+						"type": "Alpha",
+						"notes": "Trade Message identifier.",
+						"source": ""
+					},
+					{
+						"name": "Nanos",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Match Id",
+						"offset": 5,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Assigned by the system to each match executed.",
+						"source": ""
+					},
+					{
+						"name": "Combo Group Id",
+						"offset": 13,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Used to group combination order book executions and the trades in the constituent order books together. See Appendix C for details.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 17,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Type of non-display order on the book being matched. Will be set to blank (space) for anonymous markets. Supported values: B = buy order, S = sell order.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 18,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Quantity being matched in this execution.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 26,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 30,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Trade Price.",
+						"source": ""
+					},
+					{
+						"name": "Owner",
+						"offset": 38,
+						"len": 7,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Participant ID, owner. Will be set to blank (space) for anonymous markets.",
+						"source": ""
+					},
+					{
+						"name": "Counter Party",
+						"offset": 45,
+						"len": 7,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Participant ID, counterparty. Will be set to blank (space) for anonymous markets.",
+						"source": ""
+					},
+					{
+						"name": "Printable",
+						"offset": 52,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Indicates if the trade should be included in trade tickers and volume calculations. Supported values: N = non-printable, Y = printable.",
+						"source": ""
+					},
+					{
+						"name": "Cross",
+						"offset": 53,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Trade at Cross. Supported values: Y = yes, N = no.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "D",
+				"name": "Order Delete",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "D",
+						"type": "Alpha",
+						"notes": "Order Delete.",
+						"source": ""
+					},
+					{
+						"name": "Nanos",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Order Id",
+						"offset": 5,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The original order identifier of the order being deleted. The Order ID is only unique per order book and side.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 13,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 17,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The type of order being deleted. Supported values: B = buy order, S = sell order.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "d",
+				"name": "Order Clear",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "d",
+						"type": "Alpha",
+						"notes": "Order Book Clear.",
+						"source": ""
+					},
+					{
+						"name": "Nanos",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp in nanoseconds.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 5,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "G",
+				"name": "Glimpse Snapshot",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "G",
+						"type": "Alpha",
+						"notes": "Glimpse Snapshot.",
+						"source": ""
+					},
+					{
+						"name": "ITCH Sequence Number",
+						"offset": 1,
+						"len": 20,
+						"value": "",
+						"type": "Alpha",
+						"notes": "ITCH SoupBin TCP sequence number when the snapshot was taken. To be used when logging in to the ITCH SoupBin TCP feed. NOTE: While GLIMPSE is a binary feed, the SoupBin TCP uses ASCII characters to represent the sequence number.",
+						"source": ""
+					}
+				]
+			}
+		],
+		"sources": [
+			{
+				"code": "system_event_code",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "O",
+						"value": "Start of Messages. This is the first message sent."
+					},
+					{
+						"key": "S",
+						"value": "Start of System Hours."
+					},
+					{
+						"key": "Q",
+						"value": "Start of Market Hours. Trading session. It indicates the Exchange is open and ready to start accepting orders."
+					},
+					{
+						"key": "M",
+						"value": "End of Market Hours. End of Trading session."
+					},
+					{
+						"key": "P",
+						"value": "Opening auction starts."
+					},
+					{
+						"key": "K",
+						"value": "Closing auction starts."
+					},
+					{
+						"key": "V",
+						"value": "Scheduled auction starts – a manually scheduled auction outside of defined trading schedule."
+					},
+					{
+						"key": "U",
+						"value": "Scheduled auction closes."
+					},
+					{
+						"key": "T",
+						"value": "Start of post trading session."
+					},
+					{
+						"key": "A",
+						"value": "Scheduled break starts."
+					},
+					{
+						"key": "B",
+						"value": "Scheduled break ends."
+					},
+					{
+						"key": "E",
+						"value": "End Of System Hours. It indicates that the Exchange is closed."
+					},
+					{
+						"key": "C",
+						"value": "End of Messages. Last message sent."
+					},
+					{
+						"key": "X",
+						"value": "Trading suspension"
+					},
+					{
+						"key": "Y",
+						"value": "Trading activation"
+					}
+				]
+			},
+			{
+				"code": "verb",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "P",
+						"value": "‘P’ut"
+					},
+					{
+						"key": "C",
+						"value": "‘C’all"
+					}
+				]
+			},
+			{
+				"code": "trading_state",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "T",
+						"value": "Active / Unsuspended"
+					},
+					{
+						"key": "V",
+						"value": "Suspended intra-day"
+					}
+				]
+			},
+			{
+				"code": "order_verb",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "B",
+						"value": "“B”uy"
+					},
+					{
+						"key": "S",
+						"value": "“S”ell"
+					},
+					{
+						"key": "L",
+						"value": "Sett’L’ement Price Update"
+					},
+					{
+						"key": "",
+						"value": "Blank if reference/index price update."
+					}
+				]
+			},
+			{
+				"code": "domicile",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "I",
+						"value": "‘I’ndonesia"
+					},
+					{
+						"key": "A",
+						"value": "‘A’sing (foreigner)"
+					},
+					{
+						"key": "S",
+						"value": "‘S’endiri (house)"
+					},
+					{
+						"key": "F",
+						"value": "‘F’oreigner house"
+					}
+				]
+			},
+			{
+				"code": "trade_indicator",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "R",
+						"value": "‘R’egular trade."
+					},
+					{
+						"key": "U",
+						"value": "‘U’nintentional self-cross."
+					},
+					{
+						"key": "N",
+						"value": "”N’egDeal"
+					},
+					{
+						"key": "",
+						"value": "Blank"
+					}
+				]
+			},
+			{
+				"code": "printable",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "N",
+						"value": "Non Printable"
+					},
+					{
+						"key": "Y",
+						"value": "Printable"
+					}
+				]
+			},
+			{
+				"code": "broken_trade_reason",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "S",
+						"value": "Supervisory – The trade was manually broken by the Exchange."
+					}
+				]
+			},
+			{
+				"code": "cross_type",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "P",
+						"value": "Opening Auction"
+					},
+					{
+						"key": "I",
+						"value": "Intraday Auction"
+					},
+					{
+						"key": "K",
+						"value": "Closing Auction"
+					}
+				]
+			},
+			{
+				"code": "participant_status",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "A",
+						"value": "‘A’ctive"
+					},
+					{
+						"key": "S",
+						"value": "‘S’uspended"
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,0 +1,172 @@
+{
+  "server_settings": {
+    "version": "1.20.05.27",
+    "description": "",
+    "fix5xmlpath": "FIX50SP1-IDX.xml",
+    "heartbeattimeout": 3000,
+    "invalid_price_retry_time": 0,
+    "order_retry_time_invalid_price": [],
+    "socket_send_buffer": 8000,
+    "socket_recv_buffer": 0,
+    "socket_send_autoflush": true,
+    "data_end_time": "15:30:00",
+    "order_racing_enable": true,
+    "order_reply_timeout": 0,
+    "order_racing_mode": 1,
+    "order_racing_max_delay": 0,
+    "order_racing_time": [
+      {
+        "name": "pre open racing",
+        "description": "",
+        "starttime": "08:44:40",
+        "endtime": "08:44:59",
+        "tradingdays": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "bufferSend": 0,
+        "bufferRecv": 0,
+        "racingmaxdelay": 400
+      },
+      {
+        "name": "sesi 1 racing",
+        "description": "",
+        "starttime": "13:55:00",
+        "endtime": "14:55:00",
+        "tradingdays": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "bufferSend": 0,
+        "bufferRecv": 0,
+        "racingmaxdelay": 700
+      },
+      {
+        "name": "sesi 2 racing",
+        "description": "",
+        "starttime": "15:29:40",
+        "endtime": "17:29:59",
+        "tradingdays": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "bufferSend": 0,
+        "bufferRecv": 0,
+        "racingmaxdelay": 600
+      }
+    ],
+    "order_retry_time": [],
+    "order_racing_time_ca": [],
+    "order_retry_time_ca": [],
+    "order_reply_timeout_time": [],
+    "database": {
+      "address": "194.233.65.230",
+      "port": 3341,
+      "username": "sa2",
+      "password": "itm56983466",
+      "dbname": "ts"
+    },
+    "itch_connections": [
+      {
+        "name": "ITCH",
+        "description": "",
+        "ipaddress": "localhost",
+        "port": 62222,
+        "timeout": 5000,
+        "usercode": "SHIT01",
+        "password": "jakarta123",
+        "heartbeat": true,
+        "cmpmsgexact": true,
+        "reconseqmode": 0,
+        "autoselect": true
+      },
+      {
+        "name": "ITCH_MDF",
+        "description": "",
+        "ipaddress": "localhost",
+        "port": 62222,
+        "timeout": 5000,
+        "usercode": "SHIT01",
+        "password": "jakarta123",
+        "heartbeat": true,
+        "cmpmsgexact": true,
+        "reconseqmode": 0,
+        "autoselect": true
+      }
+    ],
+    "ouch_connections": [],
+    "fix5_connections": [],
+    "datafeed_client": {
+      "port": 3122,
+      "maxcount": 3,
+      "username": "user3",
+      "password": "pass3",
+      "tradingdays": "1,2,3,4,5,6,7",
+      "begindaytime": "010000",
+      "enddaytime": "230000",
+      "pausebreak": 1000
+    },
+    "splitter_client": {
+      "port": 62222,
+      "maxcount": 1,
+      "usercode": "SHIT01",
+      "password": "jakarta123",
+      "tradingdays": "1,2,3,4,5",
+      "begindaytime": "010000",
+      "enddaytime": "230000",
+      "pausebreak": 0
+    },
+    "jonec_client_connections": [
+      {
+        "name": "SH_01_001_toJONES",
+        "description": "",
+        "port": 3001,
+        "timeout": 10000,
+        "usercode": "shtr1001",
+        "password": "jakarta123",
+        "heartbeat": true
+      },
+      {
+        "name": "SH_01_002_toJONES",
+        "description": "",
+        "port": 3001,
+        "timeout": 10000,
+        "usercode": "shtr1002",
+        "password": "jakarta123",
+        "heartbeat": true
+      },
+      {
+        "name": "SH_01_003_toJONES",
+        "description": "",
+        "port": 3001,
+        "timeout": 10000,
+        "usercode": "shtr1003",
+        "password": "jakarta123",
+        "heartbeat": true
+      }
+    ],
+    "martin_client_connections": [
+      {
+        "name": "SH_01_902_toMARTINS",
+        "description": "",
+        "port": 3002,
+        "timeout": 10000,
+        "usercode": "shmi1002",
+        "password": "jakarta123",
+        "heartbeat": true
+      }
+    ]
+  }
+}
