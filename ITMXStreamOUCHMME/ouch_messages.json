@@ -11,7 +11,7 @@
 				"sequenced": false,
 				"fields": [
 					{
-						"name": "Type",
+						"name": "Ouch Message Type",
 						"offset": 0,
 						"len": 1,
 						"value": "O",
@@ -22,100 +22,145 @@
 					{
 						"name": "Order Token",
 						"offset": 1,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "Token must be unique for each OUCH user per trading cycle.",
-						"source": ""
-					},
-					{
-						"name": "Broker Reference",
-						"offset": 5,
-						"len": 20,
-						"value": "",
-						"type": "Alpha",
-						"notes": "Assigned by Participant. It is not checked but returned via the Accepted sequenced message and also forwarded to the downstream systems.",
-						"source": ""
-					},
-					{
-						"name": "Investor Id",
-						"offset": 25,
-						"len": 6,
-						"value": "",
-						"type": "Alpha",
-						"notes": "Assigned by the Participant. This field is forwarded to the clearing and settlement venues. There is no validation of this field, it is simply passed through to the depended systems. This maps to the SID value.",
-						"source": ""
-					},
-					{
-						"name": "Order Verb",
-						"offset": 31,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "‘B’uy ‘S’ell Shor’T’ Sell ‘P’rice Stabilisation (only buy) ‘M’argin (only buy)",
-						"source": "order_verb"
-					},
-					{
-						"name": "Order Source",
-						"offset": 32,
-						"len": 4,
-						"value": "",
-						"type": "Alpha",
-						"notes": "Expected format = `ABCD`",
-						"source": "order_source"
-					},
-					{
-						"name": "Domicile",
-						"offset": 36,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "‘I’ndonesia, ‘A’sing (foreigner), ‘S’endiri (house), ‘F’oreigner house.",
-						"source": "domicile"
-					},
-					{
-						"name": "Quantity",
-						"offset": 37,
 						"len": 8,
 						"value": "",
 						"type": "Integer",
-						"notes": "Total number of lots. Maximum value 0x7FFFFFFFFFFFFFFF",
+						"notes": "Client generated order identifier.",
 						"source": ""
 					},
 					{
-						"name": "Orderbook",
-						"offset": 45,
+						"name": "Order Book Id",
+						"offset": 9,
 						"len": 4,
 						"value": "",
 						"type": "Integer",
-						"notes": "Unique orderbook identifier. Unsigned big-endian binary encoded.",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 13,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Supported values: B = Buy S = Sell T = ShortSell",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 14,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The quantity of the order.",
 						"source": ""
 					},
 					{
 						"name": "Price",
-						"offset": 49,
-						"len": 4,
+						"offset": 22,
+						"len": 8,
 						"value": "",
-						"type": "Integer",
-						"notes": "The price of this order. The price is 0x7FFFFFFF for a ‘market’ order. Only positive value and maximum price for a ‘limit’ order is 0x7FFFFFFF -1",
+						"type": "Price",
+						"notes": "Signed long price. Number of decimals and allowed tick steps are given by the Order book Directory message in ITCH. To signal a market price – Minimum Long value shall be sent. See section Data Types for Price.",
 						"source": ""
 					},
 					{
-						"name": "Time in Force",
-						"offset": 53,
-						"len": 4,
+						"name": "Time In Force",
+						"offset": 30,
+						"len": 1,
 						"value": "",
 						"type": "Integer",
-						"notes": "99997 – session 99998 - day Any other values are not supported (order will be rejected).",
-						"source": "time_in_force"
+						"notes": "Supported values: 0 = Undefined 1 = Day 2 = GTC 3 = Fak 4 = Fok 5 = GTS 6 = Days",
+						"source": ""
 					},
 					{
-						"name": "Client Id",
-						"offset": 57,
+						"name": "Open Close",
+						"offset": 31,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Specifies the requested position handling, such as closing or opening position. Supported values: 0 = Default 1 = Open 2 = Close/Net 3 = Mandatory close",
+						"source": ""
+					},
+					{
+						"name": "Client Account",
+						"offset": 32,
+						"len": 16,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The name of the Account the order is entered from. The first 15 characters are used, and the last 16th character shall be a null character.",
+						"source": ""
+					},
+					{
+						"name": "Customer Info",
+						"offset": 48,
+						"len": 15,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Exchange Info",
+						"offset": 63,
+						"len": 32,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Display Quantity",
+						"offset": 95,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Display quantity if reserve order, otherwise set to zero (0).",
+						"source": ""
+					},
+					{
+						"name": "Order Type",
+						"offset": 103,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Defines type of order submitted. Supported values: 1 = Limit 2 = Market 3 = MarketToLimit 4 = BestOrder 5 = Imbalance",
+						"source": ""
+					},
+					{
+						"name": "Time In Force Data",
+						"offset": 104,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "For Time In Force GTS and GTD : Dependent on the Time In Force setting for the order. For certain Time In Force, this field is needed to specify for how long the order shall be valid. For a Good till Days order (GTD) the data shall be specified as number of days ex. 5 days. The maximum value is defined by the RDM configuration, Max time in order book. For a Good till Session order (GTS) the data shall be specified as the session state type id ex 1 (Pre-morning). For order types that do not need this information, this field is left empty.",
+						"source": ""
+					},
+					{
+						"name": "Order Capacity",
+						"offset": 106,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 0 = Undefined 1 = Agency 2 = Proprietary 3 = Individual 4 = Principal 5 = Riskless Principal",
+						"source": ""
+					},
+					{
+						"name": "Self Match Prevention Key",
+						"offset": 107,
 						"len": 4,
 						"value": "",
 						"type": "Integer",
-						"notes": "Reserved for future use.",
+						"notes": "When set, orders from the same participant with equal keys shall not be matched. Values: 0 = No key In case a participant is not configured to use Crossing key, and a key is set, the system returns 0.",
+						"source": ""
+					},
+					{
+						"name": "Attributes",
+						"offset": 111,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 0 = Undefined 1 = MarketBid 2 = PriceStabilization 3 = Margin",
 						"source": ""
 					}
 				]
@@ -128,48 +173,120 @@
 				"sequenced": false,
 				"fields": [
 					{
-						"name": "Type",
+						"name": "Ouch Message Type",
 						"offset": 0,
 						"len": 1,
 						"value": "U",
-						"type": "Alpha",
-						"notes": "Replace Order Message Id.",
+						"type": "Integer",
+						"notes": "Replace Order Message.",
 						"source": ""
 					},
 					{
 						"name": "Existing Order Token",
 						"offset": 1,
-						"len": 4,
+						"len": 8,
 						"value": "",
-						"type": "Token",
-						"notes": "The token to match exactly with the original Enter Order or Replace Order Message.",
+						"type": "Integer",
+						"notes": "The Existing Order Token is used to reference the order to be replaced. The Order Token should be the original Order Token, or the latest successful Replacement Order Token, not any Integer",
 						"source": ""
 					},
 					{
 						"name": "Replacement Order Token",
-						"offset": 5,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "Token must be unique for each OUCH user per trading cycle.",
-						"source": ""
-					},
-					{
-						"name": "Quantity",
 						"offset": 9,
 						"len": 8,
 						"value": "",
 						"type": "Integer",
-						"notes": "Total number of lots liable, inclusive of previous executions on this order chain. The maximum in the chain being 0x7FFFFFFFFFFFFFFF.",
+						"notes": "The Replacement Order Token is the new Order Token that will be assigned to the order if the replace is successful. The Replacement Order Token must not be a token previously used in Enter Order or Replace Order transactions.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 17,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Desired Open Quantity of the order, in relation to the original order quantity.",
 						"source": ""
 					},
 					{
 						"name": "Price",
-						"offset": 17,
+						"offset": 25,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "The updated/new price MIN LONG value corresponds to “no change.” See section Data Types for Price. The number of decimals and allowed tick steps are given by the Order book Directory message in ITCH.",
+						"source": ""
+					},
+					{
+						"name": "Open Close",
+						"offset": 33,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Specifies the requested position handling, such as closing or opening position. Supported values: 0 = Default 1 = Open 2 = Close/Net 3 = Mandatory close",
+						"source": ""
+					},
+					{
+						"name": "Client Account",
+						"offset": 34,
+						"len": 16,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The name of the requested new Account for the order. If empty, no change shall be done to the Account for the order. The first 15 characters are used, and the last 16th character shall be a null character.",
+						"source": ""
+					},
+					{
+						"name": "Customer Info",
+						"offset": 50,
+						"len": 15,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Exchange Info",
+						"offset": 65,
+						"len": 32,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Display Quantity",
+						"offset": 97,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Desired displayed quantity (zero for unchanged).",
+						"source": ""
+					},
+					{
+						"name": "Time In Force",
+						"offset": 105,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values:\n0 = Undefined\n1 = Day\n2 = GTC\n3 = Fak\n4 = Fok\n5 = GTS\n6 = Days",
+						"source": ""
+					},
+					{
+						"name": "Time In Force Data",
+						"offset": 106,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "For Time In Force GTS and GTD : Dependent on the Time In Force setting for the order. For certain Time In Force, this field is needed to specify for how long the order shall be valid. For a Good till Days order (GTD) the data shall be specified as number of days ex. 5 days. The maximum value is defined by the RDM configuration, Max time in order book. For a Good till Session order (GTS) the data shall be specified as the session state type id ex 1 (Pre-morning). For order types that do not need this information, this field is left empty.",
+						"source": ""
+					},
+					{
+						"name": "Self Match Prevention Key",
+						"offset": 108,
 						"len": 4,
 						"value": "",
 						"type": "Integer",
-						"notes": "The price of the replacement order. The price is 0x7FFFFFFF (hex) 2147483647 (dec) for a ‘market’ order. Only positive value and maximum price for a ‘limit’ order is 0x7FFFFFFF -1",
+						"notes": "When set, orders from the same participant with equal keys shall not be matched. Values: 0 = No key In case a participant is not configured to use Crossing key, and a key is set, the system returns 0.",
 						"source": ""
 					}
 				]
@@ -182,102 +299,84 @@
 				"sequenced": false,
 				"fields": [
 					{
-						"name": "Type",
+						"name": "Ouch Message Type",
 						"offset": 0,
 						"len": 1,
 						"value": "X",
-						"type": "Alpha",
-						"notes": "Cancel Order Message Id.",
+						"type": "Integer",
+						"notes": "Cancel Order Message.",
 						"source": ""
 					},
 					{
 						"name": "Order Token",
 						"offset": 1,
-						"len": 4,
+						"len": 8,
 						"value": "",
-						"type": "Token",
-						"notes": "The exact match for the original order token from the Order Entry message.",
+						"type": "Integer",
+						"notes": "The Order Token is used to reference the order to be canceled.",
 						"source": ""
 					}
 				]
 			},
 			{
-				"type": "T",
-				"name": "Trading Limit Message",
+				"type": "Y",
+				"name": "Cancel By Order ID Message",
 				"description": "",
 				"direction": "OUT",
 				"sequenced": false,
 				"fields": [
 					{
-						"name": "Type",
+						"name": "Ouch Message Type",
 						"offset": 0,
 						"len": 1,
-						"value": "T",
-						"type": "Alpha",
-						"notes": "Trading Limit Message Id.",
+						"value": "Y",
+						"type": "Integer",
+						"notes": "Cancel By Order ID Message",
 						"source": ""
 					},
 					{
-						"name": "Trading Limit Type",
+						"name": "Order Book Id",
 						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Identifier for the Order book.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 5,
 						"len": 1,
 						"value": "",
 						"type": "Alpha",
-						"notes": "‘P’ool ‘E’quity ‘D’erivative",
-						"source": "trading_limit_type"
-					}
-				]
-			},
-			{
-				"type": "S",
-				"name": "System Event Message",
-				"description": "",
-				"direction": "IN",
-				"sequenced": true,
-				"fields": [
-					{
-						"name": "Type",
-						"offset": 0,
-						"len": 1,
-						"value": "S",
-						"type": "Alpha",
-						"notes": "System Event Message Id.",
+						"notes": "Supported values: B = Buy S = Sell T = ShortSell",
 						"source": ""
 					},
 					{
-						"name": "Timestamp",
-						"offset": 1,
+						"name": "Order Id",
+						"offset": 6,
 						"len": 8,
 						"value": "",
 						"type": "Integer",
-						"notes": "Timestamp – reflected as number of nanoseconds past midnight.",
+						"notes": "The identifier assigned to the order by the system.",
 						"source": ""
-					},
-					{
-						"name": "Event Code",
-						"offset": 9,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "“S” start of day “E” end of day",
-						"source": "system_event_code"
 					}
 				]
 			},
 			{
 				"type": "A",
-				"name": "Accepted Message",
+				"name": "Order Accepted Message",
 				"description": "",
 				"direction": "IN",
-				"sequenced": true,
+				"sequenced": false,
 				"fields": [
 					{
-						"name": "Type",
+						"name": "Ouch Message Type",
 						"offset": 0,
 						"len": 1,
 						"value": "A",
-						"type": "Alpha",
-						"notes": "Accepted Message Id.",
+						"type": "Integer",
+						"notes": "Order Accepted Message.",
 						"source": ""
 					},
 					{
@@ -285,152 +384,188 @@
 						"offset": 1,
 						"len": 8,
 						"value": "",
-						"type": "Integer",
-						"notes": "Timestamp – reflected as number of nanoseconds past midnight.",
+						"type": "Timestamp",
+						"notes": "UNIX Time (number of nanoseconds since 1970-01-01 00:00:00 UTC).",
 						"source": ""
 					},
 					{
 						"name": "Order Token",
 						"offset": 9,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "The order token field as entered",
-						"source": ""
-					},
-					{
-						"name": "Broker Reference",
-						"offset": 13,
-						"len": 20,
-						"value": "",
-						"type": "Alpha",
-						"notes": "Assigned by Participant on the order entry message.",
-						"source": ""
-					},
-					{
-						"name": "Investor Id",
-						"offset": 33,
-						"len": 6,
-						"value": "",
-						"type": "Alpha",
-						"notes": "The Investor Id field as entered. Maps to SID.",
-						"source": ""
-					},
-					{
-						"name": "Order Verb",
-						"offset": 39,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "‘B’uy ‘S’ell Shor’T’ Sell ‘P’rice Stabilisation (only buy) ‘M’argin (only buy)",
-						"source": "order_verb"
-					},
-					{
-						"name": "Order Source",
-						"offset": 40,
-						"len": 4,
-						"value": "",
-						"type": "Alpha",
-						"notes": "Expected format = `ABCD`",
-						"source": "order_source"
-					},
-					{
-						"name": "Domicile",
-						"offset": 44,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "‘I’ndonesia, ‘A’sing (foreigner), ‘S’endiri (house), ‘F’oreigner house.",
-						"source": "domicile"
-					},
-					{
-						"name": "Quantity",
-						"offset": 45,
 						"len": 8,
 						"value": "",
 						"type": "Integer",
-						"notes": "Total number of lots accepted.",
+						"notes": "The Token for the accepted order.",
 						"source": ""
 					},
 					{
-						"name": "Orderbook",
-						"offset": 53,
+						"name": "Order Book Id",
+						"offset": 17,
 						"len": 4,
 						"value": "",
 						"type": "Integer",
-						"notes": "Unique orderbook identifier as entered.",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 21,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Supported values: B = Buy S = Sell T = ShortSell",
+						"source": ""
+					},
+					{
+						"name": "Order Id",
+						"offset": 22,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The identifier assigned to the new order. Note that the number is only unique per Order book and side.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 30,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Quantity currently open in the book.",
 						"source": ""
 					},
 					{
 						"name": "Price",
-						"offset": 57,
-						"len": 4,
-						"value": "",
-						"type": "Integer",
-						"notes": "The accepted price of the order. The price is 0x7FFFFFFF (hex) or 2147483647 (dec) for a ‘market’ order.",
-						"source": ""
-					},
-					{
-						"name": "Time in Force",
-						"offset": 61,
-						"len": 4,
-						"value": "",
-						"type": "Integer",
-						"notes": "0 – immediate 99997 - session 99998 – day Any other values are not supported",
-						"source": "time_in_force"
-					},
-					{
-						"name": "Client Id",
-						"offset": 65,
-						"len": 4,
-						"value": "",
-						"type": "Integer",
-						"notes": "Reserved for future use.",
-						"source": ""
-					},
-					{
-						"name": "Order Reference Number",
-						"offset": 69,
+						"offset": 38,
 						"len": 8,
 						"value": "",
-						"type": "Integer",
-						"notes": "Day unique order reference number.",
+						"type": "Price",
+						"notes": "Signed Integer",
 						"source": ""
 					},
 					{
-						"name": "Order Reference Number External",
-						"offset": 77,
-						"len": 8,
+						"name": "Time In Force",
+						"offset": 46,
+						"len": 1,
 						"value": "",
 						"type": "Integer",
-						"notes": "Day unique order reference number as displayed on ITCH Total View.",
+						"notes": "Supported values:\n0 = Undefined\n1 = Day\n2 = GTC\n3 = Fak\n4 = Fok\n5 = GTS\n6 = Days",
+						"source": ""
+					},
+					{
+						"name": "Open Close",
+						"offset": 47,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Specifies the requested position handling, such as closing or opening position. Supported values: 0 = Default 1 = Open 2 = Close/Net 3 = Mandatory close",
+						"source": ""
+					},
+					{
+						"name": "Client Account",
+						"offset": 48,
+						"len": 16,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The name of the Account the order is entered from. The first 15 characters are used, and the last 16th character shall be a null character.",
 						"source": ""
 					},
 					{
 						"name": "Order State",
-						"offset": 85,
+						"offset": 64,
 						"len": 1,
 						"value": "",
+						"type": "Integer",
+						"notes": "Supported values:\n1 = On book\n2 = Not on book",
+						"source": ""
+					},
+					{
+						"name": "Customer Info",
+						"offset": 65,
+						"len": 15,
+						"value": "",
 						"type": "Alpha",
-						"notes": "“L”ive or “D”ead. No further Canceled message will be received for the accepted order.",
-						"source": "order_state"
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Exchange Info",
+						"offset": 80,
+						"len": 32,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Display Quantity",
+						"offset": 112,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Display quantity if reserve order, otherwise set to zero (0).",
+						"source": ""
+					},
+					{
+						"name": "Order Type",
+						"offset": 120,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Defines type of order submitted. Supported values:\n1 = Limit\n2 = Market\n3 = MarketToLimit",
+						"source": ""
+					},
+					{
+						"name": "Time In Force Data",
+						"offset": 121,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "For Time In Force GTS and GTD : Dependent on the Time In Force setting for the order. For certain Time In Force, this field is needed to specify for how long the order shall be valid. For a Good till Days order (GTD) the data shall be specified as number of days ex. 5 days. The maximum value is defined by the RDM configuration, Max time in order book. For a Good till Session order (GTS) the data shall be specified as the session state type id ex 1 (Pre-morning). For order types that do not need this information, this field is left empty.",
+						"source": ""
+					},
+					{
+						"name": "Order Capacity",
+						"offset": 123,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values:\n0 = Undefined\n1 = Agency\n2 = Proprietary\n3 = Individual\n4 = Principal\n5 = RisklessPrincipal",
+						"source": ""
+					},
+					{
+						"name": "Self Match Prevention Key",
+						"offset": 124,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "When set, orders from the same participant with equal keys shall not be matched. Values: 0 = No key In case a participant is not configured to use Crossing key, and a key is set, the system returns 0.",
+						"source": ""
+					},
+					{
+						"name": "Attributes",
+						"offset": 128,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values:",
+						"source": ""
 					}
 				]
 			},
 			{
-				"type": "U",
-				"name": "Replaced Message",
+				"type": "J",
+				"name": "Order Rejected Message",
 				"description": "",
 				"direction": "IN",
-				"sequenced": true,
+				"sequenced": false,
 				"fields": [
 					{
-						"name": "Type",
+						"name": "Ouch Message Type",
 						"offset": 0,
 						"len": 1,
-						"value": "U",
-						"type": "Alpha",
-						"notes": "Replaced Message Id.",
+						"value": "J",
+						"type": "Integer",
+						"notes": "Order Rejected Message.",
 						"source": ""
 					},
 					{
@@ -438,413 +573,251 @@
 						"offset": 1,
 						"len": 8,
 						"value": "",
+						"type": "Timestamp",
+						"notes": "UNIX Time (number of nanoseconds since 1970-01-01 00:00:00 UTC).",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 9,
+						"len": 8,
+						"value": "",
 						"type": "Integer",
-						"notes": "Timestamp – reflected as number of nanoseconds past midnight.",
+						"notes": "The Token for the rejected order.",
+						"source": ""
+					},
+					{
+						"name": "Order Id",
+						"offset": 17,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The Order ID for the rejected order.",
+						"source": ""
+					},
+					{
+						"name": "Reject Code",
+						"offset": 25,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Backend Error Code. See System Error Messages Reference for more information.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "U",
+				"name": "Order Replaced Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": false,
+				"fields": [
+					{
+						"name": "Ouch Message Type",
+						"offset": 0,
+						"len": 1,
+						"value": "U",
+						"type": "Integer",
+						"notes": "Order Replaced Message.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Timestamp",
+						"notes": "UNIX Time (number of nanoseconds since 1970-01-01 00:00:00 UTC).",
 						"source": ""
 					},
 					{
 						"name": "Replacement Order Token",
 						"offset": 9,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "The Replacement Order Token field.",
-						"source": ""
-					},
-					{
-						"name": "Order Verb",
-						"offset": 13,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "‘B’uy ‘S’ell Shor’T’ Sell ‘P’rice Stabilisation (only buy) ‘M’argin (only buy) on original order.",
-						"source": "order_verb"
-					},
-					{
-						"name": "Quantity",
-						"offset": 14,
 						"len": 8,
 						"value": "",
 						"type": "Integer",
-						"notes": "The accepted quantity of the replacement.",
+						"notes": "The new Order Token for the order.",
 						"source": ""
 					},
 					{
-						"name": "Orderbook",
-						"offset": 22,
+						"name": "Previous Order Token",
+						"offset": 17,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The previous Order Token for the order.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 25,
 						"len": 4,
 						"value": "",
 						"type": "Integer",
-						"notes": "Unique orderbook identifier as entered on the replace message.",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 29,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Supported values: B = Buy, S = Sell, F = ShortSell",
+						"source": ""
+					},
+					{
+						"name": "Order Id",
+						"offset": 30,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The identifier assigned to the new order. Note that the number is only unique per Order book and side.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 38,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Quantity currently open in the book.",
 						"source": ""
 					},
 					{
 						"name": "Price",
-						"offset": 26,
-						"len": 4,
+						"offset": 46,
+						"len": 8,
 						"value": "",
-						"type": "Integer",
-						"notes": "The accepted price of the replacement. 0x7FFFFFFF (hex) or 2147483647 (dec) for a ‘market’ order.",
+						"type": "Price",
+						"notes": "Signed Integer",
 						"source": ""
 					},
 					{
-						"name": "Time in Force",
-						"offset": 30,
-						"len": 4,
+						"name": "Time In Force",
+						"offset": 54,
+						"len": 1,
 						"value": "",
 						"type": "Integer",
-						"notes": "99997 - session 99998 – day Any other values are not supported.",
-						"source": "time_in_force"
-					},
-					{
-						"name": "Order Reference Number",
-						"offset": 34,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Day unique order reference number.",
+						"notes": "Supported values: 0 = Undefined, 1 = Day, 2 = FOK, 3 = IOC, 4 = GTS, 6 = Days",
 						"source": ""
 					},
 					{
-						"name": "Order Reference Number External",
-						"offset": 42,
-						"len": 8,
+						"name": "Open Close",
+						"offset": 55,
+						"len": 1,
 						"value": "",
 						"type": "Integer",
-						"notes": "Day unique order reference number as displayed on ITCH Total View.",
+						"notes": "Specifies the requested position handling, such as closing or opening position. Supported values: 0 = Default, 1 = Open, 2 = Close/Net, 3 = Mandatory close",
+						"source": ""
+					},
+					{
+						"name": "Client Account",
+						"offset": 56,
+						"len": 16,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The name of the Account. The first 15 characters are used, and the last 16th character shall be a null character.",
 						"source": ""
 					},
 					{
 						"name": "Order State",
-						"offset": 50,
+						"offset": 72,
 						"len": 1,
 						"value": "",
-						"type": "Alpha",
-						"notes": "“L”ive or “D”ead. If the replaced quantity is equal to the executed quantity, OrderReplaced message is sent with value “Dead”. OrderReplaced message is also sent with value “Dead” for an IOC order which fails to execute. No further Canceled message will be received for the replaced order.",
-						"source": "order_state"
+						"type": "Integer",
+						"notes": "Supported values: 1 = On book, 2 = Not on book",
+						"source": ""
 					},
 					{
-						"name": "Previous Order Token",
-						"offset": 51,
+						"name": "Customer Info",
+						"offset": 73,
+						"len": 15,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Exchange Info",
+						"offset": 88,
+						"len": 32,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Pass-thru field.",
+						"source": ""
+					},
+					{
+						"name": "Display Quantity",
+						"offset": 120,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The displayed quantity in case the order is a reserve order or zero if the order is not a reserve order.",
+						"source": ""
+					},
+					{
+						"name": "Order Type",
+						"offset": 128,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 1 = Limit, 2 = Market, 3 = MarketToLimit, 4 = BestOrder, 5 = Imbalance",
+						"source": ""
+					},
+					{
+						"name": "Time In Force Data",
+						"offset": 129,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Dependent on the Time In Force setting for the order. For certain Time In Force, this field is needed to specify for how long the order shall be valid. For Good till Days order (GTD) the data shall be specified as number of days ex. 5 days. The maximum value is defined by the RDM configuration, Max Time in order book. For a Good till Session order (GTS) the data shall be specified as the session state type id ex 1 (Pre-morning). For order types that do not need this information, this field is left empty.",
+						"source": ""
+					},
+					{
+						"name": "Order Capacity",
+						"offset": 131,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 0 = Undefined, 1 = Agency, 2 = Proprietary, 3 = Individual, 4 = Principal, 5 = Risk Less Principal",
+						"source": ""
+					},
+					{
+						"name": "Self Match Prevention Key",
+						"offset": 132,
 						"len": 4,
 						"value": "",
-						"type": "Token",
-						"notes": "The Order Token of the order that was replaced.",
+						"type": "Integer",
+						"notes": "When set, orders from the same participant with equal keys shall not be matched. Value = 0 = No key. In case a participant is not configured to use Crossing key, and a key is set, the system returns 0.",
+						"source": ""
+					},
+					{
+						"name": "Attributes",
+						"offset": 136,
+						"len": 2,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 0 = Undefined, 1 = MarketBid, 2 = PriceStabilization, 3 = Margin",
 						"source": ""
 					}
 				]
 			},
 			{
 				"type": "C",
-				"name": "Canceled Message",
-				"description": "",
-				"direction": "IN",
-				"sequenced": true,
-				"fields": [
-					{
-						"name": "Type",
-						"offset": 0,
-						"len": 1,
-						"value": "C",
-						"type": "Alpha",
-						"notes": "Canceled Order Message Id.",
-						"source": ""
-					},
-					{
-						"name": "Timestamp",
-						"offset": 1,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Timestamp – reflected as the number of nanoseconds past midnight",
-						"source": ""
-					},
-					{
-						"name": "Order Token",
-						"offset": 9,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "The Order Token of the order being canceled.",
-						"source": ""
-					},
-					{
-						"name": "Quantity",
-						"offset": 13,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Number of lots canceled. This is balance of the order when the cancel transaction was processed.",
-						"source": ""
-					},
-					{
-						"name": "Reason",
-						"offset": 21,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "Reason the order was cancelled. Refer to Cancelled Reasons below.",
-						"source": "cancelled_reason"
-					}
-				]
-			},
-			{
-				"type": "E",
-				"name": "Executed Order Message",
-				"description": "",
-				"direction": "IN",
-				"sequenced": true,
-				"fields": [
-					{
-						"name": "Type",
-						"offset": 0,
-						"len": 1,
-						"value": "E",
-						"type": "Alpha",
-						"notes": "Order Executed Message Id.",
-						"source": ""
-					},
-					{
-						"name": "Timestamp",
-						"offset": 1,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Timestamp – reflected as the number of nanoseconds past midnight.",
-						"source": ""
-					},
-					{
-						"name": "Order Token",
-						"offset": 9,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "The Order Token of the executed order.",
-						"source": ""
-					},
-					{
-						"name": "Executed Quantity",
-						"offset": 13,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Incremental quantity executed, i.e. the quantity for this execution only.",
-						"source": ""
-					},
-					{
-						"name": "Executed Price",
-						"offset": 21,
-						"len": 4,
-						"value": "",
-						"type": "Integer",
-						"notes": "The executed price for executed quantity.",
-						"source": ""
-					},
-					{
-						"name": "Liquidity Flag",
-						"offset": 25,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "“A”dded for the passive firm (resting order), “R”emoved for the aggressor, “U”ncross for auction executions.",
-						"source": "liquidity_flag"
-					},
-					{
-						"name": "Match Number",
-						"offset": 26,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Match identifier for each trade. Same for buy/sell sides. This is the X-stream INET Trading trade number.",
-						"source": ""
-					},
-					{
-						"name": "Counter Party ID",
-						"offset": 34,
-						"len": 4,
-						"value": "",
-						"type": "Integer",
-						"notes": "Depending on the orderbook setup the counterparty identifier may contain a masking CCP or a trading counterparty.",
-						"source": ""
-					}
-				]
-			},
-			{
-				"type": "B",
-				"name": "Broken Trade Message",
-				"description": "",
-				"direction": "IN",
-				"sequenced": true,
-				"fields": [
-					{
-						"name": "Type",
-						"offset": 0,
-						"len": 1,
-						"value": "B",
-						"type": "Alpha",
-						"notes": "Broken Trade Message Id.",
-						"source": ""
-					},
-					{
-						"name": "Timestamp",
-						"offset": 1,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Timestamp – reflected as the number of nanoseconds past midnight.",
-						"source": ""
-					},
-					{
-						"name": "Order Token",
-						"offset": 9,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "The Order Token of the order for which the given Match Number is being broken.",
-						"source": ""
-					},
-					{
-						"name": "Match Number",
-						"offset": 13,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Match identifier for each trade. Same for buy/sell sides. This is the X-stream INET Trading trade number.",
-						"source": ""
-					},
-					{
-						"name": "Reason",
-						"offset": 21,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "The reason the trade was broken. See currently supported Broken Trade Reasons table below.",
-						"source": "broken_trade_reason"
-					}
-				]
-			},
-			{
-				"type": "J",
-				"name": "Rejected Order Message",
-				"description": "",
-				"direction": "IN",
-				"sequenced": true,
-				"fields": [
-					{
-						"name": "Type",
-						"offset": 0,
-						"len": 1,
-						"value": "J",
-						"type": "Alpha",
-						"notes": "Rejected Order Message Id.",
-						"source": ""
-					},
-					{
-						"name": "Timestamp",
-						"offset": 1,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Timestamp – reflected as nanoseconds past midnight.",
-						"source": ""
-					},
-					{
-						"name": "Order Token",
-						"offset": 9,
-						"len": 4,
-						"value": "",
-						"type": "Token",
-						"notes": "Order Token field as was entered.",
-						"source": ""
-					},
-					{
-						"name": "Reason",
-						"offset": 13,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "The reason the order was rejected. Refer to Rejected Order Reasons below.",
-						"source": "rejected_order_reason"
-					}
-				]
-			},
-			{
-				"type": "T",
-				"name": "Trading Limit Status Message",
-				"description": "",
-				"direction": "IN",
-				"sequenced": true,
-				"fields": [
-					{
-						"name": "Type",
-						"offset": 0,
-						"len": 1,
-						"value": "T",
-						"type": "Alpha",
-						"notes": "Trading Limit Message Id.",
-						"source": ""
-					},
-					{
-						"name": "Timestamp",
-						"offset": 1,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "Timestamp – reflected as nanoseconds past midnight.",
-						"source": ""
-					},
-					{
-						"name": "Trading Limit Type",
-						"offset": 9,
-						"len": 1,
-						"value": "",
-						"type": "Alpha",
-						"notes": "‘P’ool ‘E’quity ‘D’erivative",
-						"source": "trading_limit_type"
-					},
-					{
-						"name": "Used",
-						"offset": 10,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "The used value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
-						"source": ""
-					},
-					{
-						"name": "Traded",
-						"offset": 18,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "The traded value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
-						"source": ""
-					},
-					{
-						"name": "Limit",
-						"offset": 26,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "The limit value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
-						"source": ""
-					}
-				]
-			},
-			{
-				"type": "T",
-				"name": "Trading Limit Status Message",
+				"name": "Order Canceled Message",
 				"description": "",
 				"direction": "IN",
 				"sequenced": false,
 				"fields": [
 					{
-						"name": "Type",
+						"name": "Ouch Message Type",
 						"offset": 0,
 						"len": 1,
-						"value": "T",
-						"type": "Alpha",
-						"notes": "Trading Limit Message Id.",
+						"value": "C",
+						"type": "Integer",
+						"notes": "Order Canceled Message.",
 						"source": ""
 					},
 					{
@@ -852,44 +825,143 @@
 						"offset": 1,
 						"len": 8,
 						"value": "",
-						"type": "Integer",
-						"notes": "Timestamp – reflected as nanoseconds past midnight.",
+						"type": "Timestamp",
+						"notes": "UNIX Time (number of nanoseconds since 1970-01-01 00:00:00 UTC).",
 						"source": ""
 					},
 					{
-						"name": "Trading Limit Type",
+						"name": "Order Token",
 						"offset": 9,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order Token for the canceled order.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 17,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Side",
+						"offset": 21,
 						"len": 1,
 						"value": "",
 						"type": "Alpha",
-						"notes": "‘P’ool ‘E’quity ‘D’erivative",
-						"source": "trading_limit_type"
-					},
-					{
-						"name": "Used",
-						"offset": 10,
-						"len": 8,
-						"value": "",
-						"type": "Integer",
-						"notes": "The used value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"notes": "Supported values: B = Buy, S = Sell, F = ShortSell",
 						"source": ""
 					},
 					{
-						"name": "Traded",
-						"offset": 18,
+						"name": "Order Id",
+						"offset": 22,
 						"len": 8,
 						"value": "",
 						"type": "Integer",
-						"notes": "The traded value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"notes": "The identifier assigned to the canceled order. Note that the number is only unique per Order book and side.",
 						"source": ""
 					},
 					{
-						"name": "Limit",
-						"offset": 26,
+						"name": "Cancel Reason",
+						"offset": 30,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "Supported values: 1 = Canceled by user, 3 = Canceled by system after trade (ex FAK order), 6 = Canceled by system after new order entry (ex FOK/FAK order), 8 = Canceled by system after order converted (ex MTL order), 9 = Canceled by system, 10 = Canceled by proxy user, 12 = Canceled by system after new order triggered, 13 = Canceled by system for hidden order, 19 = Canceled by system order changed, 20 = Canceled by system due to Instrument Session State, 43 = Canceled due to Self Match Prevention, 44 = Canceled due to Circuit Breaker, 45 = Canceled due to credit limits, 58 = Canceled due to Corporate Action, 59 = Canceled due to Self Match Prev. - Default (cancel aggressive)",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "E",
+				"name": "Order Executed Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": false,
+				"fields": [
+					{
+						"name": "Ouch Message Type",
+						"offset": 0,
+						"len": 1,
+						"value": "E",
+						"type": "Integer",
+						"notes": "Order Executed Message.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Timestamp",
+						"notes": "UNIX Time (number of nanoseconds since 1970-01-01 00:00:00 UTC).",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 9,
 						"len": 8,
 						"value": "",
 						"type": "Integer",
-						"notes": "The limit value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"notes": "Token identifier for the matched order.",
+						"source": ""
+					},
+					{
+						"name": "Order Book Id",
+						"offset": 17,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Order book identifier.",
+						"source": ""
+					},
+					{
+						"name": "Trade Quantity",
+						"offset": 21,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The matched quantity.",
+						"source": ""
+					},
+					{
+						"name": "Trade Price",
+						"offset": 29,
+						"len": 8,
+						"value": "",
+						"type": "Price",
+						"notes": "Signed Integer",
+						"source": ""
+					},
+					{
+						"name": "Match Id",
+						"offset": 37,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Backend generated identifier. Assigned by the system to each match executed.",
+						"source": ""
+					},
+					{
+						"name": "Combo Group Id",
+						"offset": 45,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Used to group combo and leg executions together",
+						"source": ""
+					},
+					{
+						"name": "Deal Source",
+						"offset": 49,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "The deal source of the order executed. Supported values: 1 = Matched by system automatically, 7 = Combination order match combination order automatically, 20 = Matched in auction, 36 = Tailor Made Combination, 43 = Combination matched outright legs",
 						"source": ""
 					}
 				]
