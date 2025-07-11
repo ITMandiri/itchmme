@@ -1081,18 +1081,18 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         //. ke memory string
         lstFeedStr.add(_msg);
         
-        try
-        {
-            //System.out.println(_msg);
-            String filename= o.getDate() + ".raw";
-            FileWriter fw = new FileWriter(filename, true); 
-            fw.write(_msg + "ZZ\r\n");//appends the string to the file
-            fw.close();
-        }
-        catch(IOException ioe)
-        {
-            System.err.println("IOException: " + ioe.getMessage());
-        }
+//        try
+//        {
+//            //System.out.println(_msg);
+//            String filename= o.getDate() + ".raw";
+//            FileWriter fw = new FileWriter(filename, true); 
+//            fw.write(_msg + "ZZ\r\n");//appends the string to the file
+//            fw.close();
+//        }
+//        catch(IOException ioe)
+//        {
+//            System.err.println("IOException: " + ioe.getMessage());
+//        }
         
     }
     private int getCurTimeHHmm(){

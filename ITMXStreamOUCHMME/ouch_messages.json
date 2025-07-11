@@ -1,0 +1,1310 @@
+{
+	"ouch": {
+		"version": "2020-01-13",
+		"specification": "1.6.0",
+		"messages": [
+			{
+				"type": "O",
+				"name": "Enter Order Message",
+				"description": "",
+				"direction": "OUT",
+				"sequenced": false,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "O",
+						"type": "Alpha",
+						"notes": "Enter Order Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "Token must be unique for each OUCH user per trading cycle.",
+						"source": ""
+					},
+					{
+						"name": "Broker Reference",
+						"offset": 5,
+						"len": 20,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Assigned by Participant. It is not checked but returned via the Accepted sequenced message and also forwarded to the downstream systems.",
+						"source": ""
+					},
+					{
+						"name": "Investor Id",
+						"offset": 25,
+						"len": 6,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Assigned by the Participant. This field is forwarded to the clearing and settlement venues. There is no validation of this field, it is simply passed through to the depended systems. This maps to the SID value.",
+						"source": ""
+					},
+					{
+						"name": "Order Verb",
+						"offset": 31,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘B’uy ‘S’ell Shor’T’ Sell ‘P’rice Stabilisation (only buy) ‘M’argin (only buy)",
+						"source": "order_verb"
+					},
+					{
+						"name": "Order Source",
+						"offset": 32,
+						"len": 4,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Expected format = `ABCD`",
+						"source": "order_source"
+					},
+					{
+						"name": "Domicile",
+						"offset": 36,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘I’ndonesia, ‘A’sing (foreigner), ‘S’endiri (house), ‘F’oreigner house.",
+						"source": "domicile"
+					},
+					{
+						"name": "Quantity",
+						"offset": 37,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Total number of lots. Maximum value 0x7FFFFFFFFFFFFFFF",
+						"source": ""
+					},
+					{
+						"name": "Orderbook",
+						"offset": 45,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Unique orderbook identifier. Unsigned big-endian binary encoded.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 49,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "The price of this order. The price is 0x7FFFFFFF for a ‘market’ order. Only positive value and maximum price for a ‘limit’ order is 0x7FFFFFFF -1",
+						"source": ""
+					},
+					{
+						"name": "Time in Force",
+						"offset": 53,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "99997 – session 99998 - day Any other values are not supported (order will be rejected).",
+						"source": "time_in_force"
+					},
+					{
+						"name": "Client Id",
+						"offset": 57,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Reserved for future use.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "U",
+				"name": "Replace Order Message",
+				"description": "",
+				"direction": "OUT",
+				"sequenced": false,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "U",
+						"type": "Alpha",
+						"notes": "Replace Order Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Existing Order Token",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The token to match exactly with the original Enter Order or Replace Order Message.",
+						"source": ""
+					},
+					{
+						"name": "Replacement Order Token",
+						"offset": 5,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "Token must be unique for each OUCH user per trading cycle.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 9,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Total number of lots liable, inclusive of previous executions on this order chain. The maximum in the chain being 0x7FFFFFFFFFFFFFFF.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 17,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "The price of the replacement order. The price is 0x7FFFFFFF (hex) 2147483647 (dec) for a ‘market’ order. Only positive value and maximum price for a ‘limit’ order is 0x7FFFFFFF -1",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "X",
+				"name": "Cancel Order Message",
+				"description": "",
+				"direction": "OUT",
+				"sequenced": false,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "X",
+						"type": "Alpha",
+						"notes": "Cancel Order Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 1,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The exact match for the original order token from the Order Entry message.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "T",
+				"name": "Trading Limit Message",
+				"description": "",
+				"direction": "OUT",
+				"sequenced": false,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "T",
+						"type": "Alpha",
+						"notes": "Trading Limit Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Trading Limit Type",
+						"offset": 1,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘P’ool ‘E’quity ‘D’erivative",
+						"source": "trading_limit_type"
+					}
+				]
+			},
+			{
+				"type": "S",
+				"name": "System Event Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "S",
+						"type": "Alpha",
+						"notes": "System Event Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as number of nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Event Code",
+						"offset": 9,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "“S” start of day “E” end of day",
+						"source": "system_event_code"
+					}
+				]
+			},
+			{
+				"type": "A",
+				"name": "Accepted Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "A",
+						"type": "Alpha",
+						"notes": "Accepted Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as number of nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 9,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The order token field as entered",
+						"source": ""
+					},
+					{
+						"name": "Broker Reference",
+						"offset": 13,
+						"len": 20,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Assigned by Participant on the order entry message.",
+						"source": ""
+					},
+					{
+						"name": "Investor Id",
+						"offset": 33,
+						"len": 6,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The Investor Id field as entered. Maps to SID.",
+						"source": ""
+					},
+					{
+						"name": "Order Verb",
+						"offset": 39,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘B’uy ‘S’ell Shor’T’ Sell ‘P’rice Stabilisation (only buy) ‘M’argin (only buy)",
+						"source": "order_verb"
+					},
+					{
+						"name": "Order Source",
+						"offset": 40,
+						"len": 4,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Expected format = `ABCD`",
+						"source": "order_source"
+					},
+					{
+						"name": "Domicile",
+						"offset": 44,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘I’ndonesia, ‘A’sing (foreigner), ‘S’endiri (house), ‘F’oreigner house.",
+						"source": "domicile"
+					},
+					{
+						"name": "Quantity",
+						"offset": 45,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Total number of lots accepted.",
+						"source": ""
+					},
+					{
+						"name": "Orderbook",
+						"offset": 53,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Unique orderbook identifier as entered.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 57,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "The accepted price of the order. The price is 0x7FFFFFFF (hex) or 2147483647 (dec) for a ‘market’ order.",
+						"source": ""
+					},
+					{
+						"name": "Time in Force",
+						"offset": 61,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "0 – immediate 99997 - session 99998 – day Any other values are not supported",
+						"source": "time_in_force"
+					},
+					{
+						"name": "Client Id",
+						"offset": 65,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Reserved for future use.",
+						"source": ""
+					},
+					{
+						"name": "Order Reference Number",
+						"offset": 69,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Day unique order reference number.",
+						"source": ""
+					},
+					{
+						"name": "Order Reference Number External",
+						"offset": 77,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Day unique order reference number as displayed on ITCH Total View.",
+						"source": ""
+					},
+					{
+						"name": "Order State",
+						"offset": 85,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "“L”ive or “D”ead. No further Canceled message will be received for the accepted order.",
+						"source": "order_state"
+					}
+				]
+			},
+			{
+				"type": "U",
+				"name": "Replaced Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "U",
+						"type": "Alpha",
+						"notes": "Replaced Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as number of nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Replacement Order Token",
+						"offset": 9,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The Replacement Order Token field.",
+						"source": ""
+					},
+					{
+						"name": "Order Verb",
+						"offset": 13,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘B’uy ‘S’ell Shor’T’ Sell ‘P’rice Stabilisation (only buy) ‘M’argin (only buy) on original order.",
+						"source": "order_verb"
+					},
+					{
+						"name": "Quantity",
+						"offset": 14,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The accepted quantity of the replacement.",
+						"source": ""
+					},
+					{
+						"name": "Orderbook",
+						"offset": 22,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Unique orderbook identifier as entered on the replace message.",
+						"source": ""
+					},
+					{
+						"name": "Price",
+						"offset": 26,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "The accepted price of the replacement. 0x7FFFFFFF (hex) or 2147483647 (dec) for a ‘market’ order.",
+						"source": ""
+					},
+					{
+						"name": "Time in Force",
+						"offset": 30,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "99997 - session 99998 – day Any other values are not supported.",
+						"source": "time_in_force"
+					},
+					{
+						"name": "Order Reference Number",
+						"offset": 34,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Day unique order reference number.",
+						"source": ""
+					},
+					{
+						"name": "Order Reference Number External",
+						"offset": 42,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Day unique order reference number as displayed on ITCH Total View.",
+						"source": ""
+					},
+					{
+						"name": "Order State",
+						"offset": 50,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "“L”ive or “D”ead. If the replaced quantity is equal to the executed quantity, OrderReplaced message is sent with value “Dead”. OrderReplaced message is also sent with value “Dead” for an IOC order which fails to execute. No further Canceled message will be received for the replaced order.",
+						"source": "order_state"
+					},
+					{
+						"name": "Previous Order Token",
+						"offset": 51,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The Order Token of the order that was replaced.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "C",
+				"name": "Canceled Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "C",
+						"type": "Alpha",
+						"notes": "Canceled Order Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as the number of nanoseconds past midnight",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 9,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The Order Token of the order being canceled.",
+						"source": ""
+					},
+					{
+						"name": "Quantity",
+						"offset": 13,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Number of lots canceled. This is balance of the order when the cancel transaction was processed.",
+						"source": ""
+					},
+					{
+						"name": "Reason",
+						"offset": 21,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "Reason the order was cancelled. Refer to Cancelled Reasons below.",
+						"source": "cancelled_reason"
+					}
+				]
+			},
+			{
+				"type": "E",
+				"name": "Executed Order Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "E",
+						"type": "Alpha",
+						"notes": "Order Executed Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as the number of nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 9,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The Order Token of the executed order.",
+						"source": ""
+					},
+					{
+						"name": "Executed Quantity",
+						"offset": 13,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Incremental quantity executed, i.e. the quantity for this execution only.",
+						"source": ""
+					},
+					{
+						"name": "Executed Price",
+						"offset": 21,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "The executed price for executed quantity.",
+						"source": ""
+					},
+					{
+						"name": "Liquidity Flag",
+						"offset": 25,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "“A”dded for the passive firm (resting order), “R”emoved for the aggressor, “U”ncross for auction executions.",
+						"source": "liquidity_flag"
+					},
+					{
+						"name": "Match Number",
+						"offset": 26,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Match identifier for each trade. Same for buy/sell sides. This is the X-stream INET Trading trade number.",
+						"source": ""
+					},
+					{
+						"name": "Counter Party ID",
+						"offset": 34,
+						"len": 4,
+						"value": "",
+						"type": "Integer",
+						"notes": "Depending on the orderbook setup the counterparty identifier may contain a masking CCP or a trading counterparty.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "B",
+				"name": "Broken Trade Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "B",
+						"type": "Alpha",
+						"notes": "Broken Trade Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as the number of nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 9,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "The Order Token of the order for which the given Match Number is being broken.",
+						"source": ""
+					},
+					{
+						"name": "Match Number",
+						"offset": 13,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Match identifier for each trade. Same for buy/sell sides. This is the X-stream INET Trading trade number.",
+						"source": ""
+					},
+					{
+						"name": "Reason",
+						"offset": 21,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The reason the trade was broken. See currently supported Broken Trade Reasons table below.",
+						"source": "broken_trade_reason"
+					}
+				]
+			},
+			{
+				"type": "J",
+				"name": "Rejected Order Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "J",
+						"type": "Alpha",
+						"notes": "Rejected Order Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Order Token",
+						"offset": 9,
+						"len": 4,
+						"value": "",
+						"type": "Token",
+						"notes": "Order Token field as was entered.",
+						"source": ""
+					},
+					{
+						"name": "Reason",
+						"offset": 13,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "The reason the order was rejected. Refer to Rejected Order Reasons below.",
+						"source": "rejected_order_reason"
+					}
+				]
+			},
+			{
+				"type": "T",
+				"name": "Trading Limit Status Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": true,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "T",
+						"type": "Alpha",
+						"notes": "Trading Limit Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Trading Limit Type",
+						"offset": 9,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘P’ool ‘E’quity ‘D’erivative",
+						"source": "trading_limit_type"
+					},
+					{
+						"name": "Used",
+						"offset": 10,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The used value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"source": ""
+					},
+					{
+						"name": "Traded",
+						"offset": 18,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The traded value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"source": ""
+					},
+					{
+						"name": "Limit",
+						"offset": 26,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The limit value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"source": ""
+					}
+				]
+			},
+			{
+				"type": "T",
+				"name": "Trading Limit Status Message",
+				"description": "",
+				"direction": "IN",
+				"sequenced": false,
+				"fields": [
+					{
+						"name": "Type",
+						"offset": 0,
+						"len": 1,
+						"value": "T",
+						"type": "Alpha",
+						"notes": "Trading Limit Message Id.",
+						"source": ""
+					},
+					{
+						"name": "Timestamp",
+						"offset": 1,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "Timestamp – reflected as nanoseconds past midnight.",
+						"source": ""
+					},
+					{
+						"name": "Trading Limit Type",
+						"offset": 9,
+						"len": 1,
+						"value": "",
+						"type": "Alpha",
+						"notes": "‘P’ool ‘E’quity ‘D’erivative",
+						"source": "trading_limit_type"
+					},
+					{
+						"name": "Used",
+						"offset": 10,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The used value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"source": ""
+					},
+					{
+						"name": "Traded",
+						"offset": 18,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The traded value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"source": ""
+					},
+					{
+						"name": "Limit",
+						"offset": 26,
+						"len": 8,
+						"value": "",
+						"type": "Integer",
+						"notes": "The limit value for the trading limit. Not set is 0x7FFFFFFFFFFFFFFF.",
+						"source": ""
+					}
+				]
+			}
+		],
+		"sources": [
+			{
+				"code": "system_event_code",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "S",
+						"value": "start of day"
+					},
+					{
+						"key": "E",
+						"value": "end of day"
+					}
+				]
+			},
+			{
+				"code": "order_verb",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "B",
+						"value": "‘B’uy"
+					},
+					{
+						"key": "S",
+						"value": "‘S’ell"
+					},
+					{
+						"key": "T",
+						"value": "Shor’T’ Sell"
+					},
+					{
+						"key": "P",
+						"value": "‘P’rice Stabilisation (only buy)"
+					},
+					{
+						"key": "M",
+						"value": "‘M’argin (only buy)"
+					}
+				]
+			},
+			{
+				"code": "order_source",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "a",
+						"value": "Individual investor – Online"
+					},
+					{
+						"key": "b",
+						"value": "Individual investor – Sharia"
+					},
+					{
+						"key": "c",
+						"value": "Institutional investor – DMA"
+					},
+					{
+						"key": "d",
+						"value": "Institutional Investor – Sharia"
+					},
+					{
+						"key": "e",
+						"value": "Sales – Online"
+					},
+					{
+						"key": "f",
+						"value": "Sales – Sharia"
+					},
+					{
+						"key": "g",
+						"value": "Sales – Remote"
+					},
+					{
+						"key": "h",
+						"value": "Dealer – Sharia"
+					},
+					{
+						"key": "i",
+						"value": "Dealaer – Remote"
+					},
+					{
+						"key": "j",
+						"value": "House – Remote"
+					},
+					{
+						"key": "A",
+						"value": "Individual investor – Online – Automated Ordering"
+					},
+					{
+						"key": "B",
+						"value": "Individual investor – Sharia – Automated Ordering"
+					},
+					{
+						"key": "C",
+						"value": "Institutional investor – DMA – Automated Ordering"
+					},
+					{
+						"key": "D",
+						"value": "Institutional Investor – Sharia – Automated Ordering"
+					},
+					{
+						"key": "E",
+						"value": "Sales – Online – Automated Ordering"
+					},
+					{
+						"key": "F",
+						"value": "Sales – Sharia – Automated Ordering"
+					},
+					{
+						"key": "G",
+						"value": "Sales – Remote – Automated Ordering"
+					},
+					{
+						"key": "H",
+						"value": "Dealer – Sharia – Automated Ordering"
+					},
+					{
+						"key": "I",
+						"value": "Dealer – Remote – Automated Ordering"
+					},
+					{
+						"key": "J",
+						"value": "House – Remote – Automated Ordering"
+					},
+					{
+						"key": "q",
+						"value": "Individual investor – Online"
+					},
+					{
+						"key": "r",
+						"value": "Individual investor – Sharia"
+					},
+					{
+						"key": "s",
+						"value": "Institutional investor – DMA"
+					},
+					{
+						"key": "t",
+						"value": "Institutional Investor – Sharia"
+					},
+					{
+						"key": "u",
+						"value": "Sales – Online"
+					},
+					{
+						"key": "v",
+						"value": "Sales – Sharia"
+					},
+					{
+						"key": "w",
+						"value": "Sales – Remote"
+					},
+					{
+						"key": "x",
+						"value": "Dealer – Sharia"
+					},
+					{
+						"key": "y",
+						"value": "Dealaer – Remote"
+					},
+					{
+						"key": "z",
+						"value": "House – Remote"
+					},
+					{
+						"key": "Q",
+						"value": "Individual investor – Online – Automated Ordering"
+					},
+					{
+						"key": "R",
+						"value": "Individual investor – Sharia – Automated Ordering"
+					},
+					{
+						"key": "S",
+						"value": "Institutional investor – DMA – Automated Ordering"
+					},
+					{
+						"key": "T",
+						"value": "Institutional Investor – Sharia – Automated Ordering"
+					},
+					{
+						"key": "U",
+						"value": "Sales – Online – Automated Ordering"
+					},
+					{
+						"key": "V",
+						"value": "Sales – Sharia – Automated Ordering"
+					},
+					{
+						"key": "W",
+						"value": "Sales – Remote – Automated Ordering"
+					},
+					{
+						"key": "X",
+						"value": "Dealer – Sharia – Automated Ordering"
+					},
+					{
+						"key": "Y",
+						"value": "Dealer – Remote – Automated Ordering"
+					},
+					{
+						"key": "Z",
+						"value": "House – Remote – Automated Ordering"
+					}
+				]
+			},
+			{
+				"code": "domicile",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "I",
+						"value": "‘I’ndonesia"
+					},
+					{
+						"key": "A",
+						"value": "‘A’sing (foreigner)"
+					},
+					{
+						"key": "S",
+						"value": "‘S’endiri (house)"
+					},
+					{
+						"key": "F",
+						"value": "‘F’oreigner house"
+					}
+				]
+			},
+			{
+				"code": "trading_limit_type",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "P",
+						"value": "‘P’ool"
+					},
+					{
+						"key": "E",
+						"value": "‘E’quity"
+					},
+					{
+						"key": "D",
+						"value": "‘D’erivative"
+					}
+				]
+			},
+			{
+				"code": "time_in_force",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "0",
+						"value": "immediate"
+					},
+					{
+						"key": "99997",
+						"value": "session"
+					},
+					{
+						"key": "99998",
+						"value": "day"
+					}
+				]
+			},
+			{
+				"code": "order_state",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "L",
+						"value": "“L”ive"
+					},
+					{
+						"key": "D",
+						"value": "“D”ead"
+					}
+				]
+			},
+			{
+				"code": "liquidity_flag",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "A",
+						"value": "“A”dded for the passive firm (resting order)"
+					},
+					{
+						"key": "R",
+						"value": "“R”emoved for the aggressor"
+					},
+					{
+						"key": "U",
+						"value": "“U”ncross for auction executions"
+					}
+				]
+			},
+			{
+				"code": "cancelled_reason",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "U",
+						"value": "Cancel Order: User requested the order to be cancelled. Sent in response to a Cancel Order message or a Replace Order Message"
+					},
+					{
+						"key": "T",
+						"value": "Cancel Order: Timeout. Session/day order got expired"
+					},
+					{
+						"key": "S",
+						"value": "Cancel Order: Supervisory. For example, emergency withdraw or the user got suspended"
+					},
+					{
+						"key": "L",
+						"value": "Cancel Order: User logged off"
+					},
+					{
+						"key": "Z",
+						"value": "Replace Order: Invalid quantity or quantity exceeds maximum limit"
+					},
+					{
+						"key": "R",
+						"value": "Replace Order: The order is not allowed at this time"
+					},
+					{
+						"key": "X",
+						"value": "Replace Order: Invalid price"
+					},
+					{
+						"key": "Y",
+						"value": "Replace Order: Invalid Order Type. For example, the Time In Force value is not supported in current trading session"
+					},
+					{
+						"key": "W",
+						"value": "Replace Order: Unknown. Contact support for further information"
+					}
+				]
+			},
+			{
+				"code": "broken_trade_reason",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "C",
+						"value": "Consent – The two parties mutually agreed to break the trade."
+					},
+					{
+						"key": "S",
+						"value": "Supervisory – The trade was manually broken by Star PX Exchange supervisory."
+					}
+				]
+			},
+			{
+				"code": "rejected_order_reason",
+				"type": "pair",
+				"description": "",
+				"items": [
+					{
+						"key": "H",
+						"value": "The orderbook, instrument, board or market is not tradeable."
+					},
+					{
+						"key": "Z",
+						"value": "Invalid quantity or quantity exceeds maximum limit."
+					},
+					{
+						"key": "S",
+						"value": "Invalid orderbook identifier."
+					},
+					{
+						"key": "R",
+						"value": "The order is not allowed at this time."
+					},
+					{
+						"key": "X",
+						"value": "Invalid price."
+					},
+					{
+						"key": "Y",
+						"value": "Invalid Order Type. For example, the Time In Force value is not supported in current trading session."
+					},
+					{
+						"key": "F",
+						"value": "Flow control in place for user. A throttle is active for this OUCH port."
+					},
+					{
+						"key": "B",
+						"value": "Order source is not valid."
+					},
+					{
+						"key": "j",
+						"value": "The order has exceeded the firm trading limits."
+					},
+					{
+						"key": "W",
+						"value": "Unknown. Contact support for further information."
+					}
+				]
+			}
+		]
+	}
+}

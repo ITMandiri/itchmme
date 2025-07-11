@@ -932,40 +932,40 @@ is divided into following sections:
         </propertyfile>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.ITMDevCCDatabase}" name="call.subproject"/>
-            <param location="${project.ITMDevCCDatabase}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCCDatabase-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCCDatabase-1}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.ITMDevCCFileAccess}" name="call.subproject"/>
-            <param location="${project.ITMDevCCFileAccess}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCCFileAccess-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCCFileAccess-1}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.ITMDevCCFileLogger}" name="call.subproject"/>
-            <param location="${project.ITMDevCCFileLogger}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCCFileLogger-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCCFileLogger-1}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.ITMDevCSSocket}" name="call.subproject"/>
-            <param location="${project.ITMDevCSSocket}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCSSocket-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCSSocket-1}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.ITMJonecBridge}" name="call.subproject"/>
-            <param location="${project.ITMJonecBridge}/build.xml" name="call.script"/>
+            <param location="${project.ITMJonecBridge-1}" name="call.subproject"/>
+            <param location="${project.ITMJonecBridge-1}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
@@ -980,8 +980,8 @@ is divided into following sections:
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.ITMSoupBinTCPBridge}" name="call.subproject"/>
-            <param location="${project.ITMSoupBinTCPBridge}/build.xml" name="call.script"/>
+            <param location="${project.ITMSoupBinTCPBridge-1}" name="call.subproject"/>
+            <param location="${project.ITMSoupBinTCPBridge-1}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
             <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
@@ -1476,40 +1476,40 @@ is divided into following sections:
         </propertyfile>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.ITMDevCCDatabase}" name="call.subproject"/>
-            <param location="${project.ITMDevCCDatabase}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCCDatabase-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCCDatabase-1}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.ITMDevCCFileAccess}" name="call.subproject"/>
-            <param location="${project.ITMDevCCFileAccess}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCCFileAccess-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCCFileAccess-1}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.ITMDevCCFileLogger}" name="call.subproject"/>
-            <param location="${project.ITMDevCCFileLogger}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCCFileLogger-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCCFileLogger-1}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.ITMDevCSSocket}" name="call.subproject"/>
-            <param location="${project.ITMDevCSSocket}/build.xml" name="call.script"/>
+            <param location="${project.ITMDevCSSocket-1}" name="call.subproject"/>
+            <param location="${project.ITMDevCSSocket-1}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.ITMJonecBridge}" name="call.subproject"/>
-            <param location="${project.ITMJonecBridge}/build.xml" name="call.script"/>
+            <param location="${project.ITMJonecBridge-1}" name="call.subproject"/>
+            <param location="${project.ITMJonecBridge-1}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>
@@ -1524,8 +1524,8 @@ is divided into following sections:
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.ITMSoupBinTCPBridge}" name="call.subproject"/>
-            <param location="${project.ITMSoupBinTCPBridge}/build.xml" name="call.script"/>
+            <param location="${project.ITMSoupBinTCPBridge-1}" name="call.subproject"/>
+            <param location="${project.ITMSoupBinTCPBridge-1}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
             <param name="transfer.not.archive.disabled" value="true"/>

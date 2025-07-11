@@ -14,7 +14,7 @@
         </data>
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
-                <foreign-project>ITMDevCCDatabase</foreign-project>
+                <foreign-project>ITMDevCCDatabase-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -22,7 +22,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>ITMDevCCFileAccess</foreign-project>
+                <foreign-project>ITMDevCCFileAccess-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -30,7 +30,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>ITMDevCCFileLogger</foreign-project>
+                <foreign-project>ITMDevCCFileLogger-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -38,7 +38,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>ITMDevCSSocket</foreign-project>
+                <foreign-project>ITMDevCSSocket-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -46,7 +46,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>ITMJonecBridge</foreign-project>
+                <foreign-project>ITMJonecBridge-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -62,7 +62,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>ITMSoupBinTCPBridge</foreign-project>
+                <foreign-project>ITMSoupBinTCPBridge-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/callback/ITMSoupBinTCPOUCHPacketController.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/application/startup/ITMTransactionServerOUCH.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/structs/OUCHMsgEnterOrder.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/structs/OUCHMsgReplaceOrder.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/consts/OUCHConsts.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/msgmemory/ITMOUCHMsgMemory.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/callback/ITMSoupBinTCPOUCHPacketMgr.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/structs/OUCHMsgOrderAccepted.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/callback/ITMSoupBinTCPOUCHPacketListener.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Itch%20Ouch%20PSPP/ITMTransactionServerOUCH/src/com/itm/ts/ouch/structs/OUCHMsgOrderReplaced.java</file>
+        </group>
+    </open-files>
+</project-private>

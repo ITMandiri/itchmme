@@ -1,8 +1,13 @@
 /ITMXStreamITCHMME/build/
 /ITMXStreamITCHMME/dist/
 /ITMXStreamITCHMME/logs/
+/ITMXStreamOUCHMME/build/
+/ITMXStreamOUCHMME/dist/
+/ITMXStreamOUCHMME/logs/
 /ITMMarketInfoServerITCH/build/
 /ITMMarketInfoServerITCH/dist/
+/ITMTransactionServerOUCH/build/
+/ITMTransactionServerOUCH/dist/
 /ITMJonecBridge/build/
 /ITMJonecBridge/dist/
 /ITMSoupBinTCPBridge/build/
