@@ -12,6 +12,7 @@ package com.itm.ts.ouch.structs;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
+import com.itm.soupbintcp.bridge.consts.ITMSoupBinTCPBridgeConsts;
 import com.itm.soupbintcp.bridge.consts.ITMSoupBinTCPBridgeConsts.SoupBinTCPOffset;
 
 public class OUCHMsgOrderAccepted extends OUCHMsgBase {
@@ -228,6 +229,9 @@ public class OUCHMsgOrderAccepted extends OUCHMsgBase {
     @Override
     public byte[] buildMessage() {
         byte[] mOut = resetCumulativeBytes()
+                //.base:
+                .concatenateField(getType(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 0, 1)
+                
                 .concatenateField(getTimestamp(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 1, 8)
                 .concatenateField(getOrderToken(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 9, 8)
                 .concatenateField(getOrderBookId(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 17, 4)
@@ -247,6 +251,8 @@ public class OUCHMsgOrderAccepted extends OUCHMsgBase {
                 .concatenateField(getOrderCapacity(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 123, 1)
                 .concatenateField(getSelfMatchPreventionKey(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 124, 4)
                 .concatenateField(getAttributes(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 128, 2)
+                
+                .putPacketType(ITMSoupBinTCPBridgeConsts.SoupBinTCPPacketType.PACKETTYPE_UNSEQUENCED_DATA_PACKET) //.last set before set packet length;
                 .putPacketLength()
                 .getCumulativeBytes();
         return mOut;

@@ -17,7 +17,7 @@ public class SheetOfITCHOrderBookClear extends SheetOfITCHBase {
     
     public SheetOfITCHOrderBookClear(ITCHMsgOrderBookClear mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgOrderBookClear getMessage() {

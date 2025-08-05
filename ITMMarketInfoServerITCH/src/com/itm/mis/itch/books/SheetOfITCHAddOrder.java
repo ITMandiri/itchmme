@@ -17,7 +17,7 @@ public class SheetOfITCHAddOrder extends SheetOfITCHBase {
     
     public SheetOfITCHAddOrder(ITCHMsgAddOrder mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgAddOrder getMessage() {

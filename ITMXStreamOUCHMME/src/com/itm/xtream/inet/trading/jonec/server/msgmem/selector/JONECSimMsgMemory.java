@@ -102,9 +102,9 @@ public class JONECSimMsgMemory implements ITMOUCHMsgMemoryListener {
     }
     
     @Override
-    public void onMessage(OUCHMsgBase itchMessage, SheetOfOUCHBase mSheetBase) {
+    public void onMessage(OUCHMsgBase ouchMessage, SheetOfOUCHBase mSheetBase) {
         try{
-            processMsgOUCH(itchMessage, mSheetBase);
+            processMsgOUCH(ouchMessage, mSheetBase);
        }catch(Exception ex0){
            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, ex0);
 

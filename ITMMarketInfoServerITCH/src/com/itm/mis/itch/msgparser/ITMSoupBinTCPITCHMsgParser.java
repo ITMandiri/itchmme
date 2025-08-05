@@ -112,7 +112,7 @@ public class ITMSoupBinTCPITCHMsgParser {
                             mOut = mObjGlimpseSnapshot;
                             break;
                         default:
-                            System.out.println(vMsgType);
+                            System.out.println("default msg itch:"+vMsgType);
                     }
                 } else if (mSoupBinPacketObject instanceof ITMSoupBinTCPMsgUnsequencedDataPacket){
                     switch(vMsgType){

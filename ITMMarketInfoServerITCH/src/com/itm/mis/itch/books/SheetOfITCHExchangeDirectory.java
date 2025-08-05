@@ -17,7 +17,7 @@ public class SheetOfITCHExchangeDirectory extends SheetOfITCHBase {
     
     public SheetOfITCHExchangeDirectory(ITCHMsgExchangeDirectory mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgExchangeDirectory getMessage() {

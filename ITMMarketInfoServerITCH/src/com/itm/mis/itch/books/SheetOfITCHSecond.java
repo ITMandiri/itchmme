@@ -18,7 +18,7 @@ public class SheetOfITCHSecond extends SheetOfITCHBase {
     
     public SheetOfITCHSecond(ITCHMsgSecond mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(mMessage.getSeconds(), 0));
+        super.setMessageDate(retrieveMessageDate(mMessage.getSeconds(), 0, true));
     }
     
     public ITCHMsgSecond getMessage() {

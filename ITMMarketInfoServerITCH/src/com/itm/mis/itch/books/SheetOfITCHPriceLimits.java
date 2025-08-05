@@ -17,7 +17,7 @@ public class SheetOfITCHPriceLimits extends SheetOfITCHBase {
     
     public SheetOfITCHPriceLimits(ITCHMsgPriceLimits mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgPriceLimits getMessage() {

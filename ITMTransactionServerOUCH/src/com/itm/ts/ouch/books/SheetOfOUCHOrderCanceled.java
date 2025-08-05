@@ -17,7 +17,7 @@ public class SheetOfOUCHOrderCanceled extends SheetOfOUCHBase {
     
     public SheetOfOUCHOrderCanceled(OUCHMsgOrderCanceled mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(0, mMessage.getTimestamp()));
+        super.setMessageDate(retrieveMessageDate(0, mMessage.getTimestamp(), true));
     }
     
     public OUCHMsgOrderCanceled getMessage() {

@@ -291,10 +291,14 @@ public class ORIDataConst {
         public static final String TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION            = "S";
         public static final String TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_IOC                = "3"; //.apm:20210707:new:
         public static final String TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_FOK                = "4"; //.apm:20210707:new:
+        public static final String TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_GTD                = "5";
         
         public static final String ORDTYPE_MARKET_NONSTOP                               = "1"; //.apm:20210707:new:
         public static final String ORDTYPE_LIMIT_NONSTOP                                = "7";
         public static final String ORDTYPE_PREVIOUSLY_INDICATED                         = "E";
+        public static final String ORDTYPE_MARKET_TO_LIMIT                              = "3";
+        public static final String ORDTYPE_BEST_ORDER                                   = "4";
+        public static final String ORDTYPE_IMBALANCE                                    = "5";
         
         public static final String COMPLIANCEID_AMEND                                   = "1";
         public static final String COMPLIANCEID_NONE                                    = "0";

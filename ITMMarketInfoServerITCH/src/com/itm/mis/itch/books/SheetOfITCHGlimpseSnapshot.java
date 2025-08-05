@@ -17,7 +17,7 @@ public class SheetOfITCHGlimpseSnapshot extends SheetOfITCHBase {
     
     public SheetOfITCHGlimpseSnapshot(ITCHMsgGlimpseSnapshot mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), 0));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), 0, true));
     }
     
     public ITCHMsgGlimpseSnapshot getMessage() {

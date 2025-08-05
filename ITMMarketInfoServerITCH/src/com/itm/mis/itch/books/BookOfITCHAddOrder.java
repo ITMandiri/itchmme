@@ -192,14 +192,14 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
     
     
     //. helper-helper
-//    public SheetOfITCHAddOrder retrieveSheetByLookUp(Long vOrderNumberId){
-//        //. menemukan SheetOfITCHAddOrder dari Tree (OrderReplace yang berubah price nya)
-//        SheetOfITCHAddOrder mOut = null;
-//        try{
-//            mOut = this.chmSheets.get(vOrderNumberId);
-//            
-//            if (mOut == null){
-//                Long mOriginalOrderNumber = vOrderNumberId;
+    public SheetOfITCHAddOrder retrieveSheetByLookUp(Long vOrderNumberId){
+        //. menemukan SheetOfITCHAddOrder dari Tree (OrderReplace yang berubah price nya)
+        SheetOfITCHAddOrder mOut = null;
+        try{
+            mOut = this.chmSheets.get(vOrderNumberId);
+            
+            if (mOut == null){
+                Long mOriginalOrderNumber = vOrderNumberId;
 //                SheetOfITCHOrderReplace shOrdRep = BookOfITCHOrderReplace.getInstance.retrieveDiffSheet(vOrderNumberId);
 //                
 //                //. coba dari OrderReplace (mundur sampai habis) : max 100x
@@ -220,27 +220,27 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
 //                if (shOrdRep != null){
 //                    System.err.println("ERROR: SheetOfITCHAddOrder Mentok AMEND Check nya");
 //                }                
-//            }
-//            
-//        }catch(Exception ex0){
-//            ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
-//        }
-//        return mOut;
-//    }
-//    
-//    
-//    //. jumlah Qty yang sudah match pada group order ini
-//    public long retrieveTradedQtyByLookUp(Long vOrderNumberId){
-//        long lOut = 0;
-//        
-//        SheetOfITCHAddOrder mOut = null;
-//        try{
-//            mOut = this.chmSheets.get(vOrderNumberId);
-//            lOut += BookOfITCHOrderExecuted.getInstance.retrieveSheetQty(vOrderNumberId);
-//            lOut += BookOfITCHOrderExecutedWithPrice.getInstance.retrieveSheetQty(vOrderNumberId);
-//            
-//            if (mOut == null){
-//                //. coba dari OrderReplace (mundur sampai habis)
+            }
+            
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
+        }
+        return mOut;
+    }
+    
+    
+    //. jumlah Qty yang sudah match pada group order ini
+    public long retrieveTradedQtyByLookUp(Long vOrderNumberId){
+        long lOut = 0;
+        
+        SheetOfITCHAddOrder mOut = null;
+        try{
+            mOut = this.chmSheets.get(vOrderNumberId);
+            lOut += BookOfITCHOrderExecuted.getInstance.retrieveSheetQty(vOrderNumberId);
+            lOut += BookOfITCHOrderExecutedWithPrice.getInstance.retrieveSheetQty(vOrderNumberId);
+            
+            if (mOut == null){
+                //. coba dari OrderReplace (mundur sampai habis)
 //                Long mOriginalOrderNumber = vOrderNumberId;
 //                SheetOfITCHOrderReplace shOrdRep = BookOfITCHOrderReplace.getInstance.retrieveDiffSheet(vOrderNumberId);
 //                
@@ -265,11 +265,11 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
 //                if (shOrdRep != null){
 //                    System.err.println("ERROR: retrieveTradedQtyByLookUp Mentok AMEND Check nya");
 //                }
-//            }
-//            
-//        }catch(Exception ex0){
-//            ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
-//        }
-//        return lOut;
-//    }
+            }
+            
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
+        }
+        return lOut;
+    }
 }

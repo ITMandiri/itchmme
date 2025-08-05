@@ -17,7 +17,7 @@ public class SheetOfITCHIndexPrice extends SheetOfITCHBase {
     
     public SheetOfITCHIndexPrice(ITCHMsgIndexPrice mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgIndexPrice getMessage() {

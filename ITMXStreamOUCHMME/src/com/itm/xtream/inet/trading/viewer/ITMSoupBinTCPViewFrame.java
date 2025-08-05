@@ -255,7 +255,7 @@ public class ITMSoupBinTCPViewFrame extends javax.swing.JFrame {
         jLabelTitleModule.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelTitleModule.setText("Module : ");
 
-        jComboBoxModuleChooser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NONE", "ITCH", "OUCH" }));
+        jComboBoxModuleChooser.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NONE", "OUCH" }));
 
         jLabelTitleFilePath.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabelTitleFilePath.setText("File Path : ");

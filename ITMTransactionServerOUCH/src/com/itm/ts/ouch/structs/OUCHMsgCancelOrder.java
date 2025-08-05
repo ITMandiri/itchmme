@@ -12,6 +12,7 @@ package com.itm.ts.ouch.structs;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
+import com.itm.soupbintcp.bridge.consts.ITMSoupBinTCPBridgeConsts;
 import com.itm.soupbintcp.bridge.consts.ITMSoupBinTCPBridgeConsts.SoupBinTCPOffset;
 
 public class OUCHMsgCancelOrder extends OUCHMsgBase {
@@ -48,7 +49,12 @@ public class OUCHMsgCancelOrder extends OUCHMsgBase {
     @Override
     public byte[] buildMessage() {
         byte[] mOut = resetCumulativeBytes()
+                //.base:
+                .concatenateField(getType(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 0, 1)
+                
                 .concatenateField(getOrderToken(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 1, 8)
+                
+                .putPacketType(ITMSoupBinTCPBridgeConsts.SoupBinTCPPacketType.PACKETTYPE_UNSEQUENCED_DATA_PACKET) //.last set before set packet length;
                 .putPacketLength()
                 .getCumulativeBytes();
         return mOut;

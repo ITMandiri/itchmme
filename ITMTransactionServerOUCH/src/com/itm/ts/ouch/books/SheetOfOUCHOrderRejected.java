@@ -17,7 +17,7 @@ public class SheetOfOUCHOrderRejected extends SheetOfOUCHBase {
     
     public SheetOfOUCHOrderRejected(OUCHMsgOrderRejected mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(0, mMessage.getTimestamp()));
+        super.setMessageDate(retrieveMessageDate(0, mMessage.getTimestamp(), true));
     }
     
     public OUCHMsgOrderRejected getMessage() {

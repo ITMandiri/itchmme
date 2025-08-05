@@ -12,13 +12,14 @@ package com.itm.ts.ouch.structs;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
+import com.itm.soupbintcp.bridge.consts.ITMSoupBinTCPBridgeConsts;
 import com.itm.soupbintcp.bridge.consts.ITMSoupBinTCPBridgeConsts.SoupBinTCPOffset;
 
 public class OUCHMsgEnterOrder extends OUCHMsgBase {
 
     private long orderToken;
     private int orderBookId;
-    private byte side;
+    private String side;
     private long quantity;
     private long price;
     private byte timeInForce;
@@ -49,11 +50,11 @@ public class OUCHMsgEnterOrder extends OUCHMsgBase {
         this.orderBookId = orderBookId;
     }
 
-    public byte getSide() {
+    public String getSide() {
         return side;
     }
 
-    public void setSide(byte side) {
+    public void setSide(String side) {
         this.side = side;
     }
 
@@ -169,7 +170,7 @@ public class OUCHMsgEnterOrder extends OUCHMsgBase {
                 if (btMessageBytes.length >= 113 + SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD) {
                     setOrderToken(decodeLong(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 1, 8));
                     setOrderBookId(decodeInteger(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 9, 4));
-                    setSide(decodeByte(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 13, 1));
+                    setSide(decodeString(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 13, 1));
                     setQuantity(decodeLong(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 14, 8));
                     setPrice(decodeLong(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 22, 8));
                     setTimeInForce(decodeByte(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 30, 1));
@@ -198,6 +199,9 @@ public class OUCHMsgEnterOrder extends OUCHMsgBase {
     @Override
     public byte[] buildMessage() {
         byte[] mOut = resetCumulativeBytes()
+                //.base:
+                .concatenateField(getType(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 0, 1)
+                
                 .concatenateField(getOrderToken(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 1, 8)
                 .concatenateField(getOrderBookId(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 9, 4)
                 .concatenateField(getSide(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 13, 1)
@@ -214,6 +218,8 @@ public class OUCHMsgEnterOrder extends OUCHMsgBase {
                 .concatenateField(getOrderCapacity(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 106, 1)
                 .concatenateField(getSelfMatchPreventionKey(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 107, 4)
                 .concatenateField(getAttributes(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 111, 2)
+                
+                .putPacketType(ITMSoupBinTCPBridgeConsts.SoupBinTCPPacketType.PACKETTYPE_UNSEQUENCED_DATA_PACKET) //.last set before set packet length;
                 .putPacketLength()
                 .getCumulativeBytes();
         return mOut;

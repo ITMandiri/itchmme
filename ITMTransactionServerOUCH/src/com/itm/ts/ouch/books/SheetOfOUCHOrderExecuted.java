@@ -17,7 +17,7 @@ public class SheetOfOUCHOrderExecuted extends SheetOfOUCHBase {
     
     public SheetOfOUCHOrderExecuted(OUCHMsgOrderExecuted mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(0, mMessage.getTimestamp()));
+        super.setMessageDate(retrieveMessageDate(0, mMessage.getTimestamp(), true));
     }
     
     public OUCHMsgOrderExecuted getMessage() {

@@ -29,6 +29,7 @@ import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimEveryReques
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.callback.JONECSimCallbackController;
 import com.itm.xtream.inet.trading.jonec.server.callback.JONECSimCallbackProcessor;
+import com.itm.xtream.inet.trading.martin.server.msgmem.books.BookOfMARTINOrderList;
 import com.itm.xtream.inet.trading.racing.mgr.ITMTradingServerRacingMgr;
 import com.itm.xtream.inet.trading.replytimeout.mgr.ITMTradingServerReplyTimeOutMgr;
 import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
@@ -51,6 +52,7 @@ public class JONECSimMsgMemWorkAccepted {
         try{
             long lSeqLatestSaved = BookOfJONECSimToken.getInstance.getLastTrxSeqLatestSaved();
             long lSeqLatestReceived = BookOfJONECSimToken.getInstance.getLastTrxSeqLatestReceived();
+            //.????????????????????????????????????????????????????????????????????????????????/
             if (lSeqLatestReceived <= lSeqLatestSaved){ //. skip
                 return;
             }
@@ -91,51 +93,53 @@ public class JONECSimMsgMemWorkAccepted {
                         ORIDataNewOrder mOriginRequestMsg = ((ORIDataNewOrder)mOriginRequest.getIdxMessage());
                         
                         //. jika Order State = “D”ead maka jadikan Reject/Reply Bad, selain itu respon normal
-                        if (String.valueOf(mMessage.getOrderState()).equalsIgnoreCase(OUCHConsts.OUCHValue.ORDER_STATE_DEAD)){
-
-                            ORIDataNewOrderReply mReplyMsg = new ORIDataNewOrderReply(new HashMap());
-                            mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
-                            mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
-                            mReplyMsg.setfNewOrderReplyType(ORIDataNewOrderReply.ORINewOrderReplyType.BAD);
-
-                            mReplyMsg.setfOrderID(ORIDataConst.ORIFieldValue.ORDERID_NO_JATS_ORDERNUMBER);
-                            mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
-                            mReplyMsg.setfExecID(DateTimeHelper.getTimeIDXTRXExecReportFormatFromDate(mSheet.getMessageDate()));
-                            mReplyMsg.setfExecTransType(ORIDataConst.ORIFieldValue.EXECTRANSTYPE_NEW);
-                            mReplyMsg.setfExecType(ORIDataConst.ORIFieldValue.EXECTYPE_REJECTED);
-                            mReplyMsg.setfOrdStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_REJECTED);
-                            mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
-                            mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
-                            mReplyMsg.setfLeavesQty(0);
-                            mReplyMsg.setfCumQty(0);
-                            mReplyMsg.setfAvgPx(0);
-                            mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
-                            
-                            mReplyMsg.setfText("(" + "9" + ") reason: Order State Dead.");
-                            
-                            mReplyMsg.setfLastPx(0);
-                            mReplyMsg.setfLastShares(0);
-
-                            JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
-                            if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
-                                if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
-                                    //... .
-                                }else{
-                                    //.???:
-                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @");
-                                }
-                            }else{
-                                //.???:
-                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @");
-                            }
-                        }else{
+//                        if (!String.valueOf(mMessage.getOrderState()).equalsIgnoreCase(OUCHConsts.OUCHValue.ORDER_STATE_NOT_ON_BOOK)){
+//
+//                            ORIDataNewOrderReply mReplyMsg = new ORIDataNewOrderReply(new HashMap());
+//                            mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
+//                            mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
+//                            mReplyMsg.setfNewOrderReplyType(ORIDataNewOrderReply.ORINewOrderReplyType.BAD);
+//
+//                            mReplyMsg.setfOrderID(ORIDataConst.ORIFieldValue.ORDERID_NO_JATS_ORDERNUMBER);
+//                            mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
+//                            mReplyMsg.setfExecID(DateTimeHelper.getTimeIDXTRXExecReportFormatFromDate(mSheet.getMessageDate()));
+//                            mReplyMsg.setfExecTransType(ORIDataConst.ORIFieldValue.EXECTRANSTYPE_NEW);
+//                            mReplyMsg.setfExecType(ORIDataConst.ORIFieldValue.EXECTYPE_REJECTED);
+//                            mReplyMsg.setfOrdStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_REJECTED);
+//                            mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+//                            mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
+//                            mReplyMsg.setfLeavesQty(0);
+//                            mReplyMsg.setfCumQty(0);
+//                            mReplyMsg.setfAvgPx(0);
+//                            mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+//                            
+//                            mReplyMsg.setfText("(" + "9" + ") reason: Order State Not On Book.");
+//                            
+//                            mReplyMsg.setfLastPx(0);
+//                            mReplyMsg.setfLastShares(0);
+//
+//                            JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
+//                            if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
+//                                if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
+//                                    //... .
+//                                }else{
+//                                    //.???:
+//                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @");
+//                                }
+//                            }else{
+//                                //.???:
+//                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @");
+//                            }
+//                        }else{
                             //. response OK
                             SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
                             if (mCalcQty == null){
                                 mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
                                 BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
                             }
-                            mCalcQty.setQtyOrder(mMessage.getQuantity());
+//                            mCalcQty.setQtyOrder(mMessage.getQuantity());
+                            //.20250801: untuk sekarang dari ouch yang dikirim outstandingnya, sehingga sekarang yang dipakai untuk qtyOrder dari msg asalnya
+                            mCalcQty.setQtyOrder(mOriginRequestMsg.getfOrderQty());
                             mCalcQty.setOrderStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_NEW); //. order status = new
                             mCalcQty.setJatsOrderNo(StringHelper.fromLong(mMessage.getOrderId()));
                             mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
@@ -216,10 +220,10 @@ public class JONECSimMsgMemWorkAccepted {
                             mOrderListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());                        
 
                             //. save orderlist ke memory martin
-//                            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
-//                            //. broadcast orderlist via martin
-//                            BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mOrderListMsg);
-                        }
+                            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
+//                          //. broadcast orderlist via martin
+                            BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mOrderListMsg);
+//                        }
                         
                         
                         

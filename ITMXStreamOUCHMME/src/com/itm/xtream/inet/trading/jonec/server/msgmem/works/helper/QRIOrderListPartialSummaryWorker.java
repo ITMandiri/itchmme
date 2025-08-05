@@ -8,6 +8,7 @@ package com.itm.xtream.inet.trading.jonec.server.msgmem.works.helper;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts;
 import com.itm.idx.data.qri.message.struct.QRIDataOrderListMessage;
+import com.itm.xtream.inet.trading.martin.server.msgmem.books.BookOfMARTINOrderList;
 import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,9 +49,9 @@ public class QRIOrderListPartialSummaryWorker {
         if (mPending != null){
             removeData(lJatsOrderId);
             //. save orderlist ke memory martin
-//            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mPending);
-//            //. broadcast orderlist via martin
-//            BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mPending);
+            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mPending);
+            //. broadcast orderlist via martin
+            BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mPending);
         }
         
     }
@@ -109,9 +110,9 @@ public class QRIOrderListPartialSummaryWorker {
                 while (!mQueue.isEmpty()){
                     QRIDataOrderListMessage value =  mQueue.poll();
                     //. save orderlist ke memory martin
-//                    BookOfMARTINOrderList.getInstance.addOrUpdateSheet(value);
-//                    //. broadcast orderlist via martin
-//                    BookOfMARTINOrderList.getInstance.brodcastToSubscriber(value);
+                    BookOfMARTINOrderList.getInstance.addOrUpdateSheet(value);
+                    //. broadcast orderlist via martin
+                    BookOfMARTINOrderList.getInstance.brodcastToSubscriber(value);
                 }
                 
                //System.out.println("QRIOrderListPartialSummaryTimer.EndRun = " + getAllData().size());

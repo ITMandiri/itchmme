@@ -17,7 +17,7 @@ public class SheetOfITCHOrderExecuted extends SheetOfITCHBase {
     
     public SheetOfITCHOrderExecuted(ITCHMsgOrderExecuted mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgOrderExecuted getMessage() {

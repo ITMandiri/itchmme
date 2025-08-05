@@ -52,6 +52,8 @@ public class JONECSimMsgMemWorkRejectedOrder {
         try{
             long lSeqLatestSaved = BookOfJONECSimToken.getInstance.getLastTrxSeqLatestSaved();
             long lSeqLatestReceived = BookOfJONECSimToken.getInstance.getLastTrxSeqLatestReceived();
+            //.????????????????????????????????????????????????????????????????????????????????/
+            //.20250724: sementara remark untuk bebas order
             if (lSeqLatestReceived <= lSeqLatestSaved){ //. skip
                 return;
             }
@@ -70,102 +72,106 @@ public class JONECSimMsgMemWorkRejectedOrder {
                     if (mOriginRequest.getIdxMessage() instanceof ORIDataNewOrder){
                         
                         //.soon
-//                        if (ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.order_racing_enable){
-//                            boolean bStillSendingRacing = ITMTradingServerRacingMgr.getInstance.isbStillSendingRacing();
-//                            if (bStillSendingRacing){
-//                                ORIDataNewOrder mCurrentOrderRacing = ITMTradingServerRacingMgr.getInstance.getCurrentOrderRacing();
-//                                if (mCurrentOrderRacing != null){
-//                                    String zBrokerRef = BookOfMARTINSimToken.getInstance.findBrokerRefByToken(vOrderToken);
-//                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk cek trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", mCurrentOrderRacing.getfClOrdID() = " + mCurrentOrderRacing.getfClOrdID());  
-//                                    if (!StringHelper.isNullOrEmpty(zBrokerRef)){
-//                                        //.soon
-//                                        if (mCurrentOrderRacing.getfClOrdID().equals(zBrokerRef.replaceAll("#",""))){
-//                                            //. cek, alasan reject nya, jika R (not allow) / H (not tradeable) maka ulangi
-//                                            if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_INSTRUMENT_BOARD_MARKET_NOT_TRADEABLE.equalsIgnoreCase(mMessage.getRejectCode())){
-//                                                //. catatan : menurut pengalaman ini juga bisa terjadi pada stock suspend/bei suspend
-//                                                // anggap belum buka
-//                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getReason());                                                
-//                                                //. di ulangi lagi                                                
-//                                                ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
-//                                                
-//                                                //. 2022-02-17 : jangan teruskan ke klien
-//                                                return;
-//                                            }else if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDER_NOT_ALLOWED_THIS_TIME.equalsIgnoreCase(mMessage.getReason())){
-//                                                // anggap belum buka
-//                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getReason());                                                                                                
-//                                                //. di ulangi lagi
-//                                                ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
-//                                                //. 2022-02-17 : jangan teruskan ke klien
-//                                                return;
-//                                            }else{
-//                                                // anggap sudah buka
-//                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.INFO, "Dapat message OUCHMsgRejectedOrder untuk trigger doReleaseAllPendingOrder. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getReason());
-//                                                //. remove order pertama dan tarik sisa pending order lalu set semua flag jadi normal
-//                                                ITMTradingServerRacingMgr.getInstance.doReleaseAllPendingOrder(true);
-//                                            }
-//                                            
-//                                        }
-//                                    }else{
-//                                        //. kirim apa adanya saja
-//                                        //. cek, alasan reject nya, jika R (not allow) / H (not tradeable) maka ulangi
-//                                        if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_INSTRUMENT_BOARD_MARKET_NOT_TRADEABLE.equalsIgnoreCase(mMessage.getReason())){
-//                                            //. catatan : menurut pengalaman ini juga bisa terjadi pada stock suspend/bei suspend
-//                                            // anggap belum buka
-//                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getReason());                                                
-//                                            //. di ulangi lagi                                                
-//                                            ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
-//                                            //. 2022-02-17 : jangan teruskan ke klien
-//                                            return;
-//                                        }else if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDER_NOT_ALLOWED_THIS_TIME.equalsIgnoreCase(mMessage.getReason())){
-//                                            // anggap belum buka
-//                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getReason());                                                                                                
-//                                            //. di ulangi lagi
-//                                            ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
-//                                            //. 2022-02-17 : jangan teruskan ke klien
-//                                            return;
-//                                        }else{
-//                                            // anggap sudah buka
-//                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.INFO, "Dapat message OUCHMsgRejectedOrder untuk trigger doReleaseAllPendingOrder. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getReason());
-//                                            //. remove order pertama dan tarik sisa pending order lalu set semua flag jadi normal
-//                                            ITMTradingServerRacingMgr.getInstance.doReleaseAllPendingOrder(true);
-//                                        }
-//                                    }
-//                                }
-//                            }else{
-//                                //. hrn : sedang tidak ada OrderRacing dari single Order, maka ulangi sampai ada flag accepted // by config jam
-//                                boolean bCurrMessageAccepted =  ITMTradingServerRacingMgr.getInstance.getbOrderMessageAccepted();
-//                                boolean bRejectShouldRetry = false;
-//                                if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_INSTRUMENT_BOARD_MARKET_NOT_TRADEABLE.equalsIgnoreCase(mMessage.getReason())){
-//                                    bRejectShouldRetry = true;
-//                                }else if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDER_NOT_ALLOWED_THIS_TIME.equalsIgnoreCase(mMessage.getReason())){
-//                                    bRejectShouldRetry = true;
-//                                }
-//                                if (bRejectShouldRetry){
-//                                    boolean inRetryRange = ITMTradingServerRacingMgr.getInstance.isTimeInRangeOrderRetry(false);
-//                                    // if (!bCurrMessageAccepted){ //. cara lama
-//                                    if (inRetryRange){ //. cara baru (pakai rentang waktu)
-//                                        //. ulangi dan jangan teruskan ke klien (TS)
-//                                        JONECSimWorkDataNewOrder.getInstance.doWork(null, (ORIDataNewOrder)mOriginRequest.getIdxMessage());
-//                                        return;
-//                                    }else{
-//                                        //. log, karena sudah datang accepted (cara baru: diluar range) tapi masih ada yang reject Non Tradeable (H)
-//                                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Order rejected (" + mMessage.getReason() + "), after flag MessageAccepted set TRUE, order Token = " + vOrderToken + ", BrokerRef = " + ((ORIDataNewOrder)mOriginRequest.getIdxMessage()).getfClOrdID());
-//                                    }
-//                                }else{
-//                                    //. 2023-07-27 : req pak adry : lihat variable invalid_price_retry_time, berapa kali mau di retry ketika dapat invalid price                                    
+                        if (ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.order_racing_enable){
+                            boolean bStillSendingRacing = ITMTradingServerRacingMgr.getInstance.isbStillSendingRacing();
+                            if (bStillSendingRacing){
+                                ORIDataNewOrder mCurrentOrderRacing = ITMTradingServerRacingMgr.getInstance.getCurrentOrderRacing();
+                                if (mCurrentOrderRacing != null){
+                                    String zBrokerRef = BookOfMARTINSimToken.getInstance.findBrokerRefByToken(vOrderToken);
+                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk cek trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", mCurrentOrderRacing.getfClOrdID() = " + mCurrentOrderRacing.getfClOrdID());  
+                                    if (!StringHelper.isNullOrEmpty(zBrokerRef)){
+                                        //.soon
+                                        if (mCurrentOrderRacing.getfClOrdID().equals(zBrokerRef.replaceAll("#",""))){
+                                            //. cek, alasan reject nya, jika R (not allow) / H (not tradeable) maka ulangi
+                                            switch (mMessage.getRejectCode()) {
+                                                case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_IS_CLOSED:
+                                                    //. catatan : menurut pengalaman ini juga bisa terjadi pada stock suspend/bei suspend
+                                                    // anggap belum buka
+                                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                    //. di ulangi lagi
+                                                    ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
+                                                    
+                                                    //. 2022-02-17 : jangan teruskan ke klien
+                                                    return;
+                                                case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_LIMIT_ORDER_NOT_ALLOWED_THIS_TIME:
+                                                    // anggap belum buka
+                                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                    //. di ulangi lagi
+                                                    ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
+                                                    //. 2022-02-17 : jangan teruskan ke klien
+                                                    return;
+                                                default:
+                                                    // anggap sudah buka
+                                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.INFO, "Dapat message OUCHMsgRejectedOrder untuk trigger doReleaseAllPendingOrder. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                    //. remove order pertama dan tarik sisa pending order lalu set semua flag jadi normal
+                                                    ITMTradingServerRacingMgr.getInstance.doReleaseAllPendingOrder(true);
+                                                    break;
+                                            }
+                                            
+                                        }
+                                    }else{
+                                        //. kirim apa adanya saja
+                                        //. cek, alasan reject nya, jika R (not allow) / H (not tradeable) maka ulangi
+                                        switch (mMessage.getRejectCode()) {
+                                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_IS_CLOSED:
+                                                //. catatan : menurut pengalaman ini juga bisa terjadi pada stock suspend/bei suspend
+                                                // anggap belum buka
+                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                //. di ulangi lagi
+                                                ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
+                                                //. 2022-02-17 : jangan teruskan ke klien
+                                                return;
+                                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_LIMIT_ORDER_NOT_ALLOWED_THIS_TIME:
+                                                // anggap belum buka
+                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                //. di ulangi lagi
+                                                ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
+                                                //. 2022-02-17 : jangan teruskan ke klien
+                                                return;
+                                            default:
+                                                // anggap sudah buka
+                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.INFO, "Dapat message OUCHMsgRejectedOrder untuk trigger doReleaseAllPendingOrder. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                //. remove order pertama dan tarik sisa pending order lalu set semua flag jadi normal
+                                                ITMTradingServerRacingMgr.getInstance.doReleaseAllPendingOrder(true);
+                                                break;
+                                        }
+                                    }
+                                }
+                            }else{
+                                //. hrn : sedang tidak ada OrderRacing dari single Order, maka ulangi sampai ada flag accepted // by config jam
+                                boolean bCurrMessageAccepted =  ITMTradingServerRacingMgr.getInstance.getbOrderMessageAccepted();
+                                boolean bRejectShouldRetry = false;
+                                if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_IS_CLOSED == mMessage.getRejectCode()){
+                                    bRejectShouldRetry = true;
+                                }else if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_LIMIT_ORDER_NOT_ALLOWED_THIS_TIME == mMessage.getRejectCode()){
+                                    bRejectShouldRetry = true;
+                                }
+                                if (bRejectShouldRetry){
+                                    boolean inRetryRange = ITMTradingServerRacingMgr.getInstance.isTimeInRangeOrderRetry(false);
+                                    // if (!bCurrMessageAccepted){ //. cara lama
+                                    if (inRetryRange){ //. cara baru (pakai rentang waktu)
+                                        //. ulangi dan jangan teruskan ke klien (TS)
+                                        JONECSimWorkDataNewOrder.getInstance.doWork(null, (ORIDataNewOrder)mOriginRequest.getIdxMessage());
+                                        return;
+                                    }else{
+                                        //. log, karena sudah datang accepted (cara baru: diluar range) tapi masih ada yang reject Non Tradeable (H)
+                                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Order rejected (" + mMessage.getRejectCode() + "), after flag MessageAccepted set TRUE, order Token = " + vOrderToken + ", BrokerRef = " + ((ORIDataNewOrder)mOriginRequest.getIdxMessage()).getfClOrdID());
+                                    }
+                                }else{
+                                    //. 2023-07-27 : req pak adry : lihat variable invalid_price_retry_time, berapa kali mau di retry ketika dapat invalid price                                    
 //                                    if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_INVALID_PRICE.equalsIgnoreCase(mMessage.getReason())){
 //                                        String zOriginBrokerRef = ((ORIDataNewOrder)mOriginRequest.getIdxMessage()).getfClOrdID();
 //                                        boolean bEligible = ITMTradingServerRetryMgr.getInstance.checkIfEligibleToRetry(zOriginBrokerRef);
 //                                        if (bEligible){ //. ulang send
-//                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Order rejected (" + mMessage.getReason() + "), eligible to rety send, order Token = " + vOrderToken + ", BrokerRef = " + ((ORIDataNewOrder)mOriginRequest.getIdxMessage()).getfClOrdID());
+//                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Order rejected (" + mMessage.getRejectCode() + "), eligible to rety send, order Token = " + vOrderToken + ", BrokerRef = " + ((ORIDataNewOrder)mOriginRequest.getIdxMessage()).getfClOrdID());
 //                                            //. ulangi dan jangan teruskan ke klien (TS)
 //                                            JONECSimWorkDataNewOrder.getInstance.doWork(null, (ORIDataNewOrder)mOriginRequest.getIdxMessage());
 //                                            return;
 //                                        }
 //                                    }
-//                                }
-//                            }
-//                        }
+                                }
+                            }
+                        }
                         
                         //.soon
 //                        if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_INVALID_PRICE.equalsIgnoreCase(mMessage.getReason())){
@@ -197,46 +203,23 @@ public class JONECSimMsgMemWorkRejectedOrder {
                         mReplyMsg.setfCumQty(0);
                         mReplyMsg.setfAvgPx(0);
                         mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
-                        //.soon
-//                        switch (mMessage.getReason()) {
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_INSTRUMENT_BOARD_MARKET_NOT_TRADEABLE:
-//                                mReplyMsg.setfText("(293)" + "(" + mMessage.getReason() + ")reason: order book instrument board market not tradeable");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_INVALID_QUANTITY_OR_EXCEEDED:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: invalid quantity or exceeded");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_INVALID_ORDERBOOK_IDENTIFIER:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: invalid order book identifier");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDER_NOT_ALLOWED_THIS_TIME:
-//                                mReplyMsg.setfText("(293)" + "(" + mMessage.getReason() + ")reason: order not allowed this time");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_INVALID_PRICE:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: invalid price");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_INVALID_ORDER_TYPE:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: invalid order type");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_FLOW_CONTROL_IN_PLACE_FOR_USER:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: flow control in place for user");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDER_SOURCE_NOT_VALID:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: order source not valid");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDER_EXCEEDED_FIRM_TRADING_LIMIT:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: order exceeded firm trading limit");
-//                                break;
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_UNKNOWN:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: unknown");
-//                                break;
-//                            //.tambahan Ardi:20230919
-//                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_INVALID_MINIMUM_QUANTITY:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: order invalid minimum quantity");
-//                                break;
-//                            default:
-//                                mReplyMsg.setfText("(" + mMessage.getReason() + ")reason: default_unknown");
-//                                break;
-//                        }
+                        switch (mMessage.getRejectCode()) {
+                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_IS_CLOSED:
+                                mReplyMsg.setfText("(" + mMessage.getRejectCode() + ")reason: Illegal transaction at this time");
+                                break;
+                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_OUCH_THROTTLING:
+                                mReplyMsg.setfText("(" + mMessage.getRejectCode() + ")reason: Throttling limit exceeded");
+                                break;
+                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_LIMIT_ORDER_NOT_ALLOWED_THIS_TIME:
+                                mReplyMsg.setfText("(" + mMessage.getRejectCode() + ")reason: Limit orders are not allowed in this session state");
+                                break;
+                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_MATCH_PREMIUM:
+                                mReplyMsg.setfText("(" + mMessage.getRejectCode() + ")reason: The premium must be aligned at the price ticks for the given instrument");
+                                break;
+                            default:
+                                mReplyMsg.setfText("(" + mMessage.getRejectCode() + ")reason: default_unknown");
+                                break;
+                        }
                         mReplyMsg.setfLastPx(0);
                         mReplyMsg.setfLastShares(0);
 

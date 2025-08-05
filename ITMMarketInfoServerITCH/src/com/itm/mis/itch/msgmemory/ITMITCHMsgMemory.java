@@ -29,6 +29,7 @@ import com.itm.mis.itch.books.BookOfITCHOrderExecutedWithPrice;
 import com.itm.mis.itch.books.BookOfITCHParticipantDirectory;
 import com.itm.mis.itch.books.BookOfITCHPriceLimits;
 import com.itm.mis.itch.books.BookOfITCHReferencePrice;
+import com.itm.mis.itch.books.BookOfITCHSecond;
 import com.itm.mis.itch.books.BookOfITCHSystemEvent;
 import com.itm.mis.itch.books.BookOfITCHTickSizeTable;
 import com.itm.mis.itch.books.BookOfITCHTrade;
@@ -56,6 +57,7 @@ import com.itm.mis.itch.books.SheetOfITCHOrderExecutedWithPrice;
 import com.itm.mis.itch.books.SheetOfITCHParticipantDirectory;
 import com.itm.mis.itch.books.SheetOfITCHPriceLimits;
 import com.itm.mis.itch.books.SheetOfITCHReferencePrice;
+import com.itm.mis.itch.books.SheetOfITCHSecond;
 import com.itm.mis.itch.books.SheetOfITCHSystemEvent;
 import com.itm.mis.itch.books.SheetOfITCHTickSizeTable;
 import com.itm.mis.itch.books.SheetOfITCHTrade;
@@ -87,6 +89,7 @@ import com.itm.mis.itch.structs.ITCHMsgOrderExecutedWithPrice;
 import com.itm.mis.itch.structs.ITCHMsgParticipantDirectory;
 import com.itm.mis.itch.structs.ITCHMsgPriceLimits;
 import com.itm.mis.itch.structs.ITCHMsgReferencePrice;
+import com.itm.mis.itch.structs.ITCHMsgSecond;
 import com.itm.mis.itch.structs.ITCHMsgSystemEvent;
 import com.itm.mis.itch.structs.ITCHMsgTickSizeTable;
 import com.itm.mis.itch.structs.ITCHMsgTrade;
@@ -193,6 +196,9 @@ public class ITMITCHMsgMemory {
                     SheetOfITCHGlimpseSnapshot mSheet = new SheetOfITCHGlimpseSnapshot(mMsg);
                     BookOfITCHGlimpseSnapshot.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
+                } else if (itchMessage instanceof ITCHMsgSecond){
+                    ITCHMsgSecond mMsg = (ITCHMsgSecond)itchMessage;
+                    BookOfITCHSecond.getInstance.addSheet(new SheetOfITCHSecond(mMsg));
                 } else {
                     // ...
                 }
@@ -337,7 +343,7 @@ public class ITMITCHMsgMemory {
         boolean mOut = false;
         try{
             
-            
+            BookOfITCHSecond.getInstance.clearBook(true);
             //. ??????????????????????
             ///FEEDMsgHelper.getInstance.clearMemory();
             

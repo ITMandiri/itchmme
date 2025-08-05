@@ -139,6 +139,45 @@ public class JONECSimWorkDataOrderAmend {
                             mAmendOrder.setReplacementOrderToken(vEveryOrderToken);
                             mAmendOrder.setQuantity(mInputMsgRequest.getfOrderQty());
                             mAmendOrder.setPrice((long) mInputMsgRequest.getfPrice());
+                            if (mOriginReqSheet != null && mOriginReqSheet.getIdxMessage() != null){
+                                if (mOriginReqSheet.getIdxMessage() instanceof ORIDataNewOrder){
+                                    ORIDataNewOrder mOriginORIOrder = (ORIDataNewOrder)mOriginReqSheet.getIdxMessage();
+                                    
+                                    mAmendOrder.setClientAccount(mOriginORIOrder.getfComplianceID());
+                                    mAmendOrder.setCustomerInfo("#" + mInputMsgRequest.getfClOrdID());
+                                    mAmendOrder.setExchangeInfo(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");
+                                    if (!StringHelper.isNullOrEmpty(mOriginORIOrder.getfText())){
+                                        mAmendOrder.setExchangeInfo(mOriginORIOrder.getfText());
+                                    }
+                                    switch (mOriginORIOrder.getfTimeInForce()) {
+                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION:
+                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_GTS);
+                                            //.???????????????????
+                                            mAmendOrder.setTimeInForceData((short) 1);
+                                            break;
+                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY:
+                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
+                                            break;
+                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_IOC: //. FAK
+                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FAK);
+                                            break;
+                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_FOK:
+                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FOK);
+                                            break;
+                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_GTD:
+                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAYS);
+                                            //.???????????????????
+                                            mAmendOrder.setTimeInForceData((short) 1);
+                                            break;
+                                        default:
+                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
+                                            break;
+                                    }
+                                }
+                            }
+                            mAmendOrder.setOpenClose((byte) OUCHConsts.OUCHValue.OPEN_CLOSE_DEFAULT);
+                            mAmendOrder.setDisplayQuantity(0);
+                            mAmendOrder.setSelfMatchPreventionKey(0);
 
                             byte[] btAmendOrder = mAmendOrder.buildMessage();
 

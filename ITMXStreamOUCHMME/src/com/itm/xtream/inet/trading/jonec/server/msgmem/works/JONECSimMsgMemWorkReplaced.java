@@ -48,6 +48,8 @@ public class JONECSimMsgMemWorkReplaced {
         try{
             long lSeqLatestSaved = BookOfJONECSimToken.getInstance.getLastTrxSeqLatestSaved();
             long lSeqLatestReceived = BookOfJONECSimToken.getInstance.getLastTrxSeqLatestReceived();
+            //.????????????????????????????????????????????????????????????????????????????????/
+            //.20250724: sementara remark untuk bebas order
             if (lSeqLatestReceived <= lSeqLatestSaved){ //. skip
                 return;
             }
@@ -75,7 +77,7 @@ public class JONECSimMsgMemWorkReplaced {
                         
                         ORIDataOrderAmend mOriginRequestMsg = ((ORIDataOrderAmend)mOriginRequest.getIdxMessage());
                         
-                        mCalcQty.setQtyOrder(mMessage.getQuantity());
+                        mCalcQty.setQtyOrder(mMessage.getQuantity()); //.???????????????????????????????????
                         if (mPrevCalcQty != null){
                             mCalcQty.setQtyMatch(mPrevCalcQty.getQtyMatch());
                             //. set status baru = status lama
@@ -84,7 +86,7 @@ public class JONECSimMsgMemWorkReplaced {
                             mPrevCalcQty.setOrderStatus(QRIDataConst.QRIFieldValue.ORDSTATUS_REPLACED);
                         }
                         //.soon
-//                        mCalcQty.setJatsOrderNo(StringHelper.fromLong(mMessage.getOrderReferenceNumber()));
+                        mCalcQty.setJatsOrderNo(StringHelper.fromLong(mMessage.getOrderId()));
                         mCalcQty.setOriJatsOrderNo(mOriginRequestMsg.getfOrderID());
                         mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
                         mCalcQty.setOriBrokerRef(mOriginRequestMsg.getfOrigClOrdID());
@@ -102,7 +104,7 @@ public class JONECSimMsgMemWorkReplaced {
                         mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
                         mReplyMsg.setfOrderAmendReplyType(ORIDataOrderAmendReply.ORIOrderAmendReplyType.OK);
                         //.soon
-//                        mReplyMsg.setfOrderID(StringHelper.fromLong(mMessage.getOrderReferenceNumber()));
+                        mReplyMsg.setfOrderID(StringHelper.fromLong(mMessage.getOrderId()));
                         mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
                         mReplyMsg.setfExecID(DateTimeHelper.getTimeIDXTRXExecReportFormatFromDate(mSheet.getMessageDate()));
                         mReplyMsg.setfExecTransType(ORIDataConst.ORIFieldValue.EXECTRANSTYPE_CORRECT);
@@ -111,7 +113,7 @@ public class JONECSimMsgMemWorkReplaced {
                         mReplyMsg.setfOrdStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_REPLACED);
                         mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
                         mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
-                        mReplyMsg.setfOrderQty(mMessage.getQuantity());
+                        mReplyMsg.setfOrderQty(mMessage.getQuantity()); //.??????????????????????
                         mReplyMsg.setfLeavesQty(mCalcQty.getQtyLeave()); 
                         mReplyMsg.setfCumQty(mCalcQty.getQtyMatch());
                         mReplyMsg.setfAvgPx(0);

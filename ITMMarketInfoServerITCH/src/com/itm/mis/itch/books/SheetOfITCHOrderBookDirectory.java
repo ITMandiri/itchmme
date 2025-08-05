@@ -17,7 +17,7 @@ public class SheetOfITCHOrderBookDirectory extends SheetOfITCHBase {
     
     public SheetOfITCHOrderBookDirectory(ITCHMsgOrderBookDirectory mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgOrderBookDirectory getMessage() {

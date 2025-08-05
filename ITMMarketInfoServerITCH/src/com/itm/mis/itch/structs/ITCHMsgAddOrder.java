@@ -19,7 +19,7 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
     private int nanos;
     private long orderId;
     private int orderBookId;
-    private byte side;
+    private String side;
     private int orderBookPosition;
     private long quantity;
     private long price;
@@ -50,11 +50,11 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
         this.orderBookId = orderBookId;
     }
 
-    public byte getSide() {
+    public String getSide() {
         return side;
     }
 
-    public void setSide(byte side) {
+    public void setSide(String side) {
         this.side = side;
     }
 
@@ -107,7 +107,7 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
                     setNanos(decodeInteger(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 1, 4));
                     setOrderId(decodeLong(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 5, 8));
                     setOrderBookId(decodeInteger(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 13, 4));
-                    setSide(decodeByte(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 17, 1));
+                    setSide(decodeString(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 17, 1));
                     setOrderBookPosition(decodeInteger(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 18, 4));
                     setQuantity(decodeLong(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 22, 8));
                     setPrice(decodeLong(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 30, 8));

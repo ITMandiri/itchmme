@@ -9,6 +9,7 @@ import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -19,6 +20,7 @@ public class BookOfITCHOrderExecuted extends BookOfITCHBase {
     public final static BookOfITCHOrderExecuted getInstance = new BookOfITCHOrderExecuted();
     
     private final ArrayList<SheetOfITCHOrderExecuted> lstSheets = new ArrayList<>();
+    private final ConcurrentHashMap<Long, Long> chmSheets = new ConcurrentHashMap<>();
     
     public BookOfITCHOrderExecuted() {
         //.nothing todo here :)
@@ -29,13 +31,30 @@ public class BookOfITCHOrderExecuted extends BookOfITCHBase {
         boolean mOut = false;
         try{
             if ((mSheet != null) && (mSheet.getMessage() != null)){
-                this.lstSheets.add(mSheet);
+                //. memory tidak dipakai di remark
+                //this.lstSheets.add(mSheet);
+                
+                if (chmSheets.containsKey(mSheet.getMessage().getMatchId())){
+                    Long lNewQty = chmSheets.get(mSheet.getMessage().getMatchId()) + mSheet.getMessage().getQuantity();
+                    chmSheets.replace(mSheet.getMessage().getMatchId(), lNewQty);
+                }else{
+                    chmSheets.put(mSheet.getMessage().getMatchId(), mSheet.getMessage().getQuantity());
+                }
                 mOut = true;
             }
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
         }
         return mOut;
+    }
+    
+    public Long retrieveSheetQty(Long orderNumber){
+        Long mOut = 0L;
+        if (chmSheets.containsKey(orderNumber)){
+            mOut = chmSheets.get(orderNumber);
+        }
+        
+        return mOut;        
     }
     
     public ArrayList<SheetOfITCHOrderExecuted> retrieveAllSheets(){
@@ -46,6 +65,7 @@ public class BookOfITCHOrderExecuted extends BookOfITCHBase {
         boolean mOut = false;
         try{
             this.lstSheets.clear();
+            this.chmSheets.clear();
             mOut = this.lstSheets.isEmpty();
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);

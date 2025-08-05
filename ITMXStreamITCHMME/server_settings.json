@@ -72,7 +72,7 @@
     "order_retry_time_ca": [],
     "order_reply_timeout_time": [],
     "database": {
-      "address": "194.233.65.230",
+      "address": "157.15.77.2",
       "port": 3341,
       "username": "sa2",
       "password": "itm56983466",

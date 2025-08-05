@@ -12,7 +12,7 @@
     "data_end_time": "15:30:00",
     "order_racing_enable": true,
     "order_reply_timeout": 0,
-    "order_racing_mode": 1,
+    "order_racing_mode": 2,
     "order_racing_max_delay": 0,
     "order_racing_time": [
       {
@@ -36,7 +36,7 @@
         "name": "sesi 1 racing",
         "description": "",
         "starttime": "13:55:00",
-        "endtime": "14:55:00",
+        "endtime": "13:55:01",
         "tradingdays": [
           1,
           2,
@@ -53,7 +53,7 @@
         "name": "sesi 2 racing",
         "description": "",
         "starttime": "15:29:40",
-        "endtime": "17:29:59",
+        "endtime": "15:29:41",
         "tradingdays": [
           1,
           2,
@@ -67,54 +67,42 @@
         "racingmaxdelay": 600
       }
     ],
-    "order_retry_time": [],
+    "order_retry_time": [
+      {
+        "name": "retry 1",
+        "description": "",
+        "starttime": "08:59:55",
+        "endtime": "09:00:05",
+        "tradingdays": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    ],
     "order_racing_time_ca": [],
     "order_retry_time_ca": [],
     "order_reply_timeout_time": [],
     "database": {
-      "address": "194.233.65.230",
+      "address": "157.15.77.2",
       "port": 3341,
       "username": "sa2",
       "password": "itm56983466",
       "dbname": "ts"
     },
-    "itch_connections": [
-      {
-        "name": "ITCH",
-        "description": "",
-        "ipaddress": "localhost",
-        "port": 62222,
-        "timeout": 5000,
-        "usercode": "SHIT01",
-        "password": "jakarta123",
-        "heartbeat": true,
-        "cmpmsgexact": true,
-        "reconseqmode": 0,
-        "autoselect": true
-      },
-      {
-        "name": "ITCH_MDF",
-        "description": "",
-        "ipaddress": "localhost",
-        "port": 62222,
-        "timeout": 5000,
-        "usercode": "SHIT01",
-        "password": "jakarta123",
-        "heartbeat": true,
-        "cmpmsgexact": true,
-        "reconseqmode": 0,
-        "autoselect": true
-      }
-    ],
+    "itch_connections": [],
     "ouch_connections": [
       {
-        "name": "OUCH",
+        "name": "OUCH_TRANSACTION",
         "description": "",
-        "ipaddress": "localhost",
-        "port": 62222,
+        "ipaddress": "172.18.2.117",
+        "port": 8300,
         "timeout": 5000,
-        "usercode": "SHIT01",
-        "password": "jakarta123",
+        "usercode": "RSJOE1",
+        "password": "P@ssw0rd!1",
         "heartbeat": true,
         "cmpmsgexact": true,
         "reconseqmode": 0,
@@ -125,8 +113,8 @@
       {
         "name": "FIX5",
         "description": "",
-        "ipaddress": "localhost",
-        "port": 62222,
+        "ipaddress": "172.18.2.117",
+        "port": 8200,
         "timeout": 5000,
         "heartbeat": true,
         "cmpmsgexact": true,
@@ -164,24 +152,6 @@
         "usercode": "shtr1001",
         "password": "jakarta123",
         "heartbeat": true
-      },
-      {
-        "name": "SH_01_002_toJONES",
-        "description": "",
-        "port": 3001,
-        "timeout": 10000,
-        "usercode": "shtr1002",
-        "password": "jakarta123",
-        "heartbeat": true
-      },
-      {
-        "name": "SH_01_003_toJONES",
-        "description": "",
-        "port": 3001,
-        "timeout": 10000,
-        "usercode": "shtr1003",
-        "password": "jakarta123",
-        "heartbeat": true
       }
     ],
     "martin_client_connections": [
@@ -196,8 +166,4 @@
       }
     ]
   }
-}eartbeat": true
-      }
-    ]
-  }
-}
+}   

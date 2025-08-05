@@ -17,7 +17,7 @@ public class SheetOfITCHTickSizeTable extends SheetOfITCHBase {
     
     public SheetOfITCHTickSizeTable(ITCHMsgTickSizeTable mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgTickSizeTable getMessage() {

@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -115,11 +116,11 @@ public class ITMSoupBinTCPBridgePacketFormat {
         }
         return mOut;
     }
-    
-    public static byte[] encodeShort(int vShort, int vLimitBytesLength){
+    //.20250717: ubah int to short
+    public static byte[] encodeShort(short vShort, int vLimitBytesLength){
         byte[] mOut = {};
         if (vLimitBytesLength > 0){
-            byte[] arb = ByteBuffer.allocate(Short.SIZE / 8).putInt(vShort).array();
+            byte[] arb = ByteBuffer.allocate(Short.SIZE / 8).putShort(vShort).array();
             if (vLimitBytesLength > arb.length){
                 vLimitBytesLength = arb.length;
             }
@@ -1315,10 +1316,13 @@ public class ITMSoupBinTCPBridgePacketFormat {
         return cDateFormat.format(cDate);
     }
     
-    public static Date retrieveMessageDate(long tBaseSeconds, long tOffsetNanoSeconds){
+    public static Date retrieveMessageDateOld(long tBaseSeconds, long tOffsetNanoSeconds, boolean bSince1970){
         Date mOut = null;
         if (tBaseSeconds >= 0){
             Calendar gDestCalendar = new GregorianCalendar();
+            if (bSince1970) {
+                gDestCalendar = new GregorianCalendar(1970, Calendar.JANUARY, 1);
+            }
             long tRemainingSeconds = (long) (tBaseSeconds + (((double)tOffsetNanoSeconds) / 1000000000D));
             long vHours = 0;
             long vMinutes = 0;
@@ -1332,6 +1336,35 @@ public class ITMSoupBinTCPBridgePacketFormat {
             }
             gDestCalendar.set(gDestCalendar.get(Calendar.YEAR), gDestCalendar.get(Calendar.MONTH), gDestCalendar.get(Calendar.DATE), (int)vHours, (int)vMinutes, (int)vSeconds);
             mOut = gDestCalendar.getTime();
+        }
+        return mOut;
+    }
+    
+    public static Date retrieveMessageDate(long tBaseSeconds, long tOffsetNanoSeconds, boolean bSince1970){
+        Date mOut = null;
+        if (tBaseSeconds >= 0){
+            // Hitung total waktu dalam milidetik
+            long totalMillis = tBaseSeconds * 1000 + (tOffsetNanoSeconds / 1_000_000);
+
+            GregorianCalendar calendar;
+
+            if (bSince1970) {
+                // Mulai dari epoch UTC: 1970-01-01 00:00:00
+                calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                calendar.setTimeInMillis(0);
+            } else {
+                // Mulai dari hari ini jam 00:00:00 waktu lokal
+                calendar = new GregorianCalendar(); // local timezone
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+            }
+
+            // Tambahkan offset waktu
+            calendar.setTimeInMillis(calendar.getTimeInMillis() + totalMillis);
+
+            mOut = calendar.getTime();
         }
         return mOut;
     }

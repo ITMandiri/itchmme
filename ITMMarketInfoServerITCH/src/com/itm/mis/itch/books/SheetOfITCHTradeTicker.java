@@ -17,7 +17,7 @@ public class SheetOfITCHTradeTicker extends SheetOfITCHBase {
     
     public SheetOfITCHTradeTicker(ITCHMsgTradeTicker mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgTradeTicker getMessage() {

@@ -17,7 +17,7 @@ public class SheetOfITCHOrderDelete extends SheetOfITCHBase {
     
     public SheetOfITCHOrderDelete(ITCHMsgOrderDelete mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos()));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgOrderDelete getMessage() {

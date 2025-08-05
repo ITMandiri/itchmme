@@ -3,8 +3,25 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/main/ITMTradingServerMain.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/util/FEEDMsgHelper.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgTrade.java</file>
             <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/msgmem/ITMFeedMsgMemory.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDSuspendReleaseStock.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/datafile/restore/DataFileRestoreAccess.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgStockData.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/viewer/ITMSoupBinTCPViewFrame.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/db/record/object/StockDataRecord.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgIndices.java</file>
             <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/consts/ITMTradingServerConsts.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/viewer/ITMSoupBinTCPMessageViewer.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgBrokerData.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgOrder.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/viewer/ITMSoupBinTCPLineViewer.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgStockSummary.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgOrderClear.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgTradingStatus.java</file>
+            <file>file:/C:/Users/fredy/Kerja/ITM/Server/Github/itchmme/ITMXStreamITCHMME/src/com/itm/xtream/inet/trading/feed/structs/FEEDMsgBase.java</file>
         </group>
     </open-files>
 </project-private>

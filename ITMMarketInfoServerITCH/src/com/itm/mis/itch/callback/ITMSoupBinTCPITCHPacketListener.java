@@ -43,11 +43,11 @@ public class ITMSoupBinTCPITCHPacketListener extends ITMSoupBinTCPBridgePacketFo
         //////throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         try {
             if ((channel != null) && (!isNullOrEmpty(channel.getConnectionName()))){
-                if (channel.getConnectionName().contains(ITCHConnectionType.CONNECTIONTYPE_ITCH)) {
-                    ITMITCHMsgMemory.getInstance.mapMessage(messageLine, messageObject);
-                }
-                else if (channel.getConnectionName().contains(ITCHConnectionType.CONNECTIONTYPE_ITCH_MDF)) {
+                if (channel.getConnectionName().contains(ITCHConnectionType.CONNECTIONTYPE_ITCH_MDF)) {
                     ITMITCHMsgMemory.getInstance.itchMDFMapMessage(messageLine, messageObject);
+                }
+                else if (channel.getConnectionName().contains(ITCHConnectionType.CONNECTIONTYPE_ITCH)) {
+                    ITMITCHMsgMemory.getInstance.mapMessage(messageLine, messageObject);
                 }
                 
             }

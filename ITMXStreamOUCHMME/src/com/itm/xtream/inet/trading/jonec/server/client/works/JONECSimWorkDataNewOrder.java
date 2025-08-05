@@ -125,71 +125,83 @@ public class JONECSimWorkDataNewOrder {
                             OUCHMsgEnterOrder mNewOrder = new OUCHMsgEnterOrder();
                             mNewOrder.setType(OUCHConsts.OUCHMessageType.MESSAGETYPE_INBOUND_ENTER_ORDER);
                             mNewOrder.setOrderToken(vOriginOrderToken);
-                            // mNewOrder.setBrokerReference(mInputMsgRequest.getfClOrdID());
                             mNewOrder.setCustomerInfo("#" + mInputMsgRequest.getfClOrdID());//. 20210830 : hrn: supaya dianggap tidak valid di sisi FIX Lama (4.2)
                             mNewOrder.setClientAccount(mInputMsgRequest.getfComplianceID());
+                            mNewOrder.setAttributes((short) OUCHConsts.OUCHValue.ATTRIBUTE_UNDEFINED);
                             switch (mInputMsgRequest.getfSide()) {
                                 case ORIDataConst.ORIFieldValue.SIDE_BUY:
-                                    mNewOrder.setSide(Byte.parseByte(OUCHConsts.OUCHValue.ORDER_VERB_BUY));
+                                    mNewOrder.setSide(OUCHConsts.OUCHValue.ORDER_VERB_BUY);
                                     break;
                                 case ORIDataConst.ORIFieldValue.SIDE_SELL:
-                                    mNewOrder.setSide(Byte.parseByte(OUCHConsts.OUCHValue.ORDER_VERB_SELL));
+                                    mNewOrder.setSide(OUCHConsts.OUCHValue.ORDER_VERB_SELL);
                                     break;
                                 case ORIDataConst.ORIFieldValue.SIDE_SELL_SHORT:
-                                    mNewOrder.setSide(Byte.parseByte(OUCHConsts.OUCHValue.ORDER_VERB_SHORT_SELL));
+                                    mNewOrder.setSide(OUCHConsts.OUCHValue.ORDER_VERB_SHORT_SELL);
                                     break;
                                 case ORIDataConst.ORIFieldValue.SIDE_MARGIN_REQUEST:
-                                    mNewOrder.setSide(Byte.parseByte(OUCHConsts.OUCHValue.ORDER_VERB_MARGIN));
+                                    mNewOrder.setSide(OUCHConsts.OUCHValue.ORDER_VERB_BUY);
+                                    mNewOrder.setAttributes((short) OUCHConsts.OUCHValue.ATTRIBUTE_MARGIN);
                                     break;
                                 case ORIDataConst.ORIFieldValue.SIDE_PRICE_STABILIZATION:
-                                    mNewOrder.setSide(Byte.parseByte(OUCHConsts.OUCHValue.ORDER_VERB_PRICE_STABILIZATION));
+                                    mNewOrder.setSide(OUCHConsts.OUCHValue.ORDER_VERB_BUY);
+                                    mNewOrder.setAttributes((short) OUCHConsts.OUCHValue.ATTRIBUTE_PRICE_STABILIZATION);
                                     break;
                                 default:
                                     break;
                             }
                             
-                            mNewOrder.setExchangeInfo(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE);
-                            
-                            
+                            mNewOrder.setExchangeInfo(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");
+                                                        
                             if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
                                 mNewOrder.setExchangeInfo(mInputMsgRequest.getfText());
                             }
-                            mNewOrder.setClientAccount(mInputMsgRequest.getfAccount());
                             mNewOrder.setQuantity(mInputMsgRequest.getfOrderQty());
-
                             mNewOrder.setOrderBookId(StringHelper.toInt(mInputMsgRequest.getfSecurityID()));
-                            
-                            
-                            
                             mNewOrder.setPrice((long) mInputMsgRequest.getfPrice());
+                            mNewOrder.setOpenClose((byte) OUCHConsts.OUCHValue.OPEN_CLOSE_DEFAULT);
+                            mNewOrder.setDisplayQuantity(0);
+                            //.??????????????????????????
+                            mNewOrder.setOrderCapacity((byte) OUCHConsts.OUCHValue.ORDER_CAPACITY_INDIVIDUAL);
+                            mNewOrder.setSelfMatchPreventionKey(0);
                             
                             if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_MARKET_NONSTOP)){
-                                mNewOrder.setPrice(0x7FFFFFFF);
+                               mNewOrder.setOrderType((byte) OUCHConsts.OUCHValue.ORDER_TYPE_MARKET);
+                            } else if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_LIMIT_NONSTOP)){
+                                mNewOrder.setOrderType((byte) OUCHConsts.OUCHValue.ORDER_TYPE_LIMIT);
+                            } else if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_MARKET_TO_LIMIT)){
+                                mNewOrder.setOrderType((byte) OUCHConsts.OUCHValue.ORDER_TYPE_MARKET_TO_LIMIT);
+                            } else if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_BEST_ORDER)){
+                                mNewOrder.setOrderType((byte) OUCHConsts.OUCHValue.ORDER_TYPE_BEST_ORDER);
+                            } else if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_IMBALANCE)){
+                                mNewOrder.setOrderType((byte) OUCHConsts.OUCHValue.ORDER_TYPE_IMBALANCE);
+                            } else {
+                                mNewOrder.setOrderType((byte) OUCHConsts.OUCHValue.ORDER_TYPE_MARKET);
                             }
                             
                             switch (mInputMsgRequest.getfTimeInForce()) {
                                 case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION:
-                                    mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_SESSION);
+                                    mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_GTS);
+                                    //.???????????????????
+                                    mNewOrder.setTimeInForceData((short) 1);
                                     break;
                                 case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY:
                                     mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
                                     break;
                                 case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_IOC: //. FAK
-                                    mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_IMMEDIATE);
-                                    //.soon
-//                                    mNewOrder.setMinimumQuantity(0); //. - For FAK order, set Minimum Quantity >= 0
+                                    mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FAK);
                                     break;
                                 case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_FOK:
-                                    mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_IMMEDIATE);
-                                    //.soon
-//                                    mNewOrder.setMinimumQuantity(mNewOrder.getQuantity()); //. - For FOK order, set Minimum Quantity = Quantity
+                                    mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FOK);
+                                    break;
+                                case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_GTD:
+                                    mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAYS);
+                                    //.???????????????????
+                                    mNewOrder.setTimeInForceData((short) 1);
                                     break;
                                 default:
                                     mNewOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
                                     break;
                             }   
-                            //.soon
-//                            mNewOrder.setClientId(0);
 
                             byte[] btNewOrder = mNewOrder.buildMessage();
 

@@ -197,9 +197,8 @@ public class JONECSimMsgMemWorkExecutedOrder {
                         mTradeListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
                         mTradeListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbolSfx());
                         mTradeListMsg.setfSecurityID(mOriginRequestMsg.getfSecurityID());
-                        //.soon
-//                        mTradeListMsg.setfPrice(mMessage.getExecutedPrice());
-//                        mTradeListMsg.setfCumQty(mMessage.getExecutedQuantity());
+                        mTradeListMsg.setfPrice(mMessage.getTradePrice());
+                        mTradeListMsg.setfCumQty(mMessage.getTradeQuantity());
                         mTradeListMsg.setfText("");
                         mTradeListMsg.setfClearingAccount(" ");
                         mTradeListMsg.setfFutSettDate("");
@@ -337,9 +336,8 @@ public class JONECSimMsgMemWorkExecutedOrder {
                             mTradeListMsg.setfSymbolSfx(mOldOrderList.getfSymbolSfx());
                             mTradeListMsg.setfSecurityID(mOldOrderList.getfSecurityID());
                         }
-                        //.soon
-//                        mTradeListMsg.setfPrice(mMessage.getExecutedPrice());
-//                        mTradeListMsg.setfCumQty(mMessage.getExecutedQuantity());
+                        mTradeListMsg.setfPrice(mMessage.getTradePrice());
+                        mTradeListMsg.setfCumQty(mMessage.getTradeQuantity());
                         mTradeListMsg.setfText("");
                         mTradeListMsg.setfClearingAccount(" ");
                         mTradeListMsg.setfFutSettDate("");

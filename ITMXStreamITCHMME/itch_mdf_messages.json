@@ -114,7 +114,7 @@
 						"offset": 17,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "Start of price range for this entry.",
 						"source": ""
 					},
@@ -123,7 +123,7 @@
 						"offset": 25,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "End of price range for this entry. Zero (0) means infinity.",
 						"source": ""
 					}
@@ -339,7 +339,7 @@
 						"offset": 175,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "NOTE: Only applicable for derivative instruments.",
 						"source": ""
 					},
@@ -573,7 +573,7 @@
 						"offset": 422,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The IPO Price for the order book. The field decimalsInPrice defines the number of decimals used in the IPO Price.",
 						"source": ""
 					},
@@ -645,7 +645,7 @@
 						"offset": 9,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "Current day Index last price.",
 						"source": ""
 					},
@@ -717,7 +717,7 @@
 						"offset": 25,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "Equilibrium Price.",
 						"source": ""
 					},
@@ -726,7 +726,7 @@
 						"offset": 33,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "Best Bid Price.",
 						"source": ""
 					},
@@ -735,7 +735,7 @@
 						"offset": 41,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "Best Ask Price.",
 						"source": ""
 					},
@@ -906,7 +906,7 @@
 						"offset": 10,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "Reference Price.",
 						"source": ""
 					},
@@ -1149,7 +1149,7 @@
 						"offset": 9,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The first trade price.",
 						"source": ""
 					},
@@ -1158,7 +1158,7 @@
 						"offset": 17,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The highest trade price.",
 						"source": ""
 					},
@@ -1167,7 +1167,7 @@
 						"offset": 25,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The lowest trade price.",
 						"source": ""
 					},
@@ -1176,7 +1176,7 @@
 						"offset": 33,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The last trade price.",
 						"source": ""
 					},
@@ -1185,7 +1185,7 @@
 						"offset": 41,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The last auction trade price.",
 						"source": ""
 					},
@@ -1302,7 +1302,7 @@
 						"offset": 18,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The deal price.",
 						"source": ""
 					},
@@ -1401,7 +1401,7 @@
 						"offset": 9,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The Upper Price Limit. Min long value means limit is removed/no limits.",
 						"source": ""
 					},
@@ -1410,7 +1410,7 @@
 						"offset": 17,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The Lower Price Limit. Min long value means limit is removed/no limits.",
 						"source": ""
 					},
@@ -1437,7 +1437,7 @@
 						"offset": 27,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The reference price used for the calculated static or dynamic Price Limits.",
 						"source": ""
 					}
@@ -1482,7 +1482,7 @@
 						"offset": 9,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The effective/aggregated Upper Circuit Breaker Limit after the CB has been triggered.",
 						"source": ""
 					},
@@ -1491,7 +1491,7 @@
 						"offset": 17,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The effective/aggregated Lower Circuit Breaker Limit after the CB has been triggered.",
 						"source": ""
 					},
@@ -1500,7 +1500,7 @@
 						"offset": 25,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The attempted match price that caused the Circuit Breaker to be triggered.",
 						"source": ""
 					}
@@ -1572,7 +1572,7 @@
 						"offset": 19,
 						"len": 8,
 						"value": "",
-						"type": "Price",
+						"type": "Integer",
 						"notes": "The price of the Indicative Quote.",
 						"source": ""
 					},
