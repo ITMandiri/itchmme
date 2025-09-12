@@ -25,6 +25,8 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
     private long price;
     private short exchangeOrderType;
     private byte quantityCondition;
+    
+    private long lPriceDecimals                                                  = -1;
 
     public int getNanos() {
         return nanos;
@@ -74,12 +76,16 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
         this.quantity = quantity;
     }
 
-    public long getPrice() {
-        return price;
+    public double getPrice() {
+        return getNumberFraction(price, lPriceDecimals);
     }
 
     public void setPrice(long price) {
-        this.price = price;
+        if (price == Long.MIN_VALUE) {
+            this.price = 0;
+        }else{
+            this.price = price;
+        }
     }
 
     public short getExchangeOrderType() {
@@ -134,7 +140,7 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
                 .concatenateField(getSide(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 17, 1)
                 .concatenateField(getOrderBookPosition(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 18, 4)
                 .concatenateField(getQuantity(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 22, 8)
-                .concatenateField(getPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 30, 8)
+                .concatenateField((long)getPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 30, 8)
                 .concatenateField(getExchangeOrderType(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 38, 2)
                 .concatenateField(getQuantityCondition(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 40, 1)
                 .putPacketLength()

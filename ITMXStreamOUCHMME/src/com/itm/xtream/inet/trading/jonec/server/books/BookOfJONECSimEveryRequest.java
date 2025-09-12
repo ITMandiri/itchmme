@@ -8,6 +8,7 @@ package com.itm.xtream.inet.trading.jonec.server.books;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts;
 import com.itm.idx.data.helpers.DateTimeHelper;
+import com.itm.idx.data.ori.message.struct.ORIDataOrderAmend;
 import com.itm.xtream.inet.trading.mapbackup.ITMMapBackupMgr;
 import com.itm.xtream.inet.trading.mapbackup.ITMMapBackupProcessor;
 import java.awt.event.ActionEvent;
@@ -65,6 +66,33 @@ public class BookOfJONECSimEveryRequest {
         SheetOfJONECSimEveryRequest mOut = null;
         try{
             mOut = this.chmSheets.get(vOrderId);
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, ex0);
+        }
+        return mOut;
+    }
+    
+    public SheetOfJONECSimEveryRequest retrieveRootSheet(Long vOrderId){
+        SheetOfJONECSimEveryRequest mOut = null;
+        try{
+            mOut = this.chmSheets.get(vOrderId);
+            for (int i = 0; i < 50; i++) {
+                if (mOut != null && mOut.getIdxMessage() != null) {
+                    if (mOut.getIdxMessage() instanceof ORIDataOrderAmend) {
+                        ORIDataOrderAmend mMsg = (ORIDataOrderAmend)mOut.getIdxMessage();
+                        Long token = BookOfJONECSimToken.getInstance.findTokenByBrokerRef(mMsg.getfOrigClOrdID());
+                        if (token > 0) {
+                            mOut = this.chmSheets.get(token);
+                        }
+                    } else {
+                        break;
+                    }
+
+                } else {
+                    break;
+                }
+            }
+            
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, ex0);
         }

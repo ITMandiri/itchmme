@@ -30,10 +30,10 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
     private String fNoPartyIDs = "";
     private String fPartyID1 = "";
     private String fPartyIDSource1 = "";
-    private String fPartyRole1 = "";
+    private String fPartyRole1 = ""; //.PARTY_ROLE_12_EXECUTING_TRADER
     private String fPartyID2 = "";
     private String fPartyIDSource2 = "";
-    private String fPartyRole2 = "";
+    private String fPartyRole2 = ""; //.PARTY_ROLE_1_EXECUTING_FIRM
     private String fAccountType = "";
     private String fExecInst = "";
     private String fOrderQty = "";
@@ -42,6 +42,9 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
     private String fTransactTime = "";
     private String fTimeInForce = "";
     private String fText = "";
+    private String fNoPartySubIDs = "";
+    private String fPartySubID = "";
+    private String fPartySubIDType = "";
 
     public FIX5JonecDataOrderCancelReplaceRequest(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -223,6 +226,30 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
     public void setfText(String fText) {
         this.fText = fText;
     }
+
+    public String getfNoPartySubIDs() {
+        return fNoPartySubIDs;
+    }
+
+    public void setfNoPartySubIDs(String fNoPartySubIDs) {
+        this.fNoPartySubIDs = fNoPartySubIDs;
+    }
+
+    public String getfPartySubID() {
+        return fPartySubID;
+    }
+
+    public void setfPartySubID(String fPartySubID) {
+        this.fPartySubID = fPartySubID;
+    }
+
+    public String getfPartySubIDType() {
+        return fPartySubIDType;
+    }
+
+    public void setfPartySubIDType(String fPartySubIDType) {
+        this.fPartySubIDType = fPartySubIDType;
+    }
     
     
     //.process:
@@ -304,6 +331,15 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
                             case FIX5JonecFieldTag.TEXT:
                                 setfText(zValue);
                                 break;
+                            case FIX5JonecFieldTag.NOPARTYSUBIDS:
+                                setfNoPartySubIDs(zValue);
+                                break;
+                            case FIX5JonecFieldTag.PARTYSUBID:
+                                setfPartySubID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.PARTYSUBIDTYPE:
+                                setfPartySubIDType(zValue);
+                                break;
                             default:
                                 break;
                         }
@@ -333,8 +369,8 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
             sb.append(getfSymbol()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.SECURITYSUBTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfSecuritySubType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
-            sb.append(FIX5JonecFieldTag.SECURITYID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-            sb.append(getfSecurityID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+//            sb.append(FIX5JonecFieldTag.SECURITYID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+//            sb.append(getfSecurityID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.NOPARTYIDS).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfNoPartyIDs()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             
@@ -363,14 +399,27 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
                 sb.append(FIX5JonecFieldTag.PARTYROLE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
                 sb.append(getfPartyRole2()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
+            //...
+            if (!StringHelper.isNullOrEmpty(getfNoPartySubIDs())){
+                sb.append(FIX5JonecFieldTag.NOPARTYSUBIDS).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfNoPartySubIDs()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfPartySubID())){
+                sb.append(FIX5JonecFieldTag.PARTYSUBID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfPartySubID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfPartySubIDType())){
+                sb.append(FIX5JonecFieldTag.PARTYSUBIDTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfPartySubIDType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
             
             if (!StringHelper.isNullOrEmpty(getfAccountType())){
                 sb.append(FIX5JonecFieldTag.ACCOUNTTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
                 sb.append(getfAccountType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
             
-            sb.append(FIX5JonecFieldTag.EXECINST).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-            sb.append(getfExecInst()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+//            sb.append(FIX5JonecFieldTag.EXECINST).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+//            sb.append(getfExecInst()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.ORDERQTY).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfOrderQty()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.ORDTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);

@@ -205,4 +205,34 @@ public class ITCHConsts {
         public static final String STATE_UNSUSPEND                              = "Unsuspend";
     }
     
+    public class ITCHFinancialProductField {
+        public static final int FINANCIAL_PRODUCT_NOT_APPLICABLE                         = 0;
+        public static final int FINANCIAL_PRODUCT_DERIVATIVE_OPTION                      = 1;
+        public static final int FINANCIAL_PRODUCT_DERIVATIVE_FORWARD                     = 2;
+        public static final int FINANCIAL_PRODUCT_DERIVATIVE_FUTURE                      = 3;
+        public static final int FINANCIAL_PRODUCT_BOND                                   = 4;
+        public static final int FINANCIAL_PRODUCT_EQUITY                                 = 5;
+        public static final int FINANCIAL_PRODUCT_ENTITLEMENT_WARRANT                    = 6;
+        public static final int FINANCIAL_PRODUCT_ENTITLEMENT_RIGHT                      = 7;
+        public static final int FINANCIAL_PRODUCT_ENTITLEMENT_DAILY_LEVERAGE_CERTIFICATE = 8;
+        public static final int FINANCIAL_PRODUCT_CURRENCY                               = 9;
+        public static final int FINANCIAL_PRODUCT_INDEX                                  = 10;
+        public static final int FINANCIAL_PRODUCT_COMBINATION                            = 11;
+        public static final int FINANCIAL_PRODUCT_ENERGY                                 = 12;
+        public static final int FINANCIAL_PRODUCT_METAL                                  = 13;
+        public static final int FINANCIAL_PRODUCT_CIV_ETF                                = 14;
+        public static final int FINANCIAL_PRODUCT_CIV_BUSINESS_TRUST                     = 15;
+        public static final int FINANCIAL_PRODUCT_CIV_INVESTMENT_FUND                    = 16;
+        public static final int FINANCIAL_PRODUCT_CIV_REIT                               = 17;
+        public static final int FINANCIAL_PRODUCT_SUKUK                                  = 18;
+    }
+    
+    public class ITCHPriceTypeField {
+        public static final int PRICE_TYPE_EXTERNALLY_SET                       = 1;
+        public static final int PRICE_TYPE_SETTLEMENT                           = 5;
+        public static final int PRICE_TYPE_EVER_LAST                            = 6;
+        public static final int PRICE_TYPE_CLOSING_PRICE                        = 11;
+        
+    }
+    
 }

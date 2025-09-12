@@ -109,4 +109,17 @@ public class FIX5DateTimeHelper extends DateTimeHelper {
         return zOut;
     }
     
+    public static String getDateTimeFIX5LocalFormatDetail(){
+        String zOut = "";
+        try{
+            DateFormat cTimeFormat = new SimpleDateFormat(DEF_FORMAT_FIX5_UTC_DATETIME_DETAIL);
+//            cTimeFormat.setTimeZone(TimeZone.getTimeZone(TIME_ZONE_ID_UTC));
+            Date cDate = new Date();
+            zOut = cTimeFormat.format(cDate);
+        }catch(Exception ex0){
+            //.EXXX.
+        }
+        return zOut;
+    }
+    
 }

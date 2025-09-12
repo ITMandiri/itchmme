@@ -52,7 +52,7 @@ public class FIX5JonecAccessAdministrative {
             if (this.zPassword2 == null ? this.zPassword1 != null : !this.zPassword2.equals(this.zPassword1)){
                 mMsg.setfNewPassword(this.zPassword2);
             }
-            mMsg.setfDefaultApplVerID(StringHelper.fromInt(FIX5JonecFieldValue.ADMIN_DEFAULT_APPL_VER_ID));
+            mMsg.setfDefaultApplVerID(StringHelper.fromInt(FIX5JonecFieldValue.ADMIN_MME_APPL_VER_ID));
             mOut = mMsg.msgToString();
             if (this.hController.isCalcHeader()){
                 mOut = FIX5CheckSumHelper.repackMessageWithChecksum(mOut,true,true,this.zConnectionName);

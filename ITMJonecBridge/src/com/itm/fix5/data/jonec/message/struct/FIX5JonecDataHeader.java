@@ -25,8 +25,9 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
     private int fBodyLength                                     = 0;
     private String fMsgType                                     = "";
     private String fSenderSubID                                 = "";
-    private String fSenderCompID                                = FIX5JonecFieldValue.SENDER_COMP_ID;
-    private String fTargetCompID                                = FIX5JonecFieldValue.TARGET_COMP_ID;
+//    private String fSenderCompID                                = FIX5JonecFieldValue.SENDER_COMP_ID;
+    private String fSenderCompID                                = "RS";
+    private String fTargetCompID                                = FIX5JonecFieldValue.TARGET_COMP_ID_MME;
     private long fMsgSeqNum                                     = 0;
     private String fSendingTime                                 = "";
     //.trailer:
@@ -180,7 +181,7 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
             
             if (!StringHelper.isNullOrEmpty(getfSenderCompID())){
                 sb.append(FIX5JonecFieldTag.SENDERCOMPID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-                sb.append(getfSenderCompID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+                sb.append(getfSenderCompID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);//?????????????????????????????????????????????
             }
             
             sb.append(FIX5JonecFieldTag.TARGETCOMPID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
@@ -189,9 +190,13 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
             sb.append(FIX5JonecFieldTag.MSGSEQNUM).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfMsgSeqNum()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             
+            //.?????
+            sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+            sb.append("N").append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            
             sb.append(FIX5JonecFieldTag.SENDINGTIME).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfSendingTime()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
-            
+                        
             zOut = sb.toString();
         }catch(Exception ex0){
             //.EXXX.

@@ -9,7 +9,7 @@
     "socket_send_buffer": 8000,
     "socket_recv_buffer": 0,
     "socket_send_autoflush": true,
-    "data_end_time": "15:30:00",
+    "data_end_time": "",
     "order_racing_enable": true,
     "order_reply_timeout": 0,
     "order_racing_mode": 1,

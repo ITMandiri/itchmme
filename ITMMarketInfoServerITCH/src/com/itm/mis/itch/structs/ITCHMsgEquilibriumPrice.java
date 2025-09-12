@@ -25,6 +25,8 @@ public class ITCHMsgEquilibriumPrice extends ITCHMsgBase {
     private long bestAskPrice;
     private long bestBidQuantity;
     private long bestAskQuantity;
+    
+    private long lPriceDecimals                                                  = -1;
 
     public int getNanos() {
         return nanos;
@@ -58,28 +60,40 @@ public class ITCHMsgEquilibriumPrice extends ITCHMsgBase {
         this.askQuantity = askQuantity;
     }
 
-    public long getPrice() {
-        return price;
+    public double getPrice() {
+        return getNumberFraction(price, lPriceDecimals);
     }
 
     public void setPrice(long price) {
-        this.price = price;
+        if (price == Long.MIN_VALUE) {
+            this.price = 0;
+        }else{
+            this.price = price;
+        }
     }
 
-    public long getBestBidPrice() {
-        return bestBidPrice;
+    public double getBestBidPrice() {
+        return getNumberFraction(bestBidPrice, lPriceDecimals);
     }
 
     public void setBestBidPrice(long bestBidPrice) {
-        this.bestBidPrice = bestBidPrice;
+        if (bestBidPrice == Long.MIN_VALUE) {
+            this.bestBidPrice = 0;
+        }else{
+            this.bestBidPrice = bestBidPrice;
+        }
     }
 
-    public long getBestAskPrice() {
-        return bestAskPrice;
+    public double getBestAskPrice() {
+        return getNumberFraction(bestAskPrice, lPriceDecimals);
     }
 
     public void setBestAskPrice(long bestAskPrice) {
-        this.bestAskPrice = bestAskPrice;
+        if (bestAskPrice == Long.MIN_VALUE) {
+            this.bestAskPrice = 0;
+        }else{
+            this.bestAskPrice = bestAskPrice;
+        }
     }
 
     public long getBestBidQuantity() {
@@ -132,9 +146,9 @@ public class ITCHMsgEquilibriumPrice extends ITCHMsgBase {
                 .concatenateField(getOrderBookId(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 5, 4)
                 .concatenateField(getBidQuantity(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 9, 8)
                 .concatenateField(getAskQuantity(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 17, 8)
-                .concatenateField(getPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 25, 8)
-                .concatenateField(getBestBidPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 33, 8)
-                .concatenateField(getBestAskPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 41, 8)
+                .concatenateField((long)getPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 25, 8)
+                .concatenateField((long)getBestBidPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 33, 8)
+                .concatenateField((long)getBestAskPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 41, 8)
                 .concatenateField(getBestBidQuantity(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 49, 8)
                 .concatenateField(getBestAskQuantity(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 57, 8)
                 .putPacketLength()

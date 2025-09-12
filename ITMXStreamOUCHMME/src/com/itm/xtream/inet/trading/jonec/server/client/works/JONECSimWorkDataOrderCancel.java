@@ -14,6 +14,7 @@ import com.itm.fix5.data.message.bridge.FIX5IDXBridgeManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts;
 import com.itm.generic.engine.socket.setup.ITMSocketChannel;
+import com.itm.generic.engine.socket.uhelpers.StringHelper;
 import com.itm.idx.data.ori.consts.ORIDataConst;
 import com.itm.idx.data.ori.message.struct.ORIDataOrderCancel;
 import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketController;
@@ -59,7 +60,7 @@ public class JONECSimWorkDataOrderCancel {
                     
                     if (mTrxCtl != null){
                         FIX5JonecDataOrderCancelRequest mAdvCancelOrder = new FIX5JonecDataOrderCancelRequest(new HashMap());
-                        mAdvCancelOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.ORDER_CANCEL_REQUEST);
+                        mAdvCancelOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.INDICATIVE_QUOTE_CANCEL);
                         mAdvCancelOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
                         mAdvCancelOrder.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
                         mAdvCancelOrder.setfSenderSubID(mTrxCtl.getTraderCode());
@@ -73,6 +74,31 @@ public class JONECSimWorkDataOrderCancel {
 
                         mAdvCancelOrder.setfSide(mInputMsgRequest.getfSide());
                         mAdvCancelOrder.setfTransactTime(mAdvCancelOrder.getfSendingTime());
+                        
+                        mAdvCancelOrder.setfNoPartyIDs(StringHelper.fromInt(3));
+                        //.executing trader
+                        mAdvCancelOrder.setfPartyID1(mTrxCtl.getTraderCode());
+                        mAdvCancelOrder.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                        mAdvCancelOrder.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
+                        //.noPartySub
+                        mAdvCancelOrder.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
+                        mAdvCancelOrder.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
+                        if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+                            mAdvCancelOrder.setfPartySubID(mInputMsgRequest.getfText());
+                        }   
+                        mAdvCancelOrder.setfPartySubIDType(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
+                        //.executing firm
+                        mAdvCancelOrder.setfPartyID2(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
+                        mAdvCancelOrder.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                        mAdvCancelOrder.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
+                        //.customer account
+//                        mAdvCancelOrder.setfPartyID3(mInputMsgRequest.getfComplianceID());
+//                        mAdvCancelOrder.setfPartyIDSource3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+//                        mAdvCancelOrder.setfPartyRole3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_24_CUSTOMER_ACCOUNT);
+                       
+                        mAdvCancelOrder.setfQuoteId(mInputMsgRequest.getfClOrdID());
+                        mAdvCancelOrder.setfQuoteCancelType("5");
+                        mAdvCancelOrder.setfQuoteType("5");
 
                         String zAdvCancelOrderFixMsg = mAdvCancelOrder.msgToString();
                         zAdvCancelOrderFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zAdvCancelOrderFixMsg,true,true,mTrxCtl.getConnectionName());
@@ -115,11 +141,28 @@ public class JONECSimWorkDataOrderCancel {
                             mNormalCancelOrder.setfOrderID(mInputMsgRequest.getfOrderID());
                             mNormalCancelOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
 
-                            mNormalCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol());
+                            mNormalCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol()+"_RG");
                             mNormalCancelOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0",""));
 
                             mNormalCancelOrder.setfSide(mInputMsgRequest.getfSide());
                             mNormalCancelOrder.setfTransactTime(mNormalCancelOrder.getfSendingTime());
+                            mNormalCancelOrder.setfNoPartyIDs(StringHelper.fromInt(2));
+                            //.executing trader
+                            mNormalCancelOrder.setfPartyID1(mTrxCtl.getTraderCode());
+                            mNormalCancelOrder.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mNormalCancelOrder.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
+                            //.noPartySub
+                            mNormalCancelOrder.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
+                            mNormalCancelOrder.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
+                            if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+//                                mNormalCancelOrder.setfPartySubID(mInputMsgRequest.getfText());
+                            }   
+                            mNormalCancelOrder.setfPartySubIDType(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
+                            //.executing firm
+                            mNormalCancelOrder.setfPartyID2(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
+                            mNormalCancelOrder.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mNormalCancelOrder.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
+                                
 
                             String zNormalCancelOrderFixMsg = mNormalCancelOrder.msgToString();
                             zNormalCancelOrderFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zNormalCancelOrderFixMsg,true,true,mTrxCtl.getConnectionName());

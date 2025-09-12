@@ -293,7 +293,45 @@ public class OUCHConsts {
         public static final int REJECTED_ORDER_REASON_ME_MATCH_SST_BL_ORDER                                 = -420389;
         public static final int REJECTED_ORDER_REASON_ME_MATCH_INS_BL_ORDER                                 = -420391;
         public static final int REJECTED_ORDER_REASON_ME_MATCH_USR_BL_ORDER                                 = -420393;
-//        public static final int REJECTED_ORDER_REASON_                                                      = -80000;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_MB_SELL                                      = -420397;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_MB_ORDER_TYPE                                = -420399;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_SH_BUY                                       = -420401;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_FOK_IOC_NOT_ALLOWD                           = -420411;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_BEST_LIMIT_REQ                               = -420415;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_INV_ALWAYS_INACTIVE                          = -420425;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_STOP_PREMIUM                                 = -420429;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_SST_SSO                                      = -420443;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_INS_SSO                                      = -420445;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_USR_SSO                                      = -420447;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_SSO_SPEC_NO_TYPE                             = -420451;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_SST_EXT_T_NOT_VALID                          = -420453;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_INS_STOP_ORD                                 = -420459;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_SST_STOP_ORD                                 = -420461;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_USR_STOP_ORD                                 = -420463;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_INS_GTS                                      = -420539;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_SST_GTS                                      = -420541;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_USR_GTS                                      = -420543;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_MUST_BE_ACTIVE                               = -420615;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_ATR_PST_ORDER                                = -420621;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_IMBALANCE_IOC                                = -420623;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_FOK_NOT_ALLOWD                               = -420625;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_UPDATE_TO_FOK_IOC                            = -420627;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_FIXED_PRICE_SESSION                          = -420629;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_INV_QUOTE_ITEMS                              = -420631;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_ACCOUNT_SUSPENDED                            = -420667;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_INVESTOR_SUSPENDED                           = -420669;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_ILL_QUANTITY_RESTRICTION_CHANGE              = -420683;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_RESERVE_ORDER_QUANTITY_RESTRICTION           = -420685;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_ILL_RESERVE_CHANGE                           = -420687;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_QUANTITY_RESTRICTION_NOT_ALLOWED             = -420689;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_IMB_TRIGGER_ORDER                            = -420691;
+        public static final int REJECTED_ORDER_REASON_ME_OB_NOT_SERIES                                      = -425007;
+        public static final int REJECTED_ORDER_REASON_ME_OB_NOT_CUSTOMER                                    = -425017;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_IDX_INV_EXCHANGE_INFO                        = -421001;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_IDX_INV_PRICE_PST                            = -421003;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_IDX_SH_ONE_LESS_TICK_ZERO                    = -421005;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_IDX_SH_ONE_LESS_TICK_PLUS                    = -421007;
+        public static final int REJECTED_ORDER_REASON_ME_MATCH_IDX_MAX_ORDER_QUANTITY_PERCENTAGE_OF_TRADABLE_QUANTITY = -421009;
         
         
         //.Ardi:20230919 - restatement reason: 

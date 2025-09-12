@@ -134,7 +134,7 @@ public class ITMITCHMsgMemory {
                 } else if (itchMessage instanceof ITCHMsgSystemEvent){
                     ITCHMsgSystemEvent mMsg = (ITCHMsgSystemEvent)itchMessage;
                     if (ITCHValue.SYSTEM_EVENT_CODE_FIRST_OF_MESSAGE.equals(mMsg.getEvent())){
-                        clearAllBooks();
+//                        clearAllBooks();
                     }else if (ITCHValue.SYSTEM_EVENT_CODE_LAST_OF_MESSAGE.equals(mMsg.getEvent())){
                         //... .
                     }
@@ -326,6 +326,9 @@ public class ITMITCHMsgMemory {
                     SheetOfITCHIndicativeQuote mSheet = new SheetOfITCHIndicativeQuote(mMsg);
                     BookOfITCHIndicativeQuote.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
+                } else if (itchMessage instanceof ITCHMsgSecond){
+                    ITCHMsgSecond mMsg = (ITCHMsgSecond)itchMessage;
+                    BookOfITCHSecond.getInstance.addSheetMDF(new SheetOfITCHSecond(mMsg));
                 } else {
                     // ...
                 }
@@ -342,8 +345,34 @@ public class ITMITCHMsgMemory {
     public boolean clearAllBooks(){
         boolean mOut = false;
         try{
-            
+            BookOfITCHAddOrder.getInstance.clearBook();
+            BookOfITCHCircuitBreakerTrigger.getInstance.clearBook();
+            BookOfITCHEquilibriumPrice.getInstance.clearBook();
+            BookOfITCHExchangeDirectory.getInstance.clearBook();
+            BookOfITCHGlimpseSnapshot.getInstance.clearBook();
+            BookOfITCHIndexPrice.getInstance.clearBook();
+            BookOfITCHIndicativeQuote.getInstance.clearBook();
+            BookOfITCHIssuerDirectory.getInstance.clearBook();
+            BookOfITCHMarketByPrice.getInstance.clearBook();
+            BookOfITCHMarketDirectory.getInstance.clearBook();
+            BookOfITCHMarketSegmentDirectory.getInstance.clearBook();
+            BookOfITCHOrderBookClear.getInstance.clearBook();
+            BookOfITCHOrderBookDirectory.getInstance.clearBook();
+            BookOfITCHOrderBookDirectoryMDF.getInstance.clearBook();
+            BookOfITCHOrderBookState.getInstance.clearBook();
+            BookOfITCHOrderDelete.getInstance.clearBook();
+            BookOfITCHOrderExecuted.getInstance.clearBook();
+            BookOfITCHOrderExecutedWithPrice.getInstance.clearBook();
+            BookOfITCHParticipantDirectory.getInstance.clearBook();
+            BookOfITCHPriceLimits.getInstance.clearBook();
+            BookOfITCHReferencePrice.getInstance.clearBook();
+            BookOfITCHSystemEvent.getInstance.clearBook();
+            BookOfITCHTickSizeTable.getInstance.clearBook();
+            BookOfITCHTrade.getInstance.clearBook();
+            BookOfITCHTradeStatistics.getInstance.clearBook();
+            BookOfITCHTradeTicker.getInstance.clearBook();
             BookOfITCHSecond.getInstance.clearBook(true);
+            BookOfITCHSecond.getInstance.clearBookMDF(true);
             //. ??????????????????????
             ///FEEDMsgHelper.getInstance.clearMemory();
             

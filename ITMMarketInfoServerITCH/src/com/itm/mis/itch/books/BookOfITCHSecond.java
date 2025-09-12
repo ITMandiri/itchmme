@@ -19,6 +19,7 @@ public class BookOfITCHSecond extends BookOfITCHBase {
     public final static BookOfITCHSecond getInstance = new BookOfITCHSecond();
     
     private final ArrayList<SheetOfITCHSecond> lstSheets = new ArrayList<>();
+    private final ArrayList<SheetOfITCHSecond> lstSheetsMDF = new ArrayList<>();
     
     public BookOfITCHSecond() {
         //.nothing todo here :)
@@ -38,8 +39,25 @@ public class BookOfITCHSecond extends BookOfITCHBase {
         return mOut;
     }
     
+    public boolean addSheetMDF(SheetOfITCHSecond mSheet){
+        boolean mOut = false;
+        try{
+            if ((mSheet != null) && (mSheet.getMessage() != null)){
+                this.lstSheetsMDF.add(mSheet);
+                mOut = true;
+            }
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
+        }
+        return mOut;
+    }
+    
     public ArrayList<SheetOfITCHSecond> retrieveAllSheets(){
         return this.lstSheets;
+    }
+    
+    public ArrayList<SheetOfITCHSecond> retrieveAllSheetsMDF(){
+        return this.lstSheetsMDF;
     }
     
     public long retrieveNearestTimeStampSeconds(){
@@ -47,6 +65,18 @@ public class BookOfITCHSecond extends BookOfITCHBase {
         try{
             if (!this.lstSheets.isEmpty()){
                 mOut = this.lstSheets.get(this.lstSheets.size() - 1).getMessage().getSeconds();
+            }
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
+        }
+        return mOut;
+    }
+    
+    public long retrieveNearestTimeStampSecondsMDF(){
+        long mOut = 0;
+        try{
+            if (!this.lstSheetsMDF.isEmpty()){
+                mOut = this.lstSheetsMDF.get(this.lstSheetsMDF.size() - 1).getMessage().getSeconds();
             }
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
@@ -67,6 +97,26 @@ public class BookOfITCHSecond extends BookOfITCHBase {
             }else{
                 this.lstSheets.clear();
                 mOut = this.lstSheets.isEmpty();
+            }
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
+        }
+        return mOut;
+    }
+    
+    public boolean clearBookMDF(boolean bPreserveLastSheet){
+        boolean mOut = false;
+        try{
+            if (bPreserveLastSheet && (!this.lstSheetsMDF.isEmpty())){
+                SheetOfITCHSecond mLastSheet = this.lstSheetsMDF.get(this.lstSheetsMDF.size() - 1);
+                this.lstSheetsMDF.clear();
+                mOut = this.lstSheetsMDF.isEmpty();
+                if (mLastSheet != null){
+                    addSheetMDF(mLastSheet);
+                }
+            }else{
+                this.lstSheetsMDF.clear();
+                mOut = this.lstSheetsMDF.isEmpty();
             }
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);

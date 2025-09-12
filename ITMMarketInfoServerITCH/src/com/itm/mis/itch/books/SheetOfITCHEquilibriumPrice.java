@@ -17,7 +17,7 @@ public class SheetOfITCHEquilibriumPrice extends SheetOfITCHBase {
     
     public SheetOfITCHEquilibriumPrice(ITCHMsgEquilibriumPrice mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSecondsMDF(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgEquilibriumPrice getMessage() {

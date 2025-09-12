@@ -9,6 +9,7 @@ import com.itm.fix5.data.helpers.FIX5DateTimeHelper;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataExecutionReport;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
+import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
 import com.itm.generic.engine.socket.setup.ITMSocketChannel;
@@ -25,6 +26,7 @@ import com.itm.idx.data.ori.message.struct.ORIDataOrderCancelReply;
 import com.itm.idx.data.qri.consts.QRIDataConst;
 import com.itm.idx.data.qri.consts.QRIDataConst.QRIFieldValue;
 import com.itm.idx.data.qri.message.struct.QRIDataOrderListMessage;
+import com.itm.idx.data.qri.message.struct.QRIDataTradeListMessage;
 import com.itm.idx.data.qri.util.StringUtil;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimCalcQty;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
@@ -35,8 +37,12 @@ import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimEveryReques
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.callback.JONECSimCallbackController;
 import com.itm.xtream.inet.trading.jonec.server.callback.JONECSimCallbackProcessor;
+import com.itm.xtream.inet.trading.jonec.server.msgmem.works.helper.QRIOrderListPartialSummaryWorker;
 import com.itm.xtream.inet.trading.martin.server.msgmem.books.BookOfMARTINOrderList;
+import com.itm.xtream.inet.trading.martin.server.msgmem.books.BookOfMARTINTradeList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -82,6 +88,10 @@ public class FIX5JonecWorkDataExecutionReport {
                     mOriginRequest = BookOfJONECSimOriginRequest.getInstance.retrieveSheet(vPrevOrderToken);
                     mEveryRequest = BookOfJONECSimEveryRequest.getInstance.retrieveSheet(vOrderToken);
                 }
+                //.??????
+                if ((mOriginRequest == null) && (mEveryRequest != null)){
+                    mOriginRequest = new SheetOfJONECSimOriginRequest(vOrderToken, mEveryRequest.getIdxMessage());
+                }
                 
                 System.out.println("mOriginRequest = " + mOriginRequest);
                 System.out.println("mEveryRequest = " + mEveryRequest);
@@ -91,225 +101,393 @@ public class FIX5JonecWorkDataExecutionReport {
                     if (mOriginRequest.getIdxMessage() instanceof ORIDataNewOrder){
                         System.out.println("mOriginRequest = mOriginRequest.getIdxMessage() instanceof ORIDataNewOrder");
                         ORIDataNewOrder mOriginRequestMsg = ((ORIDataNewOrder)mOriginRequest.getIdxMessage());
-                        if (mOriginRequestMsg.getfHandlInst() == ORIDataConst.ORIFieldValue.HANDLINST_ADVERTISEMENT){
+                        switch (mOriginRequestMsg.getfHandlInst()) {
+                            case ORIDataConst.ORIFieldValue.HANDLINST_NORMAL:
+                                {
+                                    if (mInputMsgRequest.getfExecType().equalsIgnoreCase("F")) {
+                                        //. flag apakah parsial
+                                        boolean isPartial = false;
+                                        
+                                        SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
+                                        if (mCalcQty == null){
+                                            mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
+                                            BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
+                                        }
+
+                                        //. zzz jika sudah full skipp / jatsNo nya empty skkip / LastJatsOrderNo pernah di proses
+                                        if (mCalcQty.getOrderStatus() == QRIDataConst.QRIFieldValue.ORDSTATUS_FULLY_MATCH || "".equals(mCalcQty.getJatsOrderNo()) || mCalcQty.getLastJatsTradeNo() >= StringHelper.toLong(mInputMsgRequest.getfTrdMatchID())){
+                                            System.err.println("OUCHMsgExecutedOrder mCalcQty.getLastJatsTradeNo() = " + mCalcQty.getLastJatsTradeNo() + ", mMessage.getMatchNumber() = " + StringHelper.toLong(mInputMsgRequest.getfTrdMatchID())+ ", mCalcQty.getJatsOrderNo() = " + mCalcQty.getJatsOrderNo());
+                                            return;
+                                        }
+
+                                        //. tambah match
+                                        mCalcQty.addQtyMatch(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
+                                        //. set LastJastNo
+                                        mCalcQty.setLastJatsTradeNo(StringHelper.toLong(mInputMsgRequest.getfTrdMatchID()));
+                                        //. kalkulasi status
+
+                //                        if (mCalcQty.getQtyLeave() >= mCalcQty.getQtyMatch()){
+                //                            mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_NEW);
+                //                        }else 
+
+                                        if (mCalcQty.getQtyLeave() > 0){
+                                            isPartial = true;
+                                            mCalcQty.setOrderStatus(QRIDataConst.QRIFieldValue.ORDSTATUS_PARTIALLY_MATCH);
+                                        }else{
+                                            mCalcQty.setOrderStatus(QRIDataConst.QRIFieldValue.ORDSTATUS_FULLY_MATCH);
+                                        }
+
+                                        //. OrderList dengan kalkulasi
+                                        QRIDataOrderListMessage mOrderListMsg = new QRIDataOrderListMessage(new HashMap());
+                                        mOrderListMsg.setfOrderID(StringHelper.toLong(mCalcQty.getJatsOrderNo()));
+                                        mOrderListMsg.setfClOrdID(mCalcQty.getBrokerRef());
+                                        mOrderListMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                                        mOrderListMsg.setfOrigClOrdID(StringUtil.toLong(mCalcQty.getOriJatsOrderNo()));
+                                        mOrderListMsg.setfClientID(mOriginRequestMsg.getfClientID());
+                                        mOrderListMsg.setfExecBroker("");
+                                        mOrderListMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                        mOrderListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                                        mOrderListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NEW);
+                                        mOrderListMsg.setfOrdStatus(StringHelper.fromInt(mCalcQty.getOrderStatus()));
+                                        mOrderListMsg.setfAccount(mOriginRequestMsg.getfAccount());
+                                        mOrderListMsg.setfFutSettDate(""); //. sementara di kasih empty, karena tidak ketemu dipakai dimana
+                                        mOrderListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                        mOrderListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbolSfx());
+                                        mOrderListMsg.setfSecurityID(mOriginRequestMsg.getfSecurityID());
+                                        mOrderListMsg.setfSide(mOriginRequestMsg.getfSide());
+                                        mOrderListMsg.setfOrderQty(mCalcQty.getQtyOrder());
+                                        mOrderListMsg.setfOrderType(StringUtil.toInteger(mOriginRequestMsg.getfOrdType()));
+                                        mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
+                                        mOrderListMsg.setfTimeInForce(mOriginRequestMsg.getfTimeInForce());
+                                        mOrderListMsg.setfExpiredDate(mOriginRequestMsg.getfExpireDate());
+                                        mOrderListMsg.setfExecInst(mOriginRequestMsg.getfExecInst());
+                                        mOrderListMsg.setfLeavesQty(mCalcQty.getQtyLeave());
+                                        mOrderListMsg.setfCumQty(mCalcQty.getQtyMatch());
+                                        mOrderListMsg.setfAvgPx(0);
+                                        mOrderListMsg.setfTradeDate(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                        mOrderListMsg.setfTransactionTime(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                        mOrderListMsg.setfText("");
+                                        mOrderListMsg.setfClearingAccount("");
+                                        mOrderListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());                        
+
+                                        if (isPartial){//. jika parsial ditahan dulu, lempar ke class
+                                            QRIOrderListPartialSummaryWorker.getInstance.addData(mOrderListMsg);
+                                        }else{
+                                            //.pastikan di remove dari pendingan message di QRIOrderListPartialSummaryWorker
+                                            QRIOrderListPartialSummaryWorker.getInstance.removeData(mOrderListMsg.getfOrderID());
+
+                                            //. save orderlist ke memory martin
+                                            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
+
+                                            //. hrn-20211221 : untuk antisipasi order yang langsung match (overide dengan OrderAccepted), 
+                                            //. untuk full match di tahan 50ms
+                                            final QRIDataOrderListMessage mFnlOrderListMsg = mOrderListMsg;
+                                            new Timer().schedule(new TimerTask() {
+                                                @Override
+                                                public void run() {
+                                                    //. broadcast orderlist via martin
+                                                    BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mFnlOrderListMsg);
+                                                }
+                                            }, 50); 
+
+                                        }
+                                        //. Tradelist
+                                        QRIDataTradeListMessage mTradeListMsg = new QRIDataTradeListMessage(new HashMap());
+                                        mTradeListMsg.setfOrderID(StringHelper.toLong(mCalcQty.getJatsOrderNo()));
+                                        mTradeListMsg.setfClOrdID(mCalcQty.getBrokerRef());
+                                        mTradeListMsg.setfSecondaryOrderID(StringHelper.toLong(mInputMsgRequest.getfTrdMatchID()));
+                                        mTradeListMsg.setfTransactionTime(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                        mTradeListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                        mTradeListMsg.setfClientID(mOriginRequestMsg.getfClientID());
+                                        mTradeListMsg.setfSide(mOriginRequestMsg.getfSide());
+                                        mTradeListMsg.setfExecBroker("");
+                                        mTradeListMsg.setfContraTrader("");
+                                        //.soon
+                //                        long lCounterPartID =  mMessage.getCounterPartyID(); //. ?? to broker code
+                                        String lCounterPartCode = "";
+                                        //.soon
+                //                        SheetOfITCHParticipantDirectory mSheetParticipant = BookOfITCHParticipantDirectory.getInstance.retrieveSheet(lCounterPartID);
+                //                        if (mSheetParticipant != null){
+                //                            lCounterPartCode = mSheetParticipant.getMessage().getParticipantCode();
+                //                        }
+                                        mTradeListMsg.setfContraBroker(lCounterPartCode);
+                                        mTradeListMsg.setfAccount(mOriginRequestMsg.getfAccount());
+                                        mTradeListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                        mTradeListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbolSfx());
+                                        mTradeListMsg.setfSecurityID(mOriginRequestMsg.getfSecurityID());
+                                        mTradeListMsg.setfPrice(StringHelper.toDouble(mInputMsgRequest.getfPrice()));
+                                        mTradeListMsg.setfCumQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+                                        mTradeListMsg.setfText("");
+                                        mTradeListMsg.setfClearingAccount(" ");
+                                        mTradeListMsg.setfFutSettDate("");
+                                        mTradeListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NORMAL_MATCH);
+                                        mTradeListMsg.setfLastPx(0);
+                                        mTradeListMsg.setfNoContraBrokers(1);                        
+                                        mTradeListMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                        mTradeListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                                        mTradeListMsg.setfLeavesQty(0);
+                                        mTradeListMsg.setfAvgPx(0);
+                                        mTradeListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());
+                                        //. order status
+                                        mTradeListMsg.setfOrdStatus("2");
+                                        //. save tradelist ke memory martin
+                                        BookOfMARTINTradeList.getInstance.addOrUpdateSheet(mTradeListMsg);
+                                        //. broadcast tradelist via martin
+                                        BookOfMARTINTradeList.getInstance.brodcastToSubscriber(mTradeListMsg);
+                                        //.backup:
+                                        BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
+
+                                    } else {
+                                        //. response OK
+                                        SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
+                                        if (mCalcQty == null){
+                                            mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
+                                            BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
+                                        }       
+    //                                    mCalcQty.setQtyOrder(mMessage.getQuantity());
+                                        //.20250801: untuk sekarang dari ouch yang dikirim outstandingnya, sehingga sekarang yang dipakai untuk qtyOrder dari msg asalnya
+                                        mCalcQty.setQtyOrder(mOriginRequestMsg.getfOrderQty());
+                                        mCalcQty.setOrderStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_NEW); //. order status = new
+                                        mCalcQty.setJatsOrderNo(mInputMsgRequest.getfOrderID());
+                                        mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
+                                        //.backup:
+                                        BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
+                                        ORIDataNewOrderReply mReplyMsg = new ORIDataNewOrderReply(new HashMap());
+                                        if (mInputMsgRequest.getfOrderID().equalsIgnoreCase("NONE")) { //.reject
+                                            mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
+                                            mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
+                                            mReplyMsg.setfNewOrderReplyType(ORIDataNewOrderReply.ORINewOrderReplyType.BAD);
+                                            mReplyMsg.setfOrderID(ORIDataConst.ORIFieldValue.ORDERID_NO_JATS_ORDERNUMBER);
+                                            mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
+                                            mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                            mReplyMsg.setfExecTransType(ORIDataConst.ORIFieldValue.EXECTRANSTYPE_NEW);
+                                            mReplyMsg.setfExecType(ORIDataConst.ORIFieldValue.EXECTYPE_REJECTED);
+                                            mReplyMsg.setfOrdStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_REJECTED);
+                                            mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                            mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
+                                            mReplyMsg.setfLeavesQty(0);
+                                            mReplyMsg.setfCumQty(0);
+                                            mReplyMsg.setfAvgPx(0);
+                                            mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                                            mReplyMsg.setfText(mInputMsgRequest.getfRejectText());
+                                            mReplyMsg.setfLastPx(0);
+                                            mReplyMsg.setfLastShares(0);
+                                        } else {
+                                            mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
+                                            mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
+                                            mReplyMsg.setfNewOrderReplyType(ORIDataNewOrderReply.ORINewOrderReplyType.OK);
+                                            //. hrn: asumsi getOrderReferenceNumberExternal = getOrderReferenceNumber
+                                            mReplyMsg.setfOrderID(mInputMsgRequest.getfOrderID());
+                                            mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
+                                            mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                            mReplyMsg.setfExecTransType(ORIDataConst.ORIFieldValue.EXECTRANSTYPE_NEW);
+                                            mReplyMsg.setfExecType(ORIDataConst.ORIFieldValue.EXECTYPE_NEW);
+                                            mReplyMsg.setfOrdStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_NEW);
+                                            mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                            mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
+                                            mReplyMsg.setfLeavesQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+                                            mReplyMsg.setfCumQty(0);
+                                            mReplyMsg.setfAvgPx(0);
+                                            mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                                            mReplyMsg.setfLastPx(0);
+                                            mReplyMsg.setfLastShares(0);
+                                        }
+
+                                        JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
+                                        if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
+                                            if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
+                                                //... .
+                                            }else{ //. gagal dikirim ke klien
+                                                //.???:
+                                                //. TODO : handle lewat Martin
+                                                //. masukin log
+                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @");
+                                            }
+                                        }else{ //. tidak bisa dikirim ke klien
+                                            //.???:
+                                            //. TODO : handle lewat Martin
+                                            //. masukin log
+                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @");
+                                        }       
+                                        if (!mInputMsgRequest.getfOrderID().equalsIgnoreCase("NONE")) {
+                                            QRIDataOrderListMessage mOrderListMsg = new QRIDataOrderListMessage(new HashMap());
+                                            mOrderListMsg.setfOrderID(StringHelper.toLong(mInputMsgRequest.getfOrderID()));
+                                            mOrderListMsg.setfClOrdID(mCalcQty.getBrokerRef());
+                                            mOrderListMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                                            mOrderListMsg.setfOrigClOrdID(StringUtil.toLong(mCalcQty.getOriJatsOrderNo()));
+                                            mOrderListMsg.setfClientID(mOriginRequestMsg.getfClientID());
+                                            mOrderListMsg.setfExecBroker("");
+                                            mOrderListMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                            mOrderListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                                            mOrderListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NEW);
+                                            mOrderListMsg.setfOrdStatus(StringHelper.fromInt(mCalcQty.getOrderStatus()));
+                                            mOrderListMsg.setfAccount(mOriginRequestMsg.getfAccount());
+                                            mOrderListMsg.setfFutSettDate(""); //. sementara di kasih empty, karena tidak ketemu dipakai dimana
+                                            mOrderListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                            mOrderListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbolSfx());
+                                            mOrderListMsg.setfSecurityID(mOriginRequestMsg.getfSecurityID());
+                                            mOrderListMsg.setfSide(mOriginRequestMsg.getfSide());
+                                            mOrderListMsg.setfOrderQty(mCalcQty.getQtyOrder());
+                                            mOrderListMsg.setfOrderType(StringUtil.toInteger(mOriginRequestMsg.getfOrdType()));
+                                            mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
+                                            mOrderListMsg.setfTimeInForce(mOriginRequestMsg.getfTimeInForce());
+                                            mOrderListMsg.setfExpiredDate(mOriginRequestMsg.getfExpireDate());
+                                            mOrderListMsg.setfExecInst(mOriginRequestMsg.getfExecInst());
+                                            mOrderListMsg.setfLeavesQty(mCalcQty.getQtyLeave());
+                                            mOrderListMsg.setfCumQty(mCalcQty.getQtyMatch());
+                                            mOrderListMsg.setfAvgPx(0);
+                                            mOrderListMsg.setfTradeDate(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                            mOrderListMsg.setfTransactionTime(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                            mOrderListMsg.setfText("");
+                                            mOrderListMsg.setfClearingAccount("");
+                                            mOrderListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());
+                                            //. save orderlist ke memory martin
+                                            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
+                                            //. broadcast orderlist via martin
+                                            BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mOrderListMsg);
+                                        }
+                                    }
+                                    break;
+                                }
+                            case ORIDataConst.ORIFieldValue.HANDLINST_ADVERTISEMENT:
+                                {
+                                    SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
+                                    if (mCalcQty == null){
+                                        mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
+                                        BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
+                                    }       mCalcQty.setQtyOrder(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+                                    mCalcQty.setOrderStatus(ORIFieldValue.ORDSTATUS_NEW);
+                                    mCalcQty.setJatsOrderNo(mInputMsgRequest.getfOrderID());
+                                    mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
+                                    mCalcQty.setQtyMatch(StringHelper.toLong(mInputMsgRequest.getfCumQty()));
+                                    if (mCalcQty.getQtyLeave() >= mCalcQty.getQtyMatch()){
+                                        mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_NEW);
+                                    }else if (mCalcQty.getQtyLeave() > 0){
+                                        mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_PARTIALLY_MATCH);
+                                    }else{
+                                        mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_FULLY_MATCH);
+                                    }       //.backup:
+                                    BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
+                                    ORIDataNewOrderReply mReplyMsg = new ORIDataNewOrderReply(new HashMap());
+                                    mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
+                                    mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
+                                    mReplyMsg.setfNewOrderReplyType(ORIDataNewOrderReply.ORINewOrderReplyType.OK);
+                                    mReplyMsg.setfOrderID(mInputMsgRequest.getfOrderID());
+                                    mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
+                                    mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                    mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_NEW);
+                                    mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_NEW);
+                                    mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_NEW);
+                                    mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                    mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
+                                    mReplyMsg.setfLeavesQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+                                    mReplyMsg.setfCumQty(0);
+                                    mReplyMsg.setfAvgPx(0);
+                                    mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                                    mReplyMsg.setfLastPx(0);
+                                    mReplyMsg.setfLastShares(0);
+                                    JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
+                                    if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
+                                        if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
+                                            //... .
+                                        }else{ //. gagal dikirim ke klien
+                                            //.???:
+                                            //. TODO : handle lewat Martin
+                                            //. masukin log
+                                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
+                                        }
+                                    }else{ //. tidak bisa dikirim ke klien
+                                        //.???:
+                                        //. TODO : handle lewat Martin
+                                        //. masukin log
+                                        ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
+                                    }       
+                                    QRIDataOrderListMessage mOrderListMsg = new QRIDataOrderListMessage(new HashMap());
+                                    mOrderListMsg.setfOrderID(StringHelper.toLong(mInputMsgRequest.getfOrderID()));
+                                    mOrderListMsg.setfClOrdID(mCalcQty.getBrokerRef());
+                                    mOrderListMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                                    mOrderListMsg.setfOrigClOrdID(StringHelper.toLong(mCalcQty.getOriJatsOrderNo()));
+                                    mOrderListMsg.setfClientID(mOriginRequestMsg.getfClientID());
+                                    mOrderListMsg.setfExecBroker("");
+                                    mOrderListMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                    mOrderListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                                    mOrderListMsg.setfExecType(QRIFieldValue.EXECTYPE_NEW);
+                                    mOrderListMsg.setfOrdStatus(StringHelper.fromInt(mCalcQty.getOrderStatus()));
+                                    mOrderListMsg.setfAccount(mOriginRequestMsg.getfAccount());
+                                    mOrderListMsg.setfFutSettDate(""); //. sementara di kasih empty, karena tidak ketemu dipakai dimana
+                                    mOrderListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                    mOrderListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbolSfx());
+                                    mOrderListMsg.setfSecurityID(mOriginRequestMsg.getfSecurityID());
+                                    mOrderListMsg.setfSide(mOriginRequestMsg.getfSide());
+                                    mOrderListMsg.setfOrderQty(mCalcQty.getQtyOrder());
+                                    mOrderListMsg.setfOrderType(StringHelper.toInt(mOriginRequestMsg.getfOrdType()));
+                                    mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
+                                    mOrderListMsg.setfTimeInForce(mOriginRequestMsg.getfTimeInForce());
+                                    mOrderListMsg.setfExpiredDate(mOriginRequestMsg.getfExpireDate());
+                                    mOrderListMsg.setfExecInst(mOriginRequestMsg.getfExecInst());
+                                    mOrderListMsg.setfLeavesQty(mCalcQty.getQtyLeave());
+                                    mOrderListMsg.setfCumQty(mCalcQty.getQtyMatch());
+                                    mOrderListMsg.setfAvgPx(0);
+                                    mOrderListMsg.setfTradeDate(DateTimeHelper.getDateSVRTRXFormatFromDate(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
+                                    mOrderListMsg.setfTransactionTime(DateTimeHelper.getDateTimeIDXTRXFormat(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
+                                    mOrderListMsg.setfText("");
+                                    mOrderListMsg.setfClearingAccount("");
+                                    mOrderListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());
+                                    //. save orderlist ke memory martin
+                                    BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
+                                    //. broadcast orderlist via martin
+                                    BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mOrderListMsg);
+                                    break;
+                                }
+                            default:
+                                //.???:
+                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @fix5 execution report(new) invalid origin HandlInst from ClOrdID:" + mInputMsgRequest.getfClOrdID() + "[" + mOriginRequestMsg.getfHandlInst() + "]");
+                                break;
+                        }
+                    }else if (mOriginRequest.getIdxMessage() instanceof ORIDataOrderAmend){
+                        
+                        System.out.println("mOriginRequest = mOriginRequest.getIdxMessage() instanceof ORIDataOrderAmend");
+                        
+                        ORIDataOrderAmend mOriginRequestMsg = ((ORIDataOrderAmend)mOriginRequest.getIdxMessage());
                             
+                        if (mInputMsgRequest.getfExecType().equalsIgnoreCase("F")) {
+                            //. flag apakah parsial
+                            boolean isPartial = false;
+
                             SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
                             if (mCalcQty == null){
                                 mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
                                 BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
                             }
 
-                            mCalcQty.setQtyOrder(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
-                            mCalcQty.setOrderStatus(ORIFieldValue.ORDSTATUS_NEW);
-                            mCalcQty.setJatsOrderNo(mInputMsgRequest.getfOrderID());
-                            mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
-                            
-                            mCalcQty.setQtyMatch(StringHelper.toLong(mInputMsgRequest.getfCumQty()));
-                            if (mCalcQty.getQtyLeave() >= mCalcQty.getQtyMatch()){
-                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_NEW);
-                            }else if (mCalcQty.getQtyLeave() > 0){
-                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_PARTIALLY_MATCH);
+                            //. zzz jika sudah full skipp / jatsNo nya empty skkip / LastJatsOrderNo pernah di proses
+                            if (mCalcQty.getOrderStatus() == QRIDataConst.QRIFieldValue.ORDSTATUS_FULLY_MATCH || "".equals(mCalcQty.getJatsOrderNo()) || mCalcQty.getLastJatsTradeNo() >= StringHelper.toLong(mInputMsgRequest.getfTrdMatchID())){
+                                System.err.println("OUCHMsgExecutedOrder mCalcQty.getLastJatsTradeNo() = " + mCalcQty.getLastJatsTradeNo() + ", mMessage.getMatchNumber() = " + StringHelper.toLong(mInputMsgRequest.getfTrdMatchID())+ ", mCalcQty.getJatsOrderNo() = " + mCalcQty.getJatsOrderNo());
+                                return;
+                            }
+
+                            //. tambah match
+                            mCalcQty.addQtyMatch(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
+                            //. set LastJastNo
+                            mCalcQty.setLastJatsTradeNo(StringHelper.toLong(mInputMsgRequest.getfTrdMatchID()));
+                            //. kalkulasi status
+
+    //                        if (mCalcQty.getQtyLeave() >= mCalcQty.getQtyMatch()){
+    //                            mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_NEW);
+    //                        }else 
+
+                            if (mCalcQty.getQtyLeave() > 0){
+                                isPartial = true;
+                                mCalcQty.setOrderStatus(QRIDataConst.QRIFieldValue.ORDSTATUS_PARTIALLY_MATCH);
                             }else{
-                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_FULLY_MATCH);
+                                mCalcQty.setOrderStatus(QRIDataConst.QRIFieldValue.ORDSTATUS_FULLY_MATCH);
                             }
-                            
-                            //.backup:
-                            BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
-                            
-                            ORIDataNewOrderReply mReplyMsg = new ORIDataNewOrderReply(new HashMap());
-                            mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
-                            mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
-                            mReplyMsg.setfNewOrderReplyType(ORIDataNewOrderReply.ORINewOrderReplyType.OK);
-
-                            mReplyMsg.setfOrderID(mInputMsgRequest.getfOrderID());
-
-                            mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
-                            mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                            mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_NEW);
-                            mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_NEW);
-                            mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_NEW);
-                            mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
-                            mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
-                            mReplyMsg.setfLeavesQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
-                            mReplyMsg.setfCumQty(0);
-                            mReplyMsg.setfAvgPx(0);
-                            mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
-                            mReplyMsg.setfLastPx(0);
-                            mReplyMsg.setfLastShares(0);
-
-                            JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
-                            if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
-                                if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
-                                    //... .
-                                }else{ //. gagal dikirim ke klien
-                                    //.???:
-                                    //. TODO : handle lewat Martin
-                                    //. masukin log
-                                    ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
-                                }
-                            }else{ //. tidak bisa dikirim ke klien
-                                //.???:
-                                //. TODO : handle lewat Martin
-                                //. masukin log
-                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
-                            }
-
-                            QRIDataOrderListMessage mOrderListMsg = new QRIDataOrderListMessage(new HashMap());
-                            mOrderListMsg.setfOrderID(StringHelper.toLong(mInputMsgRequest.getfOrderID()));
-                            mOrderListMsg.setfClOrdID(mCalcQty.getBrokerRef());
-                            mOrderListMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
-                            mOrderListMsg.setfOrigClOrdID(StringHelper.toLong(mCalcQty.getOriJatsOrderNo()));
-                            mOrderListMsg.setfClientID(mOriginRequestMsg.getfClientID());
-                            mOrderListMsg.setfExecBroker("");
-                            mOrderListMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                            mOrderListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
-                            mOrderListMsg.setfExecType(QRIFieldValue.EXECTYPE_NEW);
-                            mOrderListMsg.setfOrdStatus(StringHelper.fromInt(mCalcQty.getOrderStatus()));
-                            mOrderListMsg.setfAccount(mOriginRequestMsg.getfAccount());
-                            mOrderListMsg.setfFutSettDate(""); //. sementara di kasih empty, karena tidak ketemu dipakai dimana
-                            mOrderListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
-                            mOrderListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbolSfx());
-                            mOrderListMsg.setfSecurityID(mOriginRequestMsg.getfSecurityID());
-                            mOrderListMsg.setfSide(mOriginRequestMsg.getfSide());
-                            mOrderListMsg.setfOrderQty(mCalcQty.getQtyOrder());
-                            mOrderListMsg.setfOrderType(StringHelper.toInt(mOriginRequestMsg.getfOrdType()));
-                            mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
-                            mOrderListMsg.setfTimeInForce(mOriginRequestMsg.getfTimeInForce());
-                            mOrderListMsg.setfExpiredDate(mOriginRequestMsg.getfExpireDate());
-                            mOrderListMsg.setfExecInst(mOriginRequestMsg.getfExecInst());
-                            mOrderListMsg.setfLeavesQty(mCalcQty.getQtyLeave());
-                            mOrderListMsg.setfCumQty(mCalcQty.getQtyMatch());
-                            mOrderListMsg.setfAvgPx(0);
-                            mOrderListMsg.setfTradeDate(DateTimeHelper.getDateSVRTRXFormatFromDate(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
-                            mOrderListMsg.setfTransactionTime(DateTimeHelper.getDateTimeIDXTRXFormat(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
-                            mOrderListMsg.setfText("");
-                            mOrderListMsg.setfClearingAccount("");
-                            mOrderListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());                        
-
-                            //. save orderlist ke memory martin
-                            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
-                            //. broadcast orderlist via martin
-                            BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mOrderListMsg);
-
-
-
-                        }else{
-                            //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @fix5 execution report(new) invalid origin HandlInst from ClOrdID:" + mInputMsgRequest.getfClOrdID() + "[" + mOriginRequestMsg.getfHandlInst() + "]");
-                        }
-                    }else if (mOriginRequest.getIdxMessage() instanceof ORIDataOrderAmend){
-                        
-                        System.out.println("mOriginRequest = mOriginRequest.getIdxMessage() instanceof ORIDataOrderAmend");
-                        
-                        SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
-                        if (mCalcQty == null){
-                            mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
-                            BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
-                        }
-                        
-                        SheetOfJONECSimCalcQty mPrevCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vPrevOrderToken);
-                        
-                        ORIDataOrderAmend mOriginRequestMsg = ((ORIDataOrderAmend)mOriginRequest.getIdxMessage());
-                        
-                        mCalcQty.setQtyOrder(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
-                        if (mPrevCalcQty != null){
-                            mCalcQty.setQtyMatch(mPrevCalcQty.getQtyMatch());
-                            //. set status baru = status lama
-                            mCalcQty.setOrderStatus(mPrevCalcQty.getOrderStatus());
-                            //. set status lama = amend
-                            mPrevCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_REPLACED);
-                        }
-                        
-                        mCalcQty.setJatsOrderNo(mInputMsgRequest.getfOrderID());
-                        mCalcQty.setOriJatsOrderNo(mOriginRequestMsg.getfOrderID());
-                        mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
-                        mCalcQty.setOriBrokerRef(mOriginRequestMsg.getfOrigClOrdID());
-                        
-                        //.backup:
-                        BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
-                        if (mPrevCalcQty != null){
-                            BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vPrevOrderToken, mPrevCalcQty);
-                        }
-                        
-
-                        
-                        ORIDataOrderAmendReply mReplyMsg = new ORIDataOrderAmendReply(new HashMap());
-                        mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
-                        mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
-                        mReplyMsg.setfOrderAmendReplyType(ORIDataOrderAmendReply.ORIOrderAmendReplyType.OK);
-                        
-                        mReplyMsg.setfOrderID(mInputMsgRequest.getfOrderID());
-                        mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
-                        
-                        mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfExecID()));
-                        mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_CORRECT);
-                        mReplyMsg.setfExecRefID(mOriginRequestMsg.getfOrigClOrdID());
-                        mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_REPLACEMENT);
-                        mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_REPLACED);
-                        mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
-                        mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
-                        mReplyMsg.setfOrderQty(StringUtil.toLong(mInputMsgRequest.getfOrderQty()));
-                        mReplyMsg.setfLeavesQty(mCalcQty.getQtyLeave()); 
-                        mReplyMsg.setfCumQty(mCalcQty.getQtyMatch());
-                        mReplyMsg.setfAvgPx(0);
-                        mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
-                        mReplyMsg.setfLastPx(mOriginRequestMsg.getfPrice());
-                        mReplyMsg.setfLastShares(0);
-                        
-                        JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
-                        if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
-                            System.out.println("mReplyMsg.msgToString() Data = " + mReplyMsg.msgToString());
-                        
-                            if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
-                                //... .
-                            }else{
-                                //.???:
-                                //. disisi klien akan menggantung, solusi : send ulang
-                                //. todo : masukin log
-                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
-                            }
-                        }else{
-                            //.???:
-                            //. disisi klien akan menggantung, solusi : send ulang
-                            //. todo : masukin log
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
-                        }
-                        
-                        
-                        System.out.println("mOriginRequestMsg Data = " + mOriginRequestMsg.msgDataToString());
-                        System.out.println("mOriginRequestMsg.getfHandlInst() = " + mOriginRequestMsg.getfHandlInst());
-                        if ((mOriginRequestMsg.getfHandlInst() == ORIDataConst.ORIFieldValue.HANDLINST_ADVERTISEMENT) 
-                            || (mOriginRequestMsg.getfHandlInst() == ORIDataConst.ORIFieldValue.HANDLINST_NORMAL)){
-                            System.out.println("Process 1");
-                        
-//                            SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
-//                            if (mCalcQty == null){
-//                                mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
-//                                BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
-//                            }
-//                            
-//                            mCalcQty.setQtyOrder(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
-//                            mCalcQty.setOrderStatus(ORIFieldValue.ORDSTATUS_NEW);
-//                            mCalcQty.setJatsOrderNo(mInputMsgRequest.getfOrderID());
-//                            mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
-//                            
-//                            mCalcQty.setQtyMatch(StringHelper.toLong(mInputMsgRequest.getfCumQty()));
-//                            if (mCalcQty.getQtyLeave() >= mCalcQty.getQtyMatch()){
-//                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_NEW);
-//                            }else if (mCalcQty.getQtyLeave() > 0){
-//                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_PARTIALLY_MATCH);
-//                            }else{
-//                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_FULLY_MATCH);
-//                            }
-                            
-                            QRIDataOrderListMessage mOldOrderList = BookOfMARTINOrderList.getInstance.retrieveSheet(StringUtil.toLong(mOriginRequestMsg.getfOrderID()));
 
                             //. OrderList dengan kalkulasi
                             QRIDataOrderListMessage mOrderListMsg = new QRIDataOrderListMessage(new HashMap());
                             mOrderListMsg.setfOrderID(StringHelper.toLong(mCalcQty.getJatsOrderNo()));
                             mOrderListMsg.setfClOrdID(mCalcQty.getBrokerRef());
                             mOrderListMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
-             
                             mOrderListMsg.setfOrigClOrdID(StringUtil.toLong(mCalcQty.getOriJatsOrderNo()));
                             mOrderListMsg.setfClientID(mOriginRequestMsg.getfClientID());
                             mOrderListMsg.setfExecBroker("");
@@ -320,41 +498,240 @@ public class FIX5JonecWorkDataExecutionReport {
                             mOrderListMsg.setfAccount(mOriginRequestMsg.getfAccount());
                             mOrderListMsg.setfFutSettDate(""); //. sementara di kasih empty, karena tidak ketemu dipakai dimana
                             mOrderListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
-                            if (mOldOrderList != null){
-                                mOrderListMsg.setfSymbolSfx(mOldOrderList.getfSymbolSfx());
-                                mOrderListMsg.setfSecurityID(mOldOrderList.getfSecurityID());
-                                mOrderListMsg.setfExecInst(mOldOrderList.getfExecInst());
-                            }
+                            mOrderListMsg.setfSymbolSfx(mInputMsgRequest.getfSymbol());//????
+                            mOrderListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());//??????
                             mOrderListMsg.setfSide(mOriginRequestMsg.getfSide());
                             mOrderListMsg.setfOrderQty(mCalcQty.getQtyOrder());
                             mOrderListMsg.setfOrderType(StringUtil.toInteger(mOriginRequestMsg.getfOrdType()));
                             mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
                             mOrderListMsg.setfTimeInForce(mOriginRequestMsg.getfTimeInForce());
                             mOrderListMsg.setfExpiredDate(mOriginRequestMsg.getfExpireDate());
+                            mOrderListMsg.setfExecInst(mInputMsgRequest.getfExecInst());//?????
                             mOrderListMsg.setfLeavesQty(mCalcQty.getQtyLeave());
                             mOrderListMsg.setfCumQty(mCalcQty.getQtyMatch());
                             mOrderListMsg.setfAvgPx(0);
-                            mOrderListMsg.setfTradeDate(DateTimeHelper.getDateSVRTRXFormatFromDate(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
-                            mOrderListMsg.setfTransactionTime(DateTimeHelper.getDateTimeIDXTRXFormat(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
+                            mOrderListMsg.setfTradeDate(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                            mOrderListMsg.setfTransactionTime(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
                             mOrderListMsg.setfText("");
                             mOrderListMsg.setfClearingAccount("");
                             mOrderListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());                        
-                            System.out.println("Process 2");
-                            //. save orderlist ke memory martin
-                            BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
-                            //. broadcast orderlist via martin
-                            BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mOrderListMsg);
-                            System.out.println("mOrderListMsg.msgToString() " + mOrderListMsg.msgToString());
-                            
-                            System.out.println("Process 3");
-                            
+
+                            if (isPartial){//. jika parsial ditahan dulu, lempar ke class
+                                QRIOrderListPartialSummaryWorker.getInstance.addData(mOrderListMsg);
+                            }else{
+                                //.pastikan di remove dari pendingan message di QRIOrderListPartialSummaryWorker
+                                QRIOrderListPartialSummaryWorker.getInstance.removeData(mOrderListMsg.getfOrderID());
+
+                                //. save orderlist ke memory martin
+                                BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
+
+                                //. hrn-20211221 : untuk antisipasi order yang langsung match (overide dengan OrderAccepted), 
+                                //. untuk full match di tahan 50ms
+                                final QRIDataOrderListMessage mFnlOrderListMsg = mOrderListMsg;
+                                new Timer().schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        //. broadcast orderlist via martin
+                                        BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mFnlOrderListMsg);
+                                    }
+                                }, 50); 
+
+                            }
+
+                            //. Tradelist
+                            QRIDataTradeListMessage mTradeListMsg = new QRIDataTradeListMessage(new HashMap());
+                            mTradeListMsg.setfOrderID(StringHelper.toLong(mCalcQty.getJatsOrderNo()));
+                            mTradeListMsg.setfClOrdID(mCalcQty.getBrokerRef());
+                            mTradeListMsg.setfSecondaryOrderID(StringHelper.toLong(mInputMsgRequest.getfTrdMatchID()));
+                            mTradeListMsg.setfTransactionTime(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                            mTradeListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                            mTradeListMsg.setfClientID(mOriginRequestMsg.getfClientID());
+                            mTradeListMsg.setfSide(mOriginRequestMsg.getfSide());
+                            mTradeListMsg.setfExecBroker("");
+                            mTradeListMsg.setfContraTrader("");
+                            //.soon
+    //                        long lCounterPartID =  mMessage.getCounterPartyID(); //. ?? to broker code
+                            String lCounterPartCode = "";
+                            //.soon
+    //                        SheetOfITCHParticipantDirectory mSheetParticipant = BookOfITCHParticipantDirectory.getInstance.retrieveSheet(lCounterPartID);
+    //                        if (mSheetParticipant != null){
+    //                            lCounterPartCode = mSheetParticipant.getMessage().getParticipantCode();
+    //                        }
+                            mTradeListMsg.setfContraBroker(lCounterPartCode);
+                            mTradeListMsg.setfAccount(mOriginRequestMsg.getfAccount());
+                            mTradeListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                            mTradeListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbol());//????
+                            mTradeListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());//????
+                            mTradeListMsg.setfPrice(StringHelper.toDouble(mInputMsgRequest.getfPrice()));
+                            mTradeListMsg.setfCumQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+                            mTradeListMsg.setfText("");
+                            mTradeListMsg.setfClearingAccount(" ");
+                            mTradeListMsg.setfFutSettDate("");
+                            mTradeListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NORMAL_MATCH);
+                            mTradeListMsg.setfLastPx(0);
+                            mTradeListMsg.setfNoContraBrokers(1);                        
+                            mTradeListMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                            mTradeListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                            mTradeListMsg.setfLeavesQty(0);
+                            mTradeListMsg.setfAvgPx(0);
+                            mTradeListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());
+                            //. order status
+                            mTradeListMsg.setfOrdStatus("2");
+                            //. save tradelist ke memory martin
+                            BookOfMARTINTradeList.getInstance.addOrUpdateSheet(mTradeListMsg);
+                            //. broadcast tradelist via martin
+                            BookOfMARTINTradeList.getInstance.brodcastToSubscriber(mTradeListMsg);
                             //.backup:
                             BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
+
+                        } else {
+                            SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
+                            if (mCalcQty == null){
+                                mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
+                                BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
+                            }
+
+                            SheetOfJONECSimCalcQty mPrevCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vPrevOrderToken);
+
+                            mCalcQty.setQtyOrder(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+                            if (mPrevCalcQty != null){
+                                mCalcQty.setQtyMatch(mPrevCalcQty.getQtyMatch());
+                                //. set status baru = status lama
+                                mCalcQty.setOrderStatus(mPrevCalcQty.getOrderStatus());
+                                //. set status lama = amend
+                                mPrevCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_REPLACED);
+                            }
                             
-                        }else{
-                            //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @fix5 execution report(new) invalid origin HandlInst from ClOrdID:" + mInputMsgRequest.getfClOrdID() + "[" + mOriginRequestMsg.getfHandlInst() + "]");
+                            mCalcQty.setJatsOrderNo(mInputMsgRequest.getfOrderID());
+                            mCalcQty.setOriJatsOrderNo(mOriginRequestMsg.getfOrderID());
+                            mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
+                            mCalcQty.setOriBrokerRef(mOriginRequestMsg.getfOrigClOrdID());
+
+                            //.backup:
+                            BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
+                            if (mPrevCalcQty != null){
+                                BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vPrevOrderToken, mPrevCalcQty);
+                            }
+
+                            ORIDataOrderAmendReply mReplyMsg = new ORIDataOrderAmendReply(new HashMap());
+                            mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
+                            mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
+                            mReplyMsg.setfOrderAmendReplyType(ORIDataOrderAmendReply.ORIOrderAmendReplyType.OK);
+                            mReplyMsg.setfOrderID(mInputMsgRequest.getfOrderID());
+                            mReplyMsg.setfClOrdID(mOriginRequestMsg.getfClOrdID());
+                            mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfExecID()));
+                            mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_CORRECT);
+                            mReplyMsg.setfExecRefID(mOriginRequestMsg.getfOrigClOrdID());
+                            mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_REPLACEMENT);
+                            mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_REPLACED);
+                            mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                            mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
+                            mReplyMsg.setfOrderQty(StringUtil.toLong(mInputMsgRequest.getfOrderQty()));
+                            mReplyMsg.setfLeavesQty(mCalcQty.getQtyLeave()); 
+                            mReplyMsg.setfCumQty(mCalcQty.getQtyMatch());
+                            mReplyMsg.setfAvgPx(0);
+                            mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                            mReplyMsg.setfLastPx(mOriginRequestMsg.getfPrice());
+                            mReplyMsg.setfLastShares(0);
+
+                            JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
+                            if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
+                                System.out.println("mReplyMsg.msgToString() Data = " + mReplyMsg.msgToString());
+
+                                if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
+                                    //... .
+                                }else{
+                                    //.???:
+                                    //. disisi klien akan menggantung, solusi : send ulang
+                                    //. todo : masukin log
+                                    ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
+                                }
+                            }else{
+                                //.???:
+                                //. disisi klien akan menggantung, solusi : send ulang
+                                //. todo : masukin log
+                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
+                            }
+
+
+                            System.out.println("mOriginRequestMsg Data = " + mOriginRequestMsg.msgDataToString());
+                            System.out.println("mOriginRequestMsg.getfHandlInst() = " + mOriginRequestMsg.getfHandlInst());
+                            if ((mOriginRequestMsg.getfHandlInst() == ORIDataConst.ORIFieldValue.HANDLINST_ADVERTISEMENT) 
+                                || (mOriginRequestMsg.getfHandlInst() == ORIDataConst.ORIFieldValue.HANDLINST_NORMAL)){
+                                System.out.println("Process 1");
+
+    //                            SheetOfJONECSimCalcQty mCalcQty = BookOfJONECSimCalcQty.getInstance.retrieveSheet(vOrderToken);
+    //                            if (mCalcQty == null){
+    //                                mCalcQty = new SheetOfJONECSimCalcQty(vOrderToken);
+    //                                BookOfJONECSimCalcQty.getInstance.addOrUpdateSheet(mCalcQty);
+    //                            }
+    //                            
+    //                            mCalcQty.setQtyOrder(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+    //                            mCalcQty.setOrderStatus(ORIFieldValue.ORDSTATUS_NEW);
+    //                            mCalcQty.setJatsOrderNo(mInputMsgRequest.getfOrderID());
+    //                            mCalcQty.setBrokerRef(mOriginRequestMsg.getfClOrdID());
+    //                            
+    //                            mCalcQty.setQtyMatch(StringHelper.toLong(mInputMsgRequest.getfCumQty()));
+    //                            if (mCalcQty.getQtyLeave() >= mCalcQty.getQtyMatch()){
+    //                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_NEW);
+    //                            }else if (mCalcQty.getQtyLeave() > 0){
+    //                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_PARTIALLY_MATCH);
+    //                            }else{
+    //                                mCalcQty.setOrderStatus(QRIFieldValue.ORDSTATUS_FULLY_MATCH);
+    //                            }
+
+                                QRIDataOrderListMessage mOldOrderList = BookOfMARTINOrderList.getInstance.retrieveSheet(StringUtil.toLong(mOriginRequestMsg.getfOrderID()));
+
+                                //. OrderList dengan kalkulasi
+                                QRIDataOrderListMessage mOrderListMsg = new QRIDataOrderListMessage(new HashMap());
+                                mOrderListMsg.setfOrderID(StringHelper.toLong(mCalcQty.getJatsOrderNo()));
+                                mOrderListMsg.setfClOrdID(mCalcQty.getBrokerRef());
+                                mOrderListMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
+                                mOrderListMsg.setfOrigClOrdID(StringUtil.toLong(mCalcQty.getOriJatsOrderNo()));
+                                mOrderListMsg.setfClientID(mOriginRequestMsg.getfClientID());
+                                mOrderListMsg.setfExecBroker("");
+                                mOrderListMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                                mOrderListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                                mOrderListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NEW);
+                                mOrderListMsg.setfOrdStatus(StringHelper.fromInt(mCalcQty.getOrderStatus()));
+                                mOrderListMsg.setfAccount(mOriginRequestMsg.getfAccount());
+                                mOrderListMsg.setfFutSettDate(""); //. sementara di kasih empty, karena tidak ketemu dipakai dimana
+                                mOrderListMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
+                                if (mOldOrderList != null){
+                                    mOrderListMsg.setfSymbolSfx(mOldOrderList.getfSymbolSfx());
+                                    mOrderListMsg.setfSecurityID(mOldOrderList.getfSecurityID());
+                                    mOrderListMsg.setfExecInst(mOldOrderList.getfExecInst());
+                                }
+                                mOrderListMsg.setfSide(mOriginRequestMsg.getfSide());
+                                mOrderListMsg.setfOrderQty(mCalcQty.getQtyOrder());
+                                mOrderListMsg.setfOrderType(StringUtil.toInteger(mOriginRequestMsg.getfOrdType()));
+                                mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
+                                mOrderListMsg.setfTimeInForce(mOriginRequestMsg.getfTimeInForce());
+                                mOrderListMsg.setfExpiredDate(mOriginRequestMsg.getfExpireDate());
+                                mOrderListMsg.setfLeavesQty(mCalcQty.getQtyLeave());
+                                mOrderListMsg.setfCumQty(mCalcQty.getQtyMatch());
+                                mOrderListMsg.setfAvgPx(0);
+                                mOrderListMsg.setfTradeDate(DateTimeHelper.getDateSVRTRXFormatFromDate(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
+                                mOrderListMsg.setfTransactionTime(DateTimeHelper.getDateTimeIDXTRXFormat(FIX5DateTimeHelper.getServerDateTimeFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()))); //. ??
+                                mOrderListMsg.setfText("");
+                                mOrderListMsg.setfClearingAccount("");
+                                mOrderListMsg.setfComplianceID(mOriginRequestMsg.getfComplianceID());                        
+                                System.out.println("Process 2");
+                                //. save orderlist ke memory martin
+                                BookOfMARTINOrderList.getInstance.addOrUpdateSheet(mOrderListMsg);
+                                //. broadcast orderlist via martin
+                                BookOfMARTINOrderList.getInstance.brodcastToSubscriber(mOrderListMsg);
+                                System.out.println("mOrderListMsg.msgToString() " + mOrderListMsg.msgToString());
+                                System.out.println("Process 3");
+                                //.backup:
+                                BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
+
+                            }else{
+                                //.???:
+                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @fix5 execution report(new) invalid origin HandlInst from ClOrdID:" + mInputMsgRequest.getfClOrdID() + "[" + mOriginRequestMsg.getfHandlInst() + "]");
+                            }
                         }
+                        
                     }else if (mOriginRequest.getIdxMessage() instanceof ORIDataOrderCancel){
                         System.out.println("mOriginRequest = mOriginRequest.getIdxMessage() instanceof ORIDataOrderCancel");
                         
@@ -368,18 +745,14 @@ public class FIX5JonecWorkDataExecutionReport {
                         //.backup:
                         BookOfJONECSimCalcQty.getInstance.backupProcessor.backupMapObjectToFile(vOrderToken, mCalcQty);
                         
-                       
                         ORIDataOrderCancel mOriginRequestMsg = ((ORIDataOrderCancel)mOriginRequest.getIdxMessage());
                         
                         ORIDataOrderCancelReply mReplyMsg = new ORIDataOrderCancelReply(new HashMap());
                         mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
                         mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
-                        
                         //. semua response
                         mReplyMsg.setfOrderCancelReplyType(ORIDataOrderCancelReply.ORIOrderCancelReplyType.OK);
-                        
-                        mReplyMsg.setfOrderID(mOriginRequestMsg.getfOrderID());
-                        
+                        mReplyMsg.setfOrderID(mOriginRequestMsg.getfOrderID());              
                         mReplyMsg.setfExecRefID(mOriginRequestMsg.getfClOrdID());
                         mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
                         mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_CANCEL);
@@ -395,7 +768,6 @@ public class FIX5JonecWorkDataExecutionReport {
                         mReplyMsg.setfText("");
                         mReplyMsg.setfLastPx(0);
                         mReplyMsg.setfLastShares(0);
-                        
                         
                         JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
                         if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){

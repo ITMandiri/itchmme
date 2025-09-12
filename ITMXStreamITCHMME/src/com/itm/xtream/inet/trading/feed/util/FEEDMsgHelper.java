@@ -24,7 +24,7 @@ public class FEEDMsgHelper {
     public final static FEEDMsgHelper getInstance = new FEEDMsgHelper();
     
     public ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> mapIndices;
-    public ConcurrentHashMap<String, ConcurrentHashMap<String, Double>> mapStock;
+    public ConcurrentHashMap<String, Double> mapStockPrevPrice;
     
     public ConcurrentHashMap<String, Integer> mapSendStockData;
     
@@ -34,27 +34,27 @@ public class FEEDMsgHelper {
     
     private FEEDMsgHelper(){
         mapIndices = new ConcurrentHashMap<>();
-        mapStock = new ConcurrentHashMap<>();
+        mapStockPrevPrice = new ConcurrentHashMap<>();
         mapSendStockData = new ConcurrentHashMap<>();
     }
     
     public void clearMemory(){
         mapIndices.clear();
-        mapStock.clear();
+        mapStockPrevPrice.clear();
         mapSendStockData.clear();
         SessionCount = 0;
     }
 
     
-    public String getFormattedTimeStamp(){
-        long totalSecs = mSecond;
-        long hours = totalSecs / 3600;
-        long minutes = (totalSecs % 3600) / 60;
-        long seconds = totalSecs % 60;
-
-        String timeString = String.format("%02d%02d%02d", hours, minutes, seconds);             
-        return timeString;
-    }
+//    public String getFormattedTimeStamp(){
+//        long totalSecs = mSecond;
+//        long hours = totalSecs / 3600;
+//        long minutes = (totalSecs % 3600) / 60;
+//        long seconds = totalSecs % 60;
+//
+//        String timeString = String.format("%02d%02d%02d", hours, minutes, seconds);             
+//        return timeString;
+//    }
     
     public String fmtSeq(long seq){
         String zSeq = "00000000";

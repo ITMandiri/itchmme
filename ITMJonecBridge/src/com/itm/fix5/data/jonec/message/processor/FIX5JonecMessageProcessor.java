@@ -191,6 +191,9 @@ public class FIX5JonecMessageProcessor {
                     case FIX5JonecMsgType.ORDER_CANCEL_REQUEST:
                         mOut = msgTypeOrderCancelRequest(mapInputFields);
                         break;
+                    case FIX5JonecMsgType.INDICATIVE_QUOTE:
+                        mOut = msgTypeNewOrderSingle(mapInputFields);
+                        break;
                     default:
                         //.EXXX.
                         break;

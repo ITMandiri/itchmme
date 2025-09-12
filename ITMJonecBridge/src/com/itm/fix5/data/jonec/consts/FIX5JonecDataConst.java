@@ -29,7 +29,8 @@ public class FIX5JonecDataConst {
         //.header:
         public static final String BEGIN_STRING                                 = "FIXT.1.1";
         public static final String SENDER_COMP_ID                               = JonecConst.DEFAULT_EXEC_BROKER_CODE; //.AB
-        public static final String TARGET_COMP_ID                               = "IDX";
+//        public static final String TARGET_COMP_ID                               = "IDX";
+        public static final String TARGET_COMP_ID_MME                           = "MME";
         public static final String IDXFIX_DEFAULT_PREFIX                        = "IDX11";
         public static final String IDXFIX_DEFAULT_CONNECTION_NAME               = SENDER_COMP_ID + "_01"; //.AB_01
         public static final String IDXFIX_CONNECTION_NAME_PREFIX                = "FIX5_";
@@ -38,6 +39,7 @@ public class FIX5JonecDataConst {
         public static final int ADMIN_ENCRYPT_METHOD                            = 0;
         public static final int ADMIN_HEARTBEAT_TIME                            = 45;
         public static final int ADMIN_DEFAULT_APPL_VER_ID                       = 8;
+        public static final int ADMIN_MME_APPL_VER_ID                           = 9;
         public static final String ADMIN_LOGOUT_TEXT                            = SENDER_COMP_ID + "_LOGOUT";
         
         //.order:
@@ -67,7 +69,10 @@ public class FIX5JonecDataConst {
         public static final String ACCOUNT_TYPE_CUSTOMER_FOREIGNER              = "100";
         public static final String ACCOUNT_TYPE_HOUSE_FOREIGNER                 = "101";
         
+        public static final String NO_PARTY_SUB_IDS_EXECUTING_FIRM              = "1";
+        
         public static final String PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER       = "C";
+        public static final String PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW   = "D";
         
         public static final String PARTY_ROLE_3_CLIENT_ID                       = "3";
         public static final String PARTY_ROLE_5_INVESTOR_ID_SID                 = "5";
@@ -75,6 +80,18 @@ public class FIX5JonecDataConst {
         public static final String PARTY_ROLE_17_CONTRA_FIRM                    = "17";
         public static final String PARTY_ROLE_36_ENTERING_TRADER                = "36";
         public static final String PARTY_ROLE_37_CONTRA_TRADER                  = "37";
+        public static final String PARTY_ROLE_24_CUSTOMER_ACCOUNT               = "24";
+        public static final String PARTY_ROLE_12_EXECUTING_TRADER               = "12";
+        public static final String PARTY_ROLE_1_EXECUTING_FIRM                  = "1";
+        
+        public static final String PARTY_SUB_ID_TYPE                            = "4030";
+        
+        public static final String ORDER_CAPACITY_AGENCY                        = "A";
+        
+        public static final String LEG_SECURITY_ID_SOURCE_MARKETPLACEASSIGNEDIDENTIFIER = "M";
+        
+        public static final String LEG_SIDE_BUY                                 = "B";
+        public static final String LEG_SIDE_SELL                                = "S";
         
         public static final String MASS_ACTION_TYPE_CANCEL_ORDERS               = "3";
         
@@ -91,9 +108,15 @@ public class FIX5JonecDataConst {
         public static final String ORD_TYPE_MARKET                              = "1";
         public static final String ORD_TYPE_LIMIT                               = "2";
         
+        public static final String SECURITY_TYPE_MULTILEGINSTRUMENT             = "MLEG";
+        
+        public static final String SECURITY_SUB_TYPE                            = "1";
         public static final String SECURITY_SUB_TYPE_RG                         = "RG";
         public static final String SECURITY_SUB_TYPE_TN                         = "TN";
         public static final String SECURITY_SUB_TYPE_NG                         = "NG";
+        
+        public static final String TRADE_HANDLING_INSTR_TWOPARTYREPORT          = "1";
+        public static final String TRADE_HANDLING_INSTR_ONEPARTYREPORTFORMATCHING = "2";
         
     }
     
@@ -124,6 +147,8 @@ public class FIX5JonecDataConst {
         public static final String POSITION_REPORT                              = "AP";
         public static final String TRADE_CAPTURE_REPORT                         = "AE";
         public static final String TRADE_CAPTURE_REPORT_ACK                     = "AR";
+        public static final String INDICATIVE_QUOTE                             = "S";
+        public static final String INDICATIVE_QUOTE_CANCEL                      = "Z";
         
     }
     
@@ -1119,7 +1144,14 @@ public class FIX5JonecDataConst {
         public static final String MASSACTIONSCOPE                              = "1374";
         public static final String MASSACTIONRESPONSE                           = "1375";
         public static final String MASSACTIONREJECTREASON                       = "1376";
-
+        //.20250815: tambahan
+        public static final String TRADEID                                      = "1003";
+        public static final String SECONDARYTRADEID                             = "1040";
+        public static final String TRADEHANDLINGINSTR                           = "1123";
+        public static final String LEGLASTQTY                                   = "1418";
+        public static final String REJECTTEXT                                   = "1328";
+        public static final String PRIVATEQUOTE                                 = "1171";
+        public static final String SINGLEQUOTEINDICATOR                         = "2837";
     }
     
 }

@@ -57,6 +57,7 @@ public class FIX5JonecDataExecutionReport extends FIX5JonecDataHeader {
     private String fMassStatusReqID = "";
     private String fSecondaryClOrdID = "";
     private String fCopyMsgIndicator = "";
+    private String fRejectText = "";
 
     public FIX5JonecDataExecutionReport(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -358,6 +359,14 @@ public class FIX5JonecDataExecutionReport extends FIX5JonecDataHeader {
     public void setfCopyMsgIndicator(String fCopyMsgIndicator) {
         this.fCopyMsgIndicator = fCopyMsgIndicator;
     }
+
+    public String getfRejectText() {
+        return fRejectText;
+    }
+
+    public void setfRejectText(String fRejectText) {
+        this.fRejectText = fRejectText;
+    }
     
     
     //.process:
@@ -484,6 +493,9 @@ public class FIX5JonecDataExecutionReport extends FIX5JonecDataHeader {
                             case FIX5JonecFieldTag.COPYMSGINDICATOR:
                                 setfCopyMsgIndicator(zValue);
                                 break;
+                            case FIX5JonecFieldTag.REJECTTEXT:
+                                setfRejectText(zValue);
+                                break;
                             default:
                                 break;
                         }
@@ -575,6 +587,8 @@ public class FIX5JonecDataExecutionReport extends FIX5JonecDataHeader {
             sb.append(getfSecondaryClOrdID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.COPYMSGINDICATOR).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfCopyMsgIndicator()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            sb.append(FIX5JonecFieldTag.REJECTTEXT).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+            sb.append(getfRejectText()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             zOut = sb.toString();
         }catch(Exception ex0){
             //.EXXX.

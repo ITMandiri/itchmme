@@ -28,6 +28,8 @@ public class ITCHMsgOrderExecutedWithPrice extends ITCHMsgBase {
     private long price;
     private byte cross;
     private byte printable;
+    
+    private long lPriceDecimals                                                  = -1;
 
     public int getNanos() {
         return nanos;
@@ -101,12 +103,16 @@ public class ITCHMsgOrderExecutedWithPrice extends ITCHMsgBase {
         this.counterparty = counterparty;
     }
 
-    public long getPrice() {
-        return price;
+    public double getPrice() {
+        return getNumberFraction(price, lPriceDecimals);
     }
 
     public void setPrice(long price) {
-        this.price = price;
+        if (price == Long.MIN_VALUE) {
+            this.price = 0;
+        }else{
+            this.price = price;
+        }
     }
 
     public byte getCross() {
@@ -167,7 +173,7 @@ public class ITCHMsgOrderExecutedWithPrice extends ITCHMsgBase {
                 .concatenateField(getComboGroupId(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 34, 4)
                 .concatenateField(getOwner(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 38, 7)
                 .concatenateField(getCounterparty(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 45, 7)
-                .concatenateField(getPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 52, 8)
+                .concatenateField((long)getPrice(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 52, 8)
                 .concatenateField(getCross(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 60, 1)
                 .concatenateField(getPrintable(), SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 61, 1)
                 .putPacketLength()

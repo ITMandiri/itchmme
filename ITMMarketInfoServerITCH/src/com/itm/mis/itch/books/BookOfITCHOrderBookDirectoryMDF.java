@@ -71,4 +71,14 @@ public class BookOfITCHOrderBookDirectoryMDF extends BookOfITCHBase {
         return mOut;
     }
     
+    public ConcurrentHashMap<Integer, SheetOfITCHOrderBookDirectoryMDF> getOrderBookDirectoryMDFByMarketSegmentID(int marketSegmentID){
+        ConcurrentHashMap<Integer, SheetOfITCHOrderBookDirectoryMDF> mOut = new ConcurrentHashMap<>();
+        for (ConcurrentHashMap.Entry<Integer, SheetOfITCHOrderBookDirectoryMDF> entry : this.chmDirectory.entrySet()) {
+            if (entry.getValue().getMessage().getMarketSegmentId() == marketSegmentID) {
+                mOut.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return mOut;
+    }
+    
 }

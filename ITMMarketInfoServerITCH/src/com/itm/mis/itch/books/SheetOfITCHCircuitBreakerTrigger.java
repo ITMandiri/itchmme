@@ -18,7 +18,7 @@ public class SheetOfITCHCircuitBreakerTrigger extends SheetOfITCHBase {
     
     public SheetOfITCHCircuitBreakerTrigger(ITCHMsgCircuitBreakerTrigger mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSecondsMDF(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgCircuitBreakerTrigger getMessage() {

@@ -17,7 +17,7 @@ public class SheetOfITCHTradeStatistics extends SheetOfITCHBase {
     
     public SheetOfITCHTradeStatistics(ITCHMsgTradeStatistics mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSecondsMDF(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgTradeStatistics getMessage() {

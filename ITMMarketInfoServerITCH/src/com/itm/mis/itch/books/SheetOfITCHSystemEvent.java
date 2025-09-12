@@ -17,7 +17,7 @@ public class SheetOfITCHSystemEvent extends SheetOfITCHBase {
     
     public SheetOfITCHSystemEvent(ITCHMsgSystemEvent mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSecondsMDF(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgSystemEvent getMessage() {

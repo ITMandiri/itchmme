@@ -17,7 +17,7 @@ public class SheetOfITCHIndicativeQuote extends SheetOfITCHBase {
     
     public SheetOfITCHIndicativeQuote(ITCHMsgIndicativeQuote mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSecondsMDF(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgIndicativeQuote getMessage() {

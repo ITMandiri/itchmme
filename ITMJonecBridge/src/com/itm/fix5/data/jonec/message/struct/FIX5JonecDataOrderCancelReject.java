@@ -28,6 +28,7 @@ public class FIX5JonecDataOrderCancelReject extends FIX5JonecDataHeader {
     private String fCxlRejReason = "";
     private String fCxlRejResponseTo = "";
     private String fText = "";
+    private String fRejectText = "";
 
     public FIX5JonecDataOrderCancelReject(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -97,6 +98,14 @@ public class FIX5JonecDataOrderCancelReject extends FIX5JonecDataHeader {
     public void setfText(String fText) {
         this.fText = fText;
     }
+
+    public String getfRejectText() {
+        return fRejectText;
+    }
+
+    public void setfRejectText(String fRejectText) {
+        this.fRejectText = fRejectText;
+    }
     
     
     //.process:
@@ -136,6 +145,9 @@ public class FIX5JonecDataOrderCancelReject extends FIX5JonecDataHeader {
                             case FIX5JonecFieldTag.TEXT:
                                 setfText(zValue);
                                 break;
+                            case FIX5JonecFieldTag.REJECTTEXT:
+                                setfRejectText(zValue);
+                                break;
                             default:
                                 break;
                         }
@@ -169,6 +181,8 @@ public class FIX5JonecDataOrderCancelReject extends FIX5JonecDataHeader {
             sb.append(getfCxlRejResponseTo()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.TEXT).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfText()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            sb.append(FIX5JonecFieldTag.REJECTTEXT).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+            sb.append(getfRejectText()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             zOut = sb.toString();
         }catch(Exception ex0){
             //.EXXX.

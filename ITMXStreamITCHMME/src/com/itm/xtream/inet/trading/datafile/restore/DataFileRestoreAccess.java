@@ -59,52 +59,7 @@ public class DataFileRestoreAccess {
                 
                 String zFileName_ITCH = ITMSoupBinTCPBridgeBackupConsts.ALTER_SOUPBINTCP_BACKUP_FILE_DIRECTORY + zConnName_ITCH + "_" + ITMSoupBinTCPBridgeBackupConsts.SOUPBINTCP_BACKUP_TYPE_RECV_SEQEUNCED + "_" + ITMSoupBinTCPBridgePacketFormat.strCurrentFormattedDateFileSafe() + ITMSoupBinTCPBridgeBackupConsts.DEFAULT_SOUPBINTCP_BACKUP_FILE_EXTENSION;
                 String zFileName_ITCH_MDF = ITMSoupBinTCPBridgeBackupConsts.ALTER_SOUPBINTCP_BACKUP_FILE_DIRECTORY + zConnName_ITCH_MDF + "_" + ITMSoupBinTCPBridgeBackupConsts.SOUPBINTCP_BACKUP_TYPE_RECV_SEQEUNCED + "_" + ITMSoupBinTCPBridgePacketFormat.strCurrentFormattedDateFileSafe() + ITMSoupBinTCPBridgeBackupConsts.DEFAULT_SOUPBINTCP_BACKUP_FILE_EXTENSION;
-                
-                if (!StringHelper.isNullOrEmpty(zFileName_ITCH) && (mController_ITCH != null)){
-                    String zDataFileName = zFileName_ITCH;
-                    ITMFileAccessForFastRead mFileRdr = new ITMFileAccessForFastRead();
-                    if (mFileRdr.openFileForReadLinesFromFirst(zDataFileName)){
-                        try{
-                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Read Data File to restore BEGIN: " + zDataFileName);
-                            String zDataLine;
-                            ITMSoupBinTCPBridgeBackupMsgBase mMsg;
-                            boolean bNeedToStop = false;
-                            while ((zDataLine = mFileRdr.readLine()) != null){
-                                mMsg = ITMSoupBinTCPBridgeBackupParser.getInstance.parsePacket(zDataLine);
-                                if (mMsg != null && mMsg.isHeaderParsed && mMsg.isContentParsed && !mMsg.isOutput && (zTodayStr.equals(mMsg.saveDateStr))){
-                                    switch (eDataFileRestoreMode) {
-                                        case ONLY_LAST_SEQ_AND_MESSAGE:
-                                            mController_ITCH.setCurrentSequencedNo(mMsg.recordNo);
-                                            mController_ITCH.setRecentSequencedMsg(mMsg.sbMessage);
-                                            break;
-                                        case FULL_RESTORE:
-                                            mController_ITCH.setCurrentSequencedNo(mMsg.recordNo);
-                                            mController_ITCH.setRecentSequencedMsg(mMsg.sbMessage);
-                                            //... .
-                                            ITMITCHMsgMemory.getInstance.mapMessage(mMsg.arbMessage, mMsg.sbMessage);
-                                            
-                                            
-                                            break;
-                                        default:
-                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Invalid Restore Mode Error: Mode=" + eDataFileRestoreMode + ", zDataFileName=" + zDataFileName + ", isHeaderParsed=" + mMsg.isHeaderParsed + ", isContentParsed=" + mMsg.isContentParsed + ", isOutput=" + mMsg.isOutput);
-                                            bNeedToStop = true;
-                                            break;
-                                    }
-                                }else{
-                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Data File Parse Error: " + zDataFileName + ", mMsg_IsNotNull=" + (mMsg != null) + ", isHeaderParsed=" + mMsg.isHeaderParsed + ", isContentParsed=" + mMsg.isContentParsed + ", isOutput=" + mMsg.isOutput + ", saveDateStr=" + mMsg.saveDateStr);
-                                    bNeedToStop = true;
-                                }
-                                if (bNeedToStop) { break; }
-                            }
-                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Read Data File to restore END: " + zDataFileName);                            
-                        }catch(Exception ex0){
-                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, ex0);
-                        }
-                        mFileRdr.closeFile();
-                    }else{
-                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Data File to restore not found: " + zDataFileName);
-                    }
-                }
+                //.MDF diproses duluan karena berisi data master
                 if (!StringHelper.isNullOrEmpty(zFileName_ITCH_MDF) && (mController_ITCH_MDF != null)){
                     String zDataFileName = zFileName_ITCH_MDF;
                     ITMFileAccessForFastRead mFileRdr = new ITMFileAccessForFastRead();
@@ -128,6 +83,51 @@ public class DataFileRestoreAccess {
                                             //... .
                                             
                                             ITMITCHMsgMemory.getInstance.itchMDFMapMessage(mMsg.arbMessage, mMsg.sbMessage);
+                                            
+                                            break;
+                                        default:
+                                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Invalid Restore Mode Error: Mode=" + eDataFileRestoreMode + ", zDataFileName=" + zDataFileName + ", isHeaderParsed=" + mMsg.isHeaderParsed + ", isContentParsed=" + mMsg.isContentParsed + ", isOutput=" + mMsg.isOutput);
+                                            bNeedToStop = true;
+                                            break;
+                                    }
+                                }else{
+                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Data File Parse Error: " + zDataFileName + ", mMsg_IsNotNull=" + (mMsg != null) + ", isHeaderParsed=" + mMsg.isHeaderParsed + ", isContentParsed=" + mMsg.isContentParsed + ", isOutput=" + mMsg.isOutput + ", saveDateStr=" + mMsg.saveDateStr);
+                                    bNeedToStop = true;
+                                }
+                                if (bNeedToStop) { break; }
+                            }
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Read Data File to restore END: " + zDataFileName);                            
+                        }catch(Exception ex0){
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, ex0);
+                        }
+                        mFileRdr.closeFile();
+                    }else{
+                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Data File to restore not found: " + zDataFileName);
+                    }
+                }
+                if (!StringHelper.isNullOrEmpty(zFileName_ITCH) && (mController_ITCH != null)){
+                    String zDataFileName = zFileName_ITCH;
+                    ITMFileAccessForFastRead mFileRdr = new ITMFileAccessForFastRead();
+                    if (mFileRdr.openFileForReadLinesFromFirst(zDataFileName)){
+                        try{
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Read Data File to restore BEGIN: " + zDataFileName);
+                            String zDataLine;
+                            ITMSoupBinTCPBridgeBackupMsgBase mMsg;
+                            boolean bNeedToStop = false;
+                            while ((zDataLine = mFileRdr.readLine()) != null){
+                                mMsg = ITMSoupBinTCPBridgeBackupParser.getInstance.parsePacket(zDataLine);
+                                if (mMsg != null && mMsg.isHeaderParsed && mMsg.isContentParsed && !mMsg.isOutput && (zTodayStr.equals(mMsg.saveDateStr))){
+                                    switch (eDataFileRestoreMode) {
+                                        case ONLY_LAST_SEQ_AND_MESSAGE:
+                                            mController_ITCH.setCurrentSequencedNo(mMsg.recordNo);
+                                            mController_ITCH.setRecentSequencedMsg(mMsg.sbMessage);
+                                            break;
+                                        case FULL_RESTORE:
+                                            mController_ITCH.setCurrentSequencedNo(mMsg.recordNo);
+                                            mController_ITCH.setRecentSequencedMsg(mMsg.sbMessage);
+                                            //... .
+                                            ITMITCHMsgMemory.getInstance.mapMessage(mMsg.arbMessage, mMsg.sbMessage);
+                                            
                                             
                                             break;
                                         default:

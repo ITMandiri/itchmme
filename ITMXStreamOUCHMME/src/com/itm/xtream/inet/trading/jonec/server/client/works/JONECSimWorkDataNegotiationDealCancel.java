@@ -77,7 +77,7 @@ public class JONECSimWorkDataNegotiationDealCancel {
                             mFixMsg.setfTradeReportRefID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfOrderID(),true));
                             
                             mFixMsg.setfSymbol(mInputMsgRequest.getfSymbol());
-                            mFixMsg.setfDeliveryType(mOriginRequestMsg.getfSettlDeliveryType().equals(ORIDataConst.ORIFieldValue.SETTLDELIVERYTYPE_VERSUS) ? FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT : FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_FREE_OF_PAYMENT );
+                            mFixMsg.setfSettlMethod(mOriginRequestMsg.getfSettlDeliveryType().equals(ORIDataConst.ORIFieldValue.SETTLDELIVERYTYPE_VERSUS) ? FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT : FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_FREE_OF_PAYMENT );
                             mFixMsg.setfSecuritySubType(mOriginRequestMsg.getfSymbolSfx().replace("0", ""));
                             mFixMsg.setfLastPx(StringHelper.fromDouble(mOriginRequestMsg.getfPrice()));
                             mFixMsg.setfLastQty(StringHelper.fromLong(mInputMsgRequest.getfOrderQty()));

@@ -30,6 +30,9 @@ public class ITCHMsgParticipantDirectory extends ITCHMsgBase {
     }
 
     public String getParticipantId() {
+        if (participantId == null) {
+            participantId = "";
+        }
         return participantId;
     }
 
@@ -38,6 +41,9 @@ public class ITCHMsgParticipantDirectory extends ITCHMsgBase {
     }
 
     public String getParticipantDescription() {
+        if (participantDescription == null) {
+            participantDescription = "";
+        }
         return participantDescription;
     }
 

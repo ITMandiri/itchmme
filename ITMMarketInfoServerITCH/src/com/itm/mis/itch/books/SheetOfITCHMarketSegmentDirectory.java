@@ -17,7 +17,7 @@ public class SheetOfITCHMarketSegmentDirectory extends SheetOfITCHBase {
     
     public SheetOfITCHMarketSegmentDirectory(ITCHMsgMarketSegmentDirectory mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSecondsMDF(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgMarketSegmentDirectory getMessage() {

@@ -52,6 +52,9 @@ public class JONECSimWorkDataOrderAmend {
                 //.prev sheet:
                 SheetOfJONECSimOriginRequest mOriginReqSheet = BookOfJONECSimOriginRequest.getInstance.retrieveSheet(vOriginOrderToken);
                 
+                //.20250805: jika tidak ada origin maka ambil every untuk kebutuhan amend yang kedua dan seterusnya
+                SheetOfJONECSimEveryRequest mEveryReqSheet = BookOfJONECSimEveryRequest.getInstance.retrieveRootSheet(vOriginOrderToken);
+                
                 //.save to memory:
                 BookOfJONECSimOriginRequest.getInstance.addOrUpdateSheet(new SheetOfJONECSimOriginRequest(vOriginOrderToken, mInputMsgRequest));
                 
@@ -73,7 +76,7 @@ public class JONECSimWorkDataOrderAmend {
                                 mNormalAmdOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
                                 mNormalAmdOrder.setfOrderID(mInputMsgRequest.getfOrderID());
 
-                                mNormalAmdOrder.setfSymbol(mInputMsgRequest.getfSymbol());
+                                mNormalAmdOrder.setfSymbol(mInputMsgRequest.getfSymbol()+"_RG");
                                 
                                 mNormalAmdOrder.setfSecuritySubType(FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_SUB_TYPE_RG); //.###???
                                 if (mOriginReqSheet != null && mOriginReqSheet.getIdxMessage() != null){
@@ -85,13 +88,13 @@ public class JONECSimWorkDataOrderAmend {
                                 
                                 mNormalAmdOrder.setfNoPartyIDs(StringHelper.fromInt(2));
 
-                                mNormalAmdOrder.setfAccountType(
-                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_I) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN : 
-                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_A) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER : 
-                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_S) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_INDONESIAN : 
-                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_F) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_FOREIGNER : 
-                                        FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN
-                                    );
+//                                mNormalAmdOrder.setfAccountType(
+//                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_I) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN : 
+//                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_A) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER : 
+//                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_S) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_INDONESIAN : 
+//                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_F) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_FOREIGNER : 
+//                                        FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN
+//                                    );
                                 mNormalAmdOrder.setfOrderQty(StringHelper.fromLong(mInputMsgRequest.getfOrderQty()));
                                 mNormalAmdOrder.setfPrice(StringHelper.fromDouble(mInputMsgRequest.getfPrice()));
                                 mNormalAmdOrder.setfSide(mInputMsgRequest.getfSide());
@@ -110,15 +113,22 @@ public class JONECSimWorkDataOrderAmend {
                                 }else{
                                     mNormalAmdOrder.setfOrdType(FIX5JonecDataConst.FIX5JonecFieldValue.ORD_TYPE_LIMIT);
                                 }
+                                //.executing trader
+                                mNormalAmdOrder.setfPartyID1(mTrxCtl.getTraderCode());
+                                mNormalAmdOrder.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                                mNormalAmdOrder.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
+                                //.noPartySub
+                                mNormalAmdOrder.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
+                                mNormalAmdOrder.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
+                                if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+                                    mNormalAmdOrder.setfPartySubID(mInputMsgRequest.getfText());
+                                }   
+                                mNormalAmdOrder.setfPartySubIDType(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
+                                //.executing firm
+                                mNormalAmdOrder.setfPartyID2(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
+                                mNormalAmdOrder.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                                mNormalAmdOrder.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
                                 
-                                mNormalAmdOrder.setfPartyID1(mInputMsgRequest.getfComplianceID());
-                                mNormalAmdOrder.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER);
-                                mNormalAmdOrder.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_5_INVESTOR_ID_SID);
-
-                                mNormalAmdOrder.setfPartyID2(mInputMsgRequest.getfClientID());
-                                mNormalAmdOrder.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER);
-                                mNormalAmdOrder.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_3_CLIENT_ID);
-
                                 String zNormalAmdOrderFixMsg = mNormalAmdOrder.msgToString();
                                 zNormalAmdOrderFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zNormalAmdOrderFixMsg,true,true,mTrxCtl.getConnectionName());
 
@@ -139,41 +149,55 @@ public class JONECSimWorkDataOrderAmend {
                             mAmendOrder.setReplacementOrderToken(vEveryOrderToken);
                             mAmendOrder.setQuantity(mInputMsgRequest.getfOrderQty());
                             mAmendOrder.setPrice((long) mInputMsgRequest.getfPrice());
+                            String zComplianceID = "";
+                            String zText = "";
+                            String zTimeInForce = "";
+                            
                             if (mOriginReqSheet != null && mOriginReqSheet.getIdxMessage() != null){
                                 if (mOriginReqSheet.getIdxMessage() instanceof ORIDataNewOrder){
                                     ORIDataNewOrder mOriginORIOrder = (ORIDataNewOrder)mOriginReqSheet.getIdxMessage();
-                                    
-                                    mAmendOrder.setClientAccount(mOriginORIOrder.getfComplianceID());
-                                    mAmendOrder.setCustomerInfo("#" + mInputMsgRequest.getfClOrdID());
-                                    mAmendOrder.setExchangeInfo(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");
-                                    if (!StringHelper.isNullOrEmpty(mOriginORIOrder.getfText())){
-                                        mAmendOrder.setExchangeInfo(mOriginORIOrder.getfText());
-                                    }
-                                    switch (mOriginORIOrder.getfTimeInForce()) {
-                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION:
-                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_GTS);
-                                            //.???????????????????
-                                            mAmendOrder.setTimeInForceData((short) 1);
-                                            break;
-                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY:
-                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
-                                            break;
-                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_IOC: //. FAK
-                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FAK);
-                                            break;
-                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_FOK:
-                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FOK);
-                                            break;
-                                        case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_GTD:
-                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAYS);
-                                            //.???????????????????
-                                            mAmendOrder.setTimeInForceData((short) 1);
-                                            break;
-                                        default:
-                                            mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
-                                            break;
-                                    }
+                                    zComplianceID = mOriginORIOrder.getfComplianceID();
+                                    zText = mOriginORIOrder.getfText();
+                                    zTimeInForce = mOriginORIOrder.getfTimeInForce();
                                 }
+                            } else if (mEveryReqSheet != null && mEveryReqSheet.getIdxMessage() != null){
+                                if (mEveryReqSheet.getIdxMessage() instanceof ORIDataNewOrder){
+                                    ORIDataNewOrder mEveryORIOrder = (ORIDataNewOrder)mEveryReqSheet.getIdxMessage();
+                                    zComplianceID = mEveryORIOrder.getfComplianceID();
+                                    zText = mEveryORIOrder.getfText();
+                                    zTimeInForce = mEveryORIOrder.getfTimeInForce();
+                                }
+                            }
+                                    
+                            mAmendOrder.setClientAccount(zComplianceID);
+                            mAmendOrder.setCustomerInfo("#" + mInputMsgRequest.getfClOrdID());
+                            mAmendOrder.setExchangeInfo(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");
+                            if (!StringHelper.isNullOrEmpty(zText)){
+                                mAmendOrder.setExchangeInfo(zText);
+                            }
+                            switch (zTimeInForce) {
+                                case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION:
+                                    mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_GTS);
+                                    //.???????????????????
+                                    mAmendOrder.setTimeInForceData((short) 1);
+                                    break;
+                                case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY:
+                                    mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
+                                    break;
+                                case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_IOC: //. FAK
+                                    mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FAK);
+                                    break;
+                                case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_FOK:
+                                    mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_FOK);
+                                    break;
+                                case ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_GTD:
+                                    mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAYS);
+                                    //.???????????????????
+                                    mAmendOrder.setTimeInForceData((short) 1);
+                                    break;
+                                default:
+                                    mAmendOrder.setTimeInForce((byte) OUCHConsts.OUCHValue.TIME_OF_FORCE_DAY);
+                                    break;
                             }
                             mAmendOrder.setOpenClose((byte) OUCHConsts.OUCHValue.OPEN_CLOSE_DEFAULT);
                             mAmendOrder.setDisplayQuantity(0);

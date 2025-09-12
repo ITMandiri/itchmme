@@ -17,7 +17,7 @@ public class SheetOfITCHOrderBookState extends SheetOfITCHBase {
     
     public SheetOfITCHOrderBookState(ITCHMsgOrderBookState mMessage){
         this.mMessage = mMessage;
-        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSeconds(), mMessage.getNanos(), true));
+        super.setMessageDate(retrieveMessageDate(BookOfITCHSecond.getInstance.retrieveNearestTimeStampSecondsMDF(), mMessage.getNanos(), true));
     }
     
     public ITCHMsgOrderBookState getMessage() {

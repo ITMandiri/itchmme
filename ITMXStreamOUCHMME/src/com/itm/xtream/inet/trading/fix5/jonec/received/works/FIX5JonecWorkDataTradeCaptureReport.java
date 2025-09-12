@@ -78,17 +78,23 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                 if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID1b();
                 }
+                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                    zTraderID = mInputMsgRequest.getfPartyID1c();
+                }
+                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                    zTraderID = mInputMsgRequest.getfPartyID1d();
+                }
                 if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID2a();
                 }
                 if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID2b();
                 }
-                if (mInputMsgRequest.getfPartyRole3a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
-                    zTraderID = mInputMsgRequest.getfPartyID3a();
+                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                    zTraderID = mInputMsgRequest.getfPartyID2c();
                 }
-                if (mInputMsgRequest.getfPartyRole3b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
-                    zTraderID = mInputMsgRequest.getfPartyID3b();
+                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                    zTraderID = mInputMsgRequest.getfPartyID2d();
                 }
                 
                 if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
@@ -97,17 +103,23 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                 if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID1b();
                 }
+                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                    zBrokerID = mInputMsgRequest.getfPartyID1c();
+                }
+                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                    zBrokerID = mInputMsgRequest.getfPartyID1d();
+                }
                 if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID2a();
                 }
                 if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID2b();
                 }
-                if (mInputMsgRequest.getfPartyRole3a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
-                    zBrokerID = mInputMsgRequest.getfPartyID3a();
+                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                    zBrokerID = mInputMsgRequest.getfPartyID2c();
                 }
-                if (mInputMsgRequest.getfPartyRole3b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
-                    zBrokerID = mInputMsgRequest.getfPartyID3b();
+                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                    zBrokerID = mInputMsgRequest.getfPartyID2d();
                 }
                 
                 if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
@@ -116,17 +128,23 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                 if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
                     zCounterpartTraderID = mInputMsgRequest.getfPartyID1b();
                 }
+                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
+                    zCounterpartTraderID = mInputMsgRequest.getfPartyID1c();
+                }
+                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
+                    zCounterpartTraderID = mInputMsgRequest.getfPartyID1d();
+                }
                 if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
                     zCounterpartTraderID = mInputMsgRequest.getfPartyID2a();
                 }
                 if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
                     zCounterpartTraderID = mInputMsgRequest.getfPartyID2b();
                 }
-                if (mInputMsgRequest.getfPartyRole3a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID3a();
+                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
+                    zCounterpartTraderID = mInputMsgRequest.getfPartyID2c();
                 }
-                if (mInputMsgRequest.getfPartyRole3b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID3b();
+                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
+                    zCounterpartTraderID = mInputMsgRequest.getfPartyID2d();
                 }
                 
                 if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
@@ -135,17 +153,23 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                 if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
                     zCounterpartBrokerID = mInputMsgRequest.getfPartyID1b();
                 }
+                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
+                    zCounterpartBrokerID = mInputMsgRequest.getfPartyID1c();
+                }
+                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
+                    zCounterpartBrokerID = mInputMsgRequest.getfPartyID1d();
+                }
                 if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
                     zCounterpartBrokerID = mInputMsgRequest.getfPartyID2a();
                 }
                 if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
                     zCounterpartBrokerID = mInputMsgRequest.getfPartyID2b();
                 }
-                if (mInputMsgRequest.getfPartyRole3a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
-                    zCounterpartBrokerID = mInputMsgRequest.getfPartyID3a();
+                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
+                    zCounterpartBrokerID = mInputMsgRequest.getfPartyID2c();
                 }
-                if (mInputMsgRequest.getfPartyRole3b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
-                    zCounterpartBrokerID = mInputMsgRequest.getfPartyID3b();
+                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
+                    zCounterpartBrokerID = mInputMsgRequest.getfPartyID2d();
                 }
                 
                 if (StringHelper.isNullOrEmpty(zTraderID)){
@@ -179,11 +203,8 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                                 mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
                                 mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
                                 mReplyMsg.setfNegotiationDealReplyType(ORINegotiationDealReplyType.ReplyOK);
-                                
                                 mReplyMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
-                                
                                 mReplyMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
-                                
                                 mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
                                 mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_NEW);
                                 mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_NEW);
@@ -265,7 +286,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                                 mInputMsgRequest.getfAccountType1()
                         );
                         mNegDealListMsg.setfFutSettDate((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlDate())) ? mInputMsgRequest.getfSettlDate() : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDate() : ""));
-                        mNegDealListMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfDeliveryType())) ? (mInputMsgRequest.getfDeliveryType().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
+                        mNegDealListMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlMethod())) ? (mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
                         mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
                         mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
                         mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
@@ -342,7 +363,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         mReplyMsg.setfBundleMessageVersion((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleMessageVersion() : "");
                         mReplyMsg.setfBundleConnectionName((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleConnectionName() : "");
                         mReplyMsg.setfNegotiationDealCancelReplyType(ORIDataNegotiationDealCancelReply.ORINegotiationDealCancelReplyType.OK);
-                        
+
                         mReplyMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
                         
                         mReplyMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
@@ -453,7 +474,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         mReplyMsg.setfSymbol(mInputMsgRequest.getfSymbol());
                         mReplyMsg.setfSide(mInputMsgRequest.getfSide1());
                         mReplyMsg.setfSettlDate((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlDate())) ? mInputMsgRequest.getfSettlDate() : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDate() : ""));
-                        mReplyMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfDeliveryType())) ? (mInputMsgRequest.getfDeliveryType().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
+                        mReplyMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlMethod())) ? (mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
                         mReplyMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
                         mReplyMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
                         mReplyMsg.setfLeavesQty(0);
@@ -515,7 +536,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         );
                         
                         mNegDealListMsg.setfFutSettDate((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlDate())) ? mInputMsgRequest.getfSettlDate() : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDate() : ""));
-                        mNegDealListMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfDeliveryType())) ? (mInputMsgRequest.getfDeliveryType().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
+                        mNegDealListMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlMethod())) ? (mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
                         mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
                         mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
                         mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
