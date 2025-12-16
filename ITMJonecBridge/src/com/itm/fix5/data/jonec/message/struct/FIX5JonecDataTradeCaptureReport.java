@@ -85,6 +85,29 @@ public class FIX5JonecDataTradeCaptureReport extends FIX5JonecDataHeader {
     private String fOrderCapacity2 = ""; //.
     private String fTransBkdTime = ""; //.
     private String fSecurityIDSource = ""; //.
+    //.20251124
+    private String fTradeID = ""; //.
+    private String fSecondaryTradeID = ""; //.
+    private String fExecType = ""; //.
+    private String fTradeLinkID = ""; //.
+    private String fSecondaryExecID = ""; //.
+    private String fNoRegulatoryTradeIDs = ""; //.
+    private String fRegulatoryTradeID = ""; //.
+    private String fRegulatoryTradeIDType = ""; //.
+    private String fPreviouslyReported = ""; //.
+    private String fVenueType = ""; //.
+    private String fNoSecurityAltID = ""; //.
+    private String fSecurityAltID = ""; //.
+    private String fSecurityAltIDSource = ""; //.
+    private String fMatchStatus = ""; //.
+    private String fTradingSessionSubID = ""; //.
+    private String fOrderCategory = ""; //.
+    private String fOrderID = ""; //.
+    private String fClOrderID = ""; //.
+    private String fNoRelatedTrades = ""; //.
+    private String fRelatedTradeID = ""; //.
+    private String fRelatedTradeIDSource = ""; //.
+    private String fCopyMsgIndicator = ""; //.
 
     public FIX5JonecDataTradeCaptureReport(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -602,6 +625,182 @@ public class FIX5JonecDataTradeCaptureReport extends FIX5JonecDataHeader {
     public void setfSecurityIDSource(String fSecurityIDSource) {
         this.fSecurityIDSource = fSecurityIDSource;
     }
+
+    public String getfTradeID() {
+        return fTradeID;
+    }
+
+    public void setfTradeID(String fTradeID) {
+        this.fTradeID = fTradeID;
+    }
+
+    public String getfSecondaryTradeID() {
+        return fSecondaryTradeID;
+    }
+
+    public void setfSecondaryTradeID(String fSecondaryTradeID) {
+        this.fSecondaryTradeID = fSecondaryTradeID;
+    }
+
+    public String getfExecType() {
+        return fExecType;
+    }
+
+    public void setfExecType(String fExecType) {
+        this.fExecType = fExecType;
+    }
+
+    public String getfTradeLinkID() {
+        return fTradeLinkID;
+    }
+
+    public void setfTradeLinkID(String fTradeLinkID) {
+        this.fTradeLinkID = fTradeLinkID;
+    }
+
+    public String getfSecondaryExecID() {
+        return fSecondaryExecID;
+    }
+
+    public void setfSecondaryExecID(String fSecondaryExecID) {
+        this.fSecondaryExecID = fSecondaryExecID;
+    }
+
+    public String getfNoRegulatoryTradeIDs() {
+        return fNoRegulatoryTradeIDs;
+    }
+
+    public void setfNoRegulatoryTradeIDs(String fNoRegulatoryTradeIDs) {
+        this.fNoRegulatoryTradeIDs = fNoRegulatoryTradeIDs;
+    }
+
+    public String getfRegulatoryTradeID() {
+        return fRegulatoryTradeID;
+    }
+
+    public void setfRegulatoryTradeID(String fRegulatoryTradeID) {
+        this.fRegulatoryTradeID = fRegulatoryTradeID;
+    }
+
+    public String getfRegulatoryTradeIDType() {
+        return fRegulatoryTradeIDType;
+    }
+
+    public void setfRegulatoryTradeIDType(String fRegulatoryTradeIDType) {
+        this.fRegulatoryTradeIDType = fRegulatoryTradeIDType;
+    }
+
+    public String getfPreviouslyReported() {
+        return fPreviouslyReported;
+    }
+
+    public void setfPreviouslyReported(String fPreviouslyReported) {
+        this.fPreviouslyReported = fPreviouslyReported;
+    }
+
+    public String getfVenueType() {
+        return fVenueType;
+    }
+
+    public void setfVenueType(String fVenueType) {
+        this.fVenueType = fVenueType;
+    }
+
+    public String getfNoSecurityAltID() {
+        return fNoSecurityAltID;
+    }
+
+    public void setfNoSecurityAltID(String fNoSecurityAltID) {
+        this.fNoSecurityAltID = fNoSecurityAltID;
+    }
+
+    public String getfSecurityAltID() {
+        return fSecurityAltID;
+    }
+
+    public void setfSecurityAltID(String fSecurityAltID) {
+        this.fSecurityAltID = fSecurityAltID;
+    }
+
+    public String getfSecurityAltIDSource() {
+        return fSecurityAltIDSource;
+    }
+
+    public void setfSecurityAltIDSource(String fSecurityAltIDSource) {
+        this.fSecurityAltIDSource = fSecurityAltIDSource;
+    }
+
+    public String getfMatchStatus() {
+        return fMatchStatus;
+    }
+
+    public void setfMatchStatus(String fMatchStatus) {
+        this.fMatchStatus = fMatchStatus;
+    }
+
+    public String getfTradingSessionSubID() {
+        return fTradingSessionSubID;
+    }
+
+    public void setfTradingSessionSubID(String fTradingSessionSubID) {
+        this.fTradingSessionSubID = fTradingSessionSubID;
+    }
+
+    public String getfOrderCategory() {
+        return fOrderCategory;
+    }
+
+    public void setfOrderCategory(String fOrderCategory) {
+        this.fOrderCategory = fOrderCategory;
+    }
+
+    public String getfOrderID() {
+        return fOrderID;
+    }
+
+    public void setfOrderID(String fOrderID) {
+        this.fOrderID = fOrderID;
+    }
+
+    public String getfClOrderID() {
+        return fClOrderID;
+    }
+
+    public void setfClOrderID(String fClOrderID) {
+        this.fClOrderID = fClOrderID;
+    }
+
+    public String getfNoRelatedTrades() {
+        return fNoRelatedTrades;
+    }
+
+    public void setfNoRelatedTrades(String fNoRelatedTrades) {
+        this.fNoRelatedTrades = fNoRelatedTrades;
+    }
+
+    public String getfRelatedTradeID() {
+        return fRelatedTradeID;
+    }
+
+    public void setfRelatedTradeID(String fRelatedTradeID) {
+        this.fRelatedTradeID = fRelatedTradeID;
+    }
+
+    public String getfRelatedTradeIDSource() {
+        return fRelatedTradeIDSource;
+    }
+
+    public void setfRelatedTradeIDSource(String fRelatedTradeIDSource) {
+        this.fRelatedTradeIDSource = fRelatedTradeIDSource;
+    }
+
+    public String getfCopyMsgIndicator() {
+        return fCopyMsgIndicator;
+    }
+
+    public void setfCopyMsgIndicator(String fCopyMsgIndicator) {
+        this.fCopyMsgIndicator = fCopyMsgIndicator;
+    }
     
     
     //.process:
@@ -772,6 +971,72 @@ public class FIX5JonecDataTradeCaptureReport extends FIX5JonecDataHeader {
                                 break;
                             case FIX5JonecFieldTag.IDSOURCE:
                                 setfSecurityIDSource(zValue);
+                                break;
+                            case FIX5JonecFieldTag.TRADEID:
+                                setfTradeID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.SECONDARYTRADEID:
+                                setfSecondaryTradeID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.EXECTYPE:
+                                setfExecType(zValue);
+                                break;
+                            case FIX5JonecFieldTag.TRADELINKID:
+                                setfTradeLinkID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.SECONDARYEXECID:
+                                setfSecondaryExecID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.NOREGULATORYTRADEIDS:
+                                setfNoRegulatoryTradeIDs(zValue);
+                                break;
+                            case FIX5JonecFieldTag.REGULATORYTRADEID:
+                                setfRegulatoryTradeID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.REGULATORYTRADEIDTYPE:
+                                setfRegulatoryTradeIDType(zValue);
+                                break;
+                            case FIX5JonecFieldTag.PREVIOUSLYREPORTED:
+                                setfPreviouslyReported(zValue);
+                                break;
+                            case FIX5JonecFieldTag.VENUETYPE:
+                                setfVenueType(zValue);
+                                break;
+                            case FIX5JonecFieldTag.NOSECURITYALTID:
+                                setfNoSecurityAltID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.SECURITYALTID:
+                                setfSecurityAltID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.SECURITYALTIDSOURCE:
+                                setfSecurityAltIDSource(zValue);
+                                break;
+                            case FIX5JonecFieldTag.MATCHSTATUS:
+                                setfMatchStatus(zValue);
+                                break;
+                            case FIX5JonecFieldTag.TRADINGSESSIONSUBID:
+                                setfTradingSessionSubID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.ORDERCATEGORY:
+                                setfOrderCategory(zValue);
+                                break;
+                            case FIX5JonecFieldTag.ORDERID:
+                                setfOrderID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.CLORDID:
+                                setfClOrderID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.NORELATEDTRADES:
+                                setfNoRelatedTrades(zValue);
+                                break;
+                            case FIX5JonecFieldTag.RELATEDTRADEID:
+                                setfRelatedTradeID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.RELATEDTRADEIDSOURCE:
+                                setfRelatedTradeIDSource(zValue);
+                                break;
+                            case FIX5JonecFieldTag.COPYMSGINDICATOR:
+                                setfCopyMsgIndicator(zValue);
                                 break;
                             default:
                                 break;
@@ -974,6 +1239,11 @@ public class FIX5JonecDataTradeCaptureReport extends FIX5JonecDataHeader {
                 sb.append(getfOrderCapacity1()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
             
+            if (!StringHelper.isNullOrEmpty(getfTransBkdTime())){
+                sb.append(FIX5JonecFieldTag.TRANSBKDTIME).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfTransBkdTime()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            
             //.--------------------------------------------------------------------------------
             
             //.side 2
@@ -1107,10 +1377,93 @@ public class FIX5JonecDataTradeCaptureReport extends FIX5JonecDataHeader {
                 sb.append(getfLegLastQty()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
             //......................
-            
-            if (!StringHelper.isNullOrEmpty(getfTransBkdTime())){
-                sb.append(FIX5JonecFieldTag.TRANSBKDTIME).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-                sb.append(getfTransBkdTime()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            if (!StringHelper.isNullOrEmpty(getfTradeID())){
+                sb.append(FIX5JonecFieldTag.TRADEID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfTradeID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfSecondaryTradeID())){
+                sb.append(FIX5JonecFieldTag.SECONDARYTRADEID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfSecondaryTradeID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfExecType())){
+                sb.append(FIX5JonecFieldTag.EXECTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfExecType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfTradeLinkID())){
+                sb.append(FIX5JonecFieldTag.TRADELINKID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfTradeLinkID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfSecondaryExecID())){
+                sb.append(FIX5JonecFieldTag.SECONDARYEXECID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfSecondaryExecID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfNoRegulatoryTradeIDs())){
+                sb.append(FIX5JonecFieldTag.NOREGULATORYTRADEIDS).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfNoRegulatoryTradeIDs()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfRegulatoryTradeID())){
+                sb.append(FIX5JonecFieldTag.REGULATORYTRADEID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfRegulatoryTradeID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfRegulatoryTradeIDType())){
+                sb.append(FIX5JonecFieldTag.REGULATORYTRADEIDTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfRegulatoryTradeIDType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfPreviouslyReported())){
+                sb.append(FIX5JonecFieldTag.PREVIOUSLYREPORTED).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfPreviouslyReported()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfVenueType())){
+                sb.append(FIX5JonecFieldTag.VENUETYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfVenueType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfNoSecurityAltID())){
+                sb.append(FIX5JonecFieldTag.NOSECURITYALTID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfNoSecurityAltID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfSecurityAltID())){
+                sb.append(FIX5JonecFieldTag.SECURITYALTID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfSecurityAltID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfSecurityAltIDSource())){
+                sb.append(FIX5JonecFieldTag.SECURITYALTIDSOURCE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfSecurityAltIDSource()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfMatchStatus())){
+                sb.append(FIX5JonecFieldTag.MATCHSTATUS).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfMatchStatus()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfTradingSessionSubID())){
+                sb.append(FIX5JonecFieldTag.TRADINGSESSIONSUBID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfTradingSessionSubID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfOrderCategory())){
+                sb.append(FIX5JonecFieldTag.ORDERCATEGORY).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfOrderCategory()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfOrderID())){
+                sb.append(FIX5JonecFieldTag.ORDERID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfOrderID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfClOrderID())){
+                sb.append(FIX5JonecFieldTag.CLORDID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfClOrderID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfNoRelatedTrades())){
+                sb.append(FIX5JonecFieldTag.NORELATEDTRADES).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfNoRelatedTrades()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfRelatedTradeID())){
+                sb.append(FIX5JonecFieldTag.RELATEDTRADEID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfRelatedTradeID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfRelatedTradeIDSource())){
+                sb.append(FIX5JonecFieldTag.RELATEDTRADEIDSOURCE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfRelatedTradeIDSource()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfCopyMsgIndicator())){
+                sb.append(FIX5JonecFieldTag.COPYMSGINDICATOR).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfCopyMsgIndicator()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
             
             

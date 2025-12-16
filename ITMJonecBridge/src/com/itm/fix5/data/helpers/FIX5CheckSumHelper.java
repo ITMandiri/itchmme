@@ -118,21 +118,21 @@ public class FIX5CheckSumHelper {
                 }else if (zFIX5ConnectionName.startsWith(FIX5JonecFieldValue.IDXFIX_CONNECTION_NAME_PREFIX)){
                     zFIX5ConnectionName = zFIX5ConnectionName.substring(FIX5JonecFieldValue.IDXFIX_CONNECTION_NAME_PREFIX.length());
                 }
-                zOut = FIX5JonecFieldValue.IDXFIX_DEFAULT_PREFIX 
-                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
-                        + zMsgType
-                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
-                        + zFIX5ConnectionName
-                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
-                        + "0"
-                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
-                        + "N"
-                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
-                        + zOut
-                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
-                        + "0"
-                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
-                ;
+//                zOut = FIX5JonecFieldValue.IDXFIX_DEFAULT_PREFIX 
+//                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
+//                        + zMsgType
+//                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
+//                        + zFIX5ConnectionName
+//                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
+//                        + "0"
+//                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
+//                        + "N"
+//                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
+//                        + zOut
+//                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
+//                        + "0"
+//                        + FIX5JonecFieldFmt.HEADER_FIELD_SEPARATOR
+//                ;
             }catch(Exception ex0){
                 //.EXXX.
             }
@@ -295,5 +295,19 @@ public class FIX5CheckSumHelper {
             System.out.println(ex0.getMessage());
         }
         return mOut;
+    }
+    
+    public static String fixNegDealNormalizeStock(String zStock){
+        String zOut = zStock; 
+        try{
+            if (!StringHelper.isNullOrEmpty(zStock)){
+                if (zStock.contains("_")) {
+                    zOut = zStock.split("_")[0];
+                }
+            }
+        }catch(Exception ex0){
+            //.EXXX.
+        }
+        return zOut;
     }
 }

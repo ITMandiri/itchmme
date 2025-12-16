@@ -16,7 +16,7 @@ public class ITMFileLoggerVarsConsts {
         public final static String CLIENT_YULI_RS                   = "RS";
     }
     
-    public final static String APP_CLIENT_CODE                      = AppClientCode.CLIENT_ASET_SH;
+    public final static String APP_CLIENT_CODE                      = AppClientCode.CLIENT_RELI_LS;
     public final static String APP_CLIENT_NAME                      =   ( APP_CLIENT_CODE.equals(AppClientCode.CLIENT_RELI_LS) ? "PT. RELIANCE SEKURITAS" : 
                                                                         ( APP_CLIENT_CODE.equals(AppClientCode.CLIENT_ASET_SH) ? "PT. ARTHA SEKURITAS" : 
                                                                         ( APP_CLIENT_CODE.equals(AppClientCode.CLIENT_YULI_RS) ? "PT. YULIE SEKURITAS INDONESIA" : 

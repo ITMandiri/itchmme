@@ -28,6 +28,7 @@ import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginReques
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimOriginRequest;
+import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 import java.util.HashMap;
 
 /**
@@ -62,7 +63,7 @@ public class JONECSimWorkDataOrderAmend {
                 //.process:
                 switch (mInputMsgRequest.getfHandlInst()) {
                     case ORIDataConst.ORIFieldValue.HANDLINST_NORMAL:
-                        if (ITMTradingServerConsts.EngineSetup.FIX5_ONLY){
+                        if (ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only){
                             
                             FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                             if (mTrxCtl != null){

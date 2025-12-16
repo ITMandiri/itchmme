@@ -32,16 +32,18 @@ public class FIX5JonecWorkDataHeartbeat {
     public void doWork(ITMSocketChannel channel, FIX5IDXBridgeController controller, FIX5JonecDataHeartbeat mInputMsgRequest){
         try{
             //.apm:20210312:skip msg karena terima eltrader error:IDXEQeSH_010N2003~Message of type '0' cannot be sent or posted on connection 'SH_01' through this API call.0
-            if (!controller.isCalcHeader()){
+            //.20251128: setelah tidak connect menggunakan eltrader, fungsi ini diaktifkan lagi
+//            if (!controller.isCalcHeader()){
                 FIX5JonecDataHeartbeat mMsg = new FIX5JonecDataHeartbeat(new HashMap());
                 mMsg.setfMsgType(FIX5JonecMsgType.HEART_BEAT);
                 mMsg.setfMsgSeqNum(controller.getNextTXSequencedNo());
                 mMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+                mMsg.setfSenderSubID(controller.getConnectorCode());
                 mMsg.setfTestReqID(mInputMsgRequest.getfTestReqID());
                 String zMsg = mMsg.msgToString();
                 zMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zMsg,true,true,controller.getConnectionName());
                 channel.sendMessageDirect(zMsg);
-            }
+//            }
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
         }

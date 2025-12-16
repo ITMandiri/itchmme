@@ -8,6 +8,7 @@ package com.itm.xtream.inet.trading.fix5.jonec.received.works;
 import com.itm.fix5.data.helpers.FIX5CheckSumHelper;
 import com.itm.fix5.data.helpers.FIX5DateTimeHelper;
 import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst.FIX5JonecMsgType;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataHeartbeat;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTestRequest;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
@@ -32,14 +33,26 @@ public class FIX5JonecWorkDataTestRequest {
     public void doWork(ITMSocketChannel channel, FIX5IDXBridgeController controller, FIX5JonecDataTestRequest mInputMsgRequest){
         try{
             
-            FIX5JonecDataTestRequest mMsg = new FIX5JonecDataTestRequest(new HashMap());
-            mMsg.setfMsgType(FIX5JonecMsgType.TEST_REQUEST);
-            mMsg.setfMsgSeqNum(controller.getNextTXSequencedNo());
-            mMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
-            mMsg.setfTestReqID(mInputMsgRequest.getfTestReqID());
-            String zMsg = mMsg.msgToString();
-            zMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zMsg,true,true,controller.getConnectionName());
-            channel.sendMessageDirect(zMsg);
+//            FIX5JonecDataTestRequest mMsg = new FIX5JonecDataTestRequest(new HashMap());
+//            mMsg.setfMsgType(FIX5JonecMsgType.TEST_REQUEST);
+//            mMsg.setfMsgSeqNum(controller.getNextTXSequencedNo());
+//            mMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+//            mMsg.setfSenderSubID(controller.getConnectorCode());
+//            mMsg.setfTestReqID(mInputMsgRequest.getfTestReqID());
+//            String zMsg = mMsg.msgToString();
+//            zMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zMsg,true,true,controller.getConnectionName());
+//            channel.sendMessageDirect(zMsg);
+            
+            //.20251128: balasan testrequest menggunakan hearbeat
+            FIX5JonecDataHeartbeat mMsgHB = new FIX5JonecDataHeartbeat(new HashMap());
+            mMsgHB.setfMsgType(FIX5JonecMsgType.HEART_BEAT);
+            mMsgHB.setfMsgSeqNum(controller.getNextTXSequencedNo());
+            mMsgHB.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+            mMsgHB.setfSenderSubID(controller.getConnectorCode());
+            mMsgHB.setfTestReqID(mInputMsgRequest.getfTestReqID());
+            String zMsgHB = mMsgHB.msgToString();
+            zMsgHB = FIX5CheckSumHelper.repackMessageWithChecksum(zMsgHB,true,true,controller.getConnectionName());
+            channel.sendMessageDirect(zMsgHB);
             
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);

@@ -28,7 +28,8 @@ public class FIX5JonecDataConst {
     public class FIX5JonecFieldValue{
         //.header:
         public static final String BEGIN_STRING                                 = "FIXT.1.1";
-        public static final String SENDER_COMP_ID                               = JonecConst.DEFAULT_EXEC_BROKER_CODE; //.AB
+//        public static final String SENDER_COMP_ID                               = JonecConst.DEFAULT_EXEC_BROKER_CODE; //.AB
+        public static final String SENDER_COMP_ID                               = "LS"; //.AB
 //        public static final String TARGET_COMP_ID                               = "IDX";
         public static final String TARGET_COMP_ID_MME                           = "MME";
         public static final String IDXFIX_DEFAULT_PREFIX                        = "IDX11";
@@ -47,10 +48,11 @@ public class FIX5JonecDataConst {
         public static final String TRADE_REPORT_TRANS_TYPE_CANCEL               = "1";
         
         public static final String TRADE_REPORT_TYPE_SUBMIT                     = "0";
-        public static final String TRADE_REPORT_TYPE_ALLEGED                    = "1";
+        public static final String TRADE_REPORT_TYPE_ALLEGED                    = "11";
         public static final String TRADE_REPORT_TYPE_ACCEPT                     = "2";
         public static final String TRADE_REPORT_TYPE_DECLINE                    = "3";
         public static final String TRADE_REPORT_TYPE_CANCEL                     = "6";
+        public static final String TRADE_REPORT_TYPE_ALLEGED_CANCEL             = "14";
         
         public static final String DELIVERY_TYPE_VERSUS_PAYMENT                 = "1";
         public static final String DELIVERY_TYPE_FREE_OF_PAYMENT                = "2";
@@ -101,6 +103,7 @@ public class FIX5JonecDataConst {
         
         public static final String TRADE_REPORT_STATUS_ACCEPTED                 = "0";
         public static final String TRADE_REPORT_STATUS_REJECTED                 = "1";
+        public static final String TRADE_REPORT_STATUS_CANCELLED                = "2";
         
         public static final String TIME_IN_FORCE_DAY                            = "0";
         public static final String TIME_IN_FORCE_SESSION                        = "1";
@@ -109,6 +112,7 @@ public class FIX5JonecDataConst {
         public static final String ORD_TYPE_LIMIT                               = "2";
         
         public static final String SECURITY_TYPE_MULTILEGINSTRUMENT             = "MLEG";
+        public static final String SECURITY_TYPE_OTHER                          = "OTHER";
         
         public static final String SECURITY_SUB_TYPE                            = "1";
         public static final String SECURITY_SUB_TYPE_RG                         = "RG";
@@ -117,6 +121,15 @@ public class FIX5JonecDataConst {
         
         public static final String TRADE_HANDLING_INSTR_TWOPARTYREPORT          = "1";
         public static final String TRADE_HANDLING_INSTR_ONEPARTYREPORTFORMATCHING = "2";
+        
+        public static final String TRADE_REQUEST_TYPE_ALL_TRADES                = "0";
+        public static final String SUBSCRIPTION_REQUEST_TYPE_SNAPSHOT           = "0";
+        public static final String SUBSCRIPTION_REQUEST_TYPE_SUBSCRIBE          = "1";
+        public static final String SUBSCRIPTION_REQUEST_TYPE_UNSUBSCRIBE        = "2";
+        
+        public static final String MASS_STATUS_REQ_TYPE_SNAPSHOT                = "701";
+        public static final String MASS_STATUS_REQ_TYPE_SUBSCRIBE               = "702";
+        public static final String MASS_STATUS_REQ_TYPE_UNSUBSCRIBE             = "703";
         
     }
     
@@ -149,6 +162,11 @@ public class FIX5JonecDataConst {
         public static final String TRADE_CAPTURE_REPORT_ACK                     = "AR";
         public static final String INDICATIVE_QUOTE                             = "S";
         public static final String INDICATIVE_QUOTE_CANCEL                      = "Z";
+        public static final String QUOTE_RESPONSE                               = "AJ";
+        public static final String QUOTE_STATUS_REPORT                          = "AI";
+        public static final String ORDER_MASS_STATUS_REQUEST                    = "AF";
+        public static final String TRADE_CAPTURE_REPORT_REQUEST                 = "AD";
+        public static final String TRADE_CAPTURE_REPORT_REQUEST_ACK             = "AQ";
         
     }
     
@@ -1152,6 +1170,14 @@ public class FIX5JonecDataConst {
         public static final String REJECTTEXT                                   = "1328";
         public static final String PRIVATEQUOTE                                 = "1171";
         public static final String SINGLEQUOTEINDICATOR                         = "2837";
+        public static final String NOREGULATORYTRADEIDS                         = "1907";
+        public static final String REGULATORYTRADEID                            = "1903";
+        public static final String REGULATORYTRADEIDTYPE                        = "1906";
+        public static final String VENUETYPE                                    = "1430";
+        public static final String ORDERCATEGORY                                = "1115";
+        public static final String NORELATEDTRADES                              = "1855";
+        public static final String RELATEDTRADEID                               = "1856";
+        public static final String RELATEDTRADEIDSOURCE                         = "1857";
     }
     
 }

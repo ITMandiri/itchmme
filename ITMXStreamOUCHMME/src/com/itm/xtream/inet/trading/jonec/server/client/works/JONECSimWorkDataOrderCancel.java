@@ -27,6 +27,7 @@ import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginReques
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimOriginRequest;
+import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 import java.util.HashMap;
 
 /**
@@ -65,17 +66,17 @@ public class JONECSimWorkDataOrderCancel {
                         mAdvCancelOrder.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
                         mAdvCancelOrder.setfSenderSubID(mTrxCtl.getTraderCode());
 
-                        mAdvCancelOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
-                        mAdvCancelOrder.setfOrderID(mInputMsgRequest.getfOrderID());
-                        mAdvCancelOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
+//                        mAdvCancelOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
+//                        mAdvCancelOrder.setfOrderID(mInputMsgRequest.getfOrderID());
+//                        mAdvCancelOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
 
-                        mAdvCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol());
-                        mAdvCancelOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0",""));
+                        mAdvCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol()+ "_" +FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_SUB_TYPE_NG);
+//                        mAdvCancelOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0",""));
 
-                        mAdvCancelOrder.setfSide(mInputMsgRequest.getfSide());
-                        mAdvCancelOrder.setfTransactTime(mAdvCancelOrder.getfSendingTime());
+//                        mAdvCancelOrder.setfSide(mInputMsgRequest.getfSide());
+//                        mAdvCancelOrder.setfTransactTime(mAdvCancelOrder.getfSendingTime());
                         
-                        mAdvCancelOrder.setfNoPartyIDs(StringHelper.fromInt(3));
+                        mAdvCancelOrder.setfNoPartyIDs(StringHelper.fromInt(2));
                         //.executing trader
                         mAdvCancelOrder.setfPartyID1(mTrxCtl.getTraderCode());
                         mAdvCancelOrder.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
@@ -96,9 +97,10 @@ public class JONECSimWorkDataOrderCancel {
 //                        mAdvCancelOrder.setfPartyIDSource3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
 //                        mAdvCancelOrder.setfPartyRole3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_24_CUSTOMER_ACCOUNT);
                        
-                        mAdvCancelOrder.setfQuoteId(mInputMsgRequest.getfClOrdID());
+                        mAdvCancelOrder.setfQuoteId(mInputMsgRequest.getfOrigClOrdID());
                         mAdvCancelOrder.setfQuoteCancelType("5");
-                        mAdvCancelOrder.setfQuoteType("5");
+                        mAdvCancelOrder.setfQuoteType("0");
+                        mAdvCancelOrder.setfNoQuoteEntries("1");
 
                         String zAdvCancelOrderFixMsg = mAdvCancelOrder.msgToString();
                         zAdvCancelOrderFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zAdvCancelOrderFixMsg,true,true,mTrxCtl.getConnectionName());
@@ -120,7 +122,7 @@ public class JONECSimWorkDataOrderCancel {
             }else{
                 long vOriginOrderToken = BookOfJONECSimToken.getInstance.findTokenByBrokerRef(mInputMsgRequest.getfOrigClOrdID());
                 long vEveryOrderToken = BookOfJONECSimToken.getInstance.generateTrxToken(mInputMsgRequest.getfClOrdID());
-                if (ITMTradingServerConsts.EngineSetup.FIX5_ONLY){
+                if (ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only){
                     
                     if ((vOriginOrderToken > 0) && (vEveryOrderToken > 0)){
                         //.save to memory:

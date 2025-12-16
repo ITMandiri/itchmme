@@ -5,12 +5,19 @@
  */
 package com.itm.xtream.inet.trading.fix5.jonec.received.works;
 
+import com.itm.fix5.data.helpers.FIX5CheckSumHelper;
+import com.itm.fix5.data.helpers.FIX5DateTimeHelper;
+import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataLogonReply;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataSequenceReset;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
+import com.itm.fix5.data.message.bridge.FIX5IDXBridgeManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
 import com.itm.generic.engine.socket.setup.ITMSocketChannel;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -30,6 +37,13 @@ public class FIX5JonecWorkDataLogonReply {
             if (!controller.isAdminLoggedOn()){
                 controller.setIsAdminLoggedOn(true);
             }
+            
+            if (controller.getMsgSubGroupType() == FIX5IDXBridgeController.FIX5IDXSubGroupMessageType.FIX5_DROP_COPY) {
+                FIX5IDXBridgeManager.getInstance.subscribeDropCopy();
+                controller.setIsAdminSubscribed(true);
+            }
+            
+            
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
         }

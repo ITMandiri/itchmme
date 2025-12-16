@@ -101,6 +101,7 @@ public class ORIDataConst {
         public static final String MASSWITHDRAWREJECTREASON                             = "6069";
         public static final String LOGONREPLY                                           = "6090";
         public static final String LOGONDESC                                            = "6091";
+        public static final String SETTLEMETHOD                                         = "1193";
         
     }
     
@@ -203,6 +204,7 @@ public class ORIDataConst {
         public static final int HANDLINST_NORMAL                                        = 1;
         public static final int HANDLINST_ADVERTISEMENT                                 = 2;
         public static final int HANDLINST_NEGOTIATIONDEAL                               = 3;
+        public static final int HANDLINST_QUOTE_RESPONSE                                = 4;
         
         public static final String SIDE_BUY                                             = "1";
         public static final String SIDE_SELL                                            = "2";

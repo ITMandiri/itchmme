@@ -45,6 +45,7 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
     private String fQuoteId = "";
     private String fQuoteCancelType = "";
     private String fQuoteType = "";
+    private String fNoQuoteEntries = "";
 
     public FIX5JonecDataOrderCancelRequest(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -242,6 +243,14 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
     public void setfQuoteType(String fQuoteType) {
         this.fQuoteType = fQuoteType;
     }
+
+    public String getfNoQuoteEntries() {
+        return fNoQuoteEntries;
+    }
+
+    public void setfNoQuoteEntries(String fNoQuoteEntries) {
+        this.fNoQuoteEntries = fNoQuoteEntries;
+    }
     
     
     //.process:
@@ -323,6 +332,9 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
                             case FIX5JonecFieldTag.QUOTETYPE:
                                 setfQuoteType(zValue);
                                 break;
+                            case FIX5JonecFieldTag.NOQUOTEENTRIES:
+                                setfNoQuoteEntries(zValue);
+                                break;
                             default:
                                 break;
                         }
@@ -351,6 +363,10 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
             if (!StringHelper.isNullOrEmpty(getfQuoteType())){
                 sb.append(FIX5JonecFieldTag.QUOTETYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
                 sb.append(getfQuoteType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfNoQuoteEntries())){
+                sb.append(FIX5JonecFieldTag.NOQUOTEENTRIES).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfNoQuoteEntries()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
             if (!StringHelper.isNullOrEmpty(getfClOrdID())){
                 sb.append(FIX5JonecFieldTag.CLORDID).append(FIX5JonecFieldFmt.KV_SEPARATOR);

@@ -45,10 +45,13 @@ public class FIX5JonecAccessAdministrative {
             mMsg.setfMsgType(FIX5JonecMsgType.LOGON);
             mMsg.setfMsgSeqNum(this.hController.getNextTXSequencedNo());
             mMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+            mMsg.setfSenderSubID(this.zConnectorCode);
+            mMsg.setfSenderCompID(FIX5JonecFieldValue.SENDER_COMP_ID);
             mMsg.setfEncryptMethod(StringHelper.fromInt(FIX5JonecFieldValue.ADMIN_ENCRYPT_METHOD));
             mMsg.setfHeartBtInt(StringHelper.fromInt(FIX5JonecFieldValue.ADMIN_HEARTBEAT_TIME));
             mMsg.setfUsername(this.zConnectorCode);
             mMsg.setfPassword(this.zPassword1);
+//            mMsg.setfResetSeqNumFlag("Y");
             if (this.zPassword2 == null ? this.zPassword1 != null : !this.zPassword2.equals(this.zPassword1)){
                 mMsg.setfNewPassword(this.zPassword2);
             }
@@ -69,6 +72,7 @@ public class FIX5JonecAccessAdministrative {
             mMsg.setfMsgType(FIX5JonecMsgType.LOGOUT);
             mMsg.setfMsgSeqNum(this.hController.getNextTXSequencedNo());
             mMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+            mMsg.setfSenderSubID(this.zConnectorCode);
             mMsg.setfText(FIX5JonecFieldValue.ADMIN_LOGOUT_TEXT);
             mOut = mMsg.msgToString();
             if (this.hController.isCalcHeader()){

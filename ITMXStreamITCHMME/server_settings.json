@@ -82,7 +82,7 @@
       {
         "name": "ITCH",
         "description": "",
-        "ipaddress": "172.18.2.117",
+        "ipaddress": "172.18.2.142",
         "port": 21500,
         "timeout": 5000,
         "usercode": "RSJIA1",
@@ -95,7 +95,7 @@
       {
         "name": "ITCH_MDF",
         "description": "",
-        "ipaddress": "172.18.2.117",
+        "ipaddress": "172.18.2.142",
         "port": 31500,
         "timeout": 5000,
         "usercode": "RSJNA1",

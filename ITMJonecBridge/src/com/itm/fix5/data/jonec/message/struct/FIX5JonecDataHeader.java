@@ -10,6 +10,7 @@ import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst.FIX5JonecFieldTag;
 import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst.FIX5JonecFieldValueLength;
 import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst.FIX5JonecFieldValue;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -25,11 +26,13 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
     private int fBodyLength                                     = 0;
     private String fMsgType                                     = "";
     private String fSenderSubID                                 = "";
-//    private String fSenderCompID                                = FIX5JonecFieldValue.SENDER_COMP_ID;
-    private String fSenderCompID                                = "RS";
+    private String fSenderCompID                                = FIX5JonecFieldValue.SENDER_COMP_ID;
+//    private String fSenderCompID                                = "SH";
     private String fTargetCompID                                = FIX5JonecFieldValue.TARGET_COMP_ID_MME;
     private long fMsgSeqNum                                     = 0;
     private String fSendingTime                                 = "";
+    //.20251202
+    private String fPossDupflag                                 = "";
     //.trailer:
     private int fCheckSum                                       = 0;
     
@@ -103,6 +106,14 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
         this.fSendingTime = fSendingTime;
     }
 
+    public String getfPossDupflag() {
+        return fPossDupflag;
+    }
+
+    public void setfPossDupflag(String fPossDupflag) {
+        this.fPossDupflag = fPossDupflag;
+    }
+
     public int getfCheckSum() {
         return fCheckSum;
     }
@@ -143,6 +154,9 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
                                 break;
                             case FIX5JonecFieldTag.SENDINGTIME:
                                 setfSendingTime(zValue);
+                                break;
+                            case FIX5JonecFieldTag.POSSDUPFLAG:
+                                setfPossDupflag(zValue);
                                 break;
                             case FIX5JonecFieldTag.CHECKSUM:
                                 setfCheckSum(StringHelper.toInt(zValue));
@@ -191,18 +205,80 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
             sb.append(getfMsgSeqNum()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             
             //.?????
-            sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-            sb.append("N").append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            if (!StringHelper.isNullOrEmpty(getfPossDupflag())) {
+                sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfPossDupflag()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            } else {
+                sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append("N").append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            
             
             sb.append(FIX5JonecFieldTag.SENDINGTIME).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfSendingTime()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
                         
             zOut = sb.toString();
+
+//            String SOH = "\u0001";
+//
+//            StringBuilder sb1 = new StringBuilder();
+//            sb1.append("8=FIXT.1.1").append(SOH);
+//            sb1.append("9=000").append(SOH);      // placeholder
+//            sb1.append("35=A").append(SOH);
+//            sb1.append("49=SH").append(SOH);
+//            sb1.append("56=MME").append(SOH);
+//            sb1.append("34=122").append(SOH);
+//            sb1.append("50=SHJFE1").append(SOH);
+//            sb1.append("43=N").append(SOH);
+//            sb1.append("52=20251127-01:50:20").append(SOH);
+//            sb1.append("98=0").append(SOH);
+//            sb1.append("108=11").append(SOH);
+//            sb1.append("553=SHJFE1").append(SOH);
+//            sb1.append("554=P@ssw0rd!1").append(SOH);
+//            sb1.append("1137=9").append(SOH);
+////            sb1.append("1128=9").append(SOH);
+//            // … termasuk tag 165xx custom
+//            String msgWithoutChecksum = sb1.toString();
+//
+//            // Hitung BodyLength
+//            int bodyLength = calculateBodyLength(msgWithoutChecksum + "10=000" + SOH);
+//
+//            // Replace tag 9=xxx
+//            String finalMsg = msgWithoutChecksum.replace("9=000", "9=" + bodyLength);
+//
+//            // Ambil checksum
+//            String checksum = calculateChecksum(finalMsg);
+//
+//            // Tambahkan checksum
+//            finalMsg = finalMsg + "10=" + checksum + SOH;
+//
+//            System.out.println(finalMsg);
+//            
+//            
+//            zOut = finalMsg;
         }catch(Exception ex0){
             //.EXXX.
         }
         return zOut;
     }
+    
+    public static String calculateChecksum(String fixMessage) {
+        byte[] bytes = fixMessage.getBytes(StandardCharsets.US_ASCII);
+        int sum = 0;
+        for (byte b : bytes) {
+            sum += b;
+        }
+        int cs = sum % 256;
+        return String.format("%03d", cs);
+    }
+    
+    public static int calculateBodyLength(String fixMessage) {
+        int index9End = fixMessage.indexOf("\u0001", fixMessage.indexOf("9=")) + 1;
+        int index10Start = fixMessage.indexOf("10=");
+        return fixMessage.substring(index9End, index10Start).getBytes(StandardCharsets.US_ASCII).length;
+    }
+
+
     
     public String msgTrailerToString(){
         String zOut = "";

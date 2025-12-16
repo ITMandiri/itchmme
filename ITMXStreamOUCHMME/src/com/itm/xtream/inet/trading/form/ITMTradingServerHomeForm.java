@@ -255,6 +255,11 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
                         zCurMsg = "-";
                         if (mEachCtl.getChannel() != null){
                             zCurMsg = (mEachCtl.getChannel().isConnected() ? ((mEachCtl.getChannel().isChannelAlreadyWasted()) ? "-Disconnected" : ((mEachCtl.isAdminLoggedOn()) ? "+LoggedOn" : "+Connected")) : "-Disconnected") + ((mEachCtl.getStsBridgeStatus() == FIX5IDXBridgeStatus.SCK_CONNECTING || mEachCtl.getStsBridgeStatus() == FIX5IDXBridgeStatus.SCK_DISCONNECTING) ? " [" + mEachCtl.getStsBridgeStatus().cname + "]" : "") + ((!StringHelper.isNullOrEmpty(mEachCtl.getLastMessage())) ? ". Msg:" + mEachCtl.getLastMessage() : "") ;
+                            
+                            //.20251128
+                            if (mEachCtl.getIsAdminSubscribed() && mEachCtl.isAdminLoggedOn()) {
+                                zCurMsg += " (subscribed)";
+                            }
                         }
                         ITMComponentLayoutHelper.addTableEmptyRows(this.jTableIdxConnectionList, 1);
                         try{ this.jTableIdxConnectionList.setValueAt(bSetConnSelect, pCurRow, ITMComponentLayoutHelper.getTableColumnIndex(this.jTableIdxConnectionList, Z_REF_TABLE_COLUMN_SELECT));}catch(Exception ex0){}

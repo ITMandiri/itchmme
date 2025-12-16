@@ -47,6 +47,7 @@ public class QRIDataNegDealListMessage extends QRIDataHeader{
     private String          fClearingAccount;
     private String          fComplianceID;
     private long            fOrderQty;
+    private int             fReportType = QRIDataConst.ReportType.NEGDEAL.value; //.20251215: untuk menghandle msg dari negdeal dan quoteresponse, default 0 untuk negdeallist
     
     public QRIDataNegDealListMessage(){
     }
@@ -277,6 +278,14 @@ public class QRIDataNegDealListMessage extends QRIDataHeader{
     public void setfOrderQty(long fOrderQty) {
         this.fOrderQty = fOrderQty;
     }
+
+    public int getfReportType() {
+        return fReportType;
+    }
+
+    public void setfReportType(int fReportType) {
+        this.fReportType = fReportType;
+    }
     
     public String msgToString(){
         MsgBuilder msgBuild = new MsgBuilder(QRIDataConst.MESSAGE_INNER_TAG_SEPARATOR, String.valueOf(QRIDataConst.MESSAGE_INTER_TAG_SEPARATOR));
@@ -313,6 +322,7 @@ public class QRIDataNegDealListMessage extends QRIDataHeader{
         msgBuild.addData(QRIDataConst.QRITag.ClearingAccount, String.valueOf(fClearingAccount));   
         msgBuild.addData(QRIDataConst.QRITag.ComplianceID, String.valueOf(fComplianceID));
         msgBuild.addData(QRIDataConst.QRITag.OrderQty, String.valueOf(fOrderQty));
+        msgBuild.addData(QRIDataConst.QRITag.ReportType, String.valueOf(fReportType));
         
         msgBuild.addData(QRIDataConst.QRITag.MsgType, getfMsgType());
         msgBuild.addData(QRIDataConst.QRITag.Checksum, StringHelper.addZeroFromInt(0, 3));
@@ -419,6 +429,9 @@ public class QRIDataNegDealListMessage extends QRIDataHeader{
                     break;
                 case QRIDataConst.QRITag.OrderQty: 
                     setfOrderQty(StringUtil.toLong(val)); 
+                    break;
+                case QRIDataConst.QRITag.ReportType: 
+                    setfReportType(StringUtil.toInteger(val)); 
                     break;
                 default:
                     //. tag yang terlewatkan

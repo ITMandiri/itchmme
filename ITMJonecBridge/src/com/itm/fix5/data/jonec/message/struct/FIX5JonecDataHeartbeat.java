@@ -69,8 +69,11 @@ public class FIX5JonecDataHeartbeat extends FIX5JonecDataHeader {
         String zOut = "";
         try{
             StringBuilder sb = new StringBuilder();
-            sb.append(FIX5JonecFieldTag.TESTREQID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-            sb.append(getfTestReqID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            if (!StringHelper.isNullOrEmpty(getfTestReqID())) {
+                sb.append(FIX5JonecFieldTag.TESTREQID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfTestReqID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            
             zOut = sb.toString();
         }catch(Exception ex0){
             //.EXXX.

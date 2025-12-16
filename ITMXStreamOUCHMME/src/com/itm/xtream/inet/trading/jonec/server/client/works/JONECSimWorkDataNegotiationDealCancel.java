@@ -19,6 +19,7 @@ import com.itm.idx.data.ori.consts.ORIDataConst;
 import com.itm.idx.data.ori.message.struct.ORIDataNegotiationDeal;
 import com.itm.idx.data.ori.message.struct.ORIDataNegotiationDealCancel;
 import com.itm.idx.data.qri.message.struct.QRIDataNegDealListMessage;
+import com.itm.ts.ouch.consts.OUCHConsts;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -47,7 +48,7 @@ public class JONECSimWorkDataNegotiationDealCancel {
             
             if ((vOriginOrderToken > 0) && (vEveryOrderToken > 0)){
                 //.save to memory:
-                ///BookOfJONECSimOriginRequest.getInstance.addOrUpdateSheet(new SheetOfJONECSimOriginRequest(vOriginOrderToken, mInputMsgRequest));
+//                BookOfJONECSimOriginRequest.getInstance.addOrUpdateSheet(new SheetOfJONECSimOriginRequest(vOriginOrderToken, mInputMsgRequest));
                 BookOfJONECSimEveryRequest.getInstance.addOrUpdateSheet(new SheetOfJONECSimEveryRequest(vEveryOrderToken, mInputMsgRequest));
                 
                 SheetOfJONECSimOriginRequest mOriginRequest = BookOfJONECSimOriginRequest.getInstance.retrieveSheet(vOriginOrderToken);
@@ -67,61 +68,55 @@ public class JONECSimWorkDataNegotiationDealCancel {
                             mFixMsg = new FIX5JonecDataTradeCaptureReport(new HashMap());
                             mFixMsg.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.TRADE_CAPTURE_REPORT);
                             mFixMsg.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
-                            mFixMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+                            mFixMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5LocalFormatDetail());
                             mFixMsg.setfSenderSubID(mTrxCtl.getTraderCode());
-
-                            mFixMsg.setfTradeReportID(mInputMsgRequest.getfClOrdID());
-                            mFixMsg.setfTradeReportTransType(FIX5JonecDataConst.FIX5JonecFieldValue.TRADE_REPORT_TRANS_TYPE_NEW);
-                            mFixMsg.setfTradeReportType(FIX5JonecDataConst.FIX5JonecFieldValue.TRADE_REPORT_TYPE_DECLINE);
-                            mFixMsg.setfSettlDate(mOriginRequestMsg.getfSettlDate());
-                            mFixMsg.setfTradeReportRefID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfOrderID(),true));
                             
-                            mFixMsg.setfSymbol(mInputMsgRequest.getfSymbol());
+                            mFixMsg.setfTradeReportID(mInputMsgRequest.getfClOrdID());
+//                            mFixMsg.setfTradeReportTransType(FIX5JonecDataConst.FIX5JonecFieldValue.TRADE_REPORT_TRANS_TYPE_NEW);
+                            mFixMsg.setfTradeReportType(FIX5JonecDataConst.FIX5JonecFieldValue.TRADE_REPORT_TYPE_CANCEL);
+                            mFixMsg.setfSettlDate(mOriginRequestMsg.getfSettlDate());
                             mFixMsg.setfSettlMethod(mOriginRequestMsg.getfSettlDeliveryType().equals(ORIDataConst.ORIFieldValue.SETTLDELIVERYTYPE_VERSUS) ? FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT : FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_FREE_OF_PAYMENT );
-                            mFixMsg.setfSecuritySubType(mOriginRequestMsg.getfSymbolSfx().replace("0", ""));
+                            mFixMsg.setfSymbol(mInputMsgRequest.getfSymbol()+ "_" +FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_SUB_TYPE_NG);
+                            mFixMsg.setfSecuritySubType("1");
                             mFixMsg.setfLastPx(StringHelper.fromDouble(mOriginRequestMsg.getfPrice()));
                             mFixMsg.setfLastQty(StringHelper.fromLong(mInputMsgRequest.getfOrderQty()));
-                            mFixMsg.setfNoSides(StringHelper.fromInt(2));
+                            mFixMsg.setfNoSides(StringHelper.fromInt(1));
                             
-                            mFixMsg.setfSide1(mInputMsgRequest.getfSide().equals(ORIDataConst.ORIFieldValue.SIDE_BUY) ? FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_BUY : FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_SELL );
-                            mFixMsg.setfAccountType1(
-                                    (mNGList != null) ? 
-                                    (
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_I) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN : 
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_A) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER : 
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_S) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_INDONESIAN : 
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_F) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_FOREIGNER : 
-                                        FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN
-                                    ):""
-                                );
+                            mFixMsg.setfSide1(mInputMsgRequest.getfSide().equals(ORIDataConst.ORIFieldValue.SIDE_BUY) ? FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_BUY : FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_SELL );                         
+                            mFixMsg.setfNoPartyIDs1(StringHelper.fromInt(4));
+                            //.customer account
+                            mFixMsg.setfPartyID1a(mOriginRequestMsg.getfComplianceID());
+                            mFixMsg.setfPartyIDSource1a(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mFixMsg.setfPartyRole1a(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_24_CUSTOMER_ACCOUNT);
+                            //.executing trader
+                            mFixMsg.setfPartyID1b(mTrxCtl.getTraderCode());
+                            mFixMsg.setfPartyIDSource1b(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mFixMsg.setfPartyRole1b(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
+                            //.executing firm
+                            mFixMsg.setfPartyID1c(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
+                            mFixMsg.setfPartyIDSource1c(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mFixMsg.setfPartyRole1c(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
+                            //.noPartySub 1
+                            mFixMsg.setfNoPartySubIDs1(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
+                            mFixMsg.setfPartySubID1(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");
+                                                        
+                            if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+                                mFixMsg.setfPartySubID1("RZAZ");//????????????????????????????
+                            }
+                            mFixMsg.setfPartySubIDType1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
+                            //.contra firm
+                            mFixMsg.setfPartyID1d((!StringHelper.isNullOrEmpty(mOriginRequestMsg.getSfCounterpartUserID())) ? mOriginRequestMsg.getSfCounterpartUserID().substring(0, 2).toUpperCase() : "");
+                            mFixMsg.setfPartyIDSource1d(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mFixMsg.setfPartyRole1d(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM);  
                             
-                            mFixMsg.setfNoPartyIDs1(StringHelper.fromInt(2));
-                            mFixMsg.setfPartyID1a((mNGList != null) ? (mNGList.getfClientID()) : mInputMsgRequest.getfClientID());
-                            mFixMsg.setfPartyIDSource1a(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER);
-                            mFixMsg.setfPartyRole1a(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER);
-                            mFixMsg.setfPartyID1b((!StringHelper.isNullOrEmpty(mFixMsg.getfPartyID1a())) ? mFixMsg.getfPartyID1a().substring(0, 2).toUpperCase() : "");
-                            mFixMsg.setfPartyIDSource1b(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER);
-                            mFixMsg.setfPartyRole1b(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM);
-                            
-                            mFixMsg.setfSide2(mInputMsgRequest.getfSide().equals(ORIDataConst.ORIFieldValue.SIDE_BUY) ? FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_SELL : FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_BUY );
-                            mFixMsg.setfAccountType2(
-                                    (mNGList != null) ? 
-                                    (
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_I) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN : 
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_A) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER : 
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_S) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_INDONESIAN : 
-                                        mNGList.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_F) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_FOREIGNER : 
-                                        FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN
-                                    ):""
-                                );
-                            
-                            mFixMsg.setfNoPartyIDs2(StringHelper.fromInt(2));
-                            mFixMsg.setfPartyID2a((mNGList != null) ? mNGList.getfContraTrader() : "");
-                            mFixMsg.setfPartyIDSource2a(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER);
-                            mFixMsg.setfPartyRole2a(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER);
-                            mFixMsg.setfPartyID2b((mNGList != null) ? mNGList.getfContraBroker() : "");
-                            mFixMsg.setfPartyIDSource2b(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER);
-                            mFixMsg.setfPartyRole2b(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM);
+                            //.tambahan
+                            mFixMsg.setfSecurityIDSource("M");
+                            mFixMsg.setfSecurityType(FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_TYPE_MULTILEGINSTRUMENT);
+                            mFixMsg.setfTransactTime(FIX5DateTimeHelper.getDateTimeFIX5LocalFormatDetail());
+                            mFixMsg.setfTransBkdTime(FIX5DateTimeHelper.getDateTimeFIX5LocalFormatDetail());
+                            mFixMsg.setfTradeID(mInputMsgRequest.getfOrderID());
+                            mFixMsg.setfSecondaryTradeID(mInputMsgRequest.getfOrderID());
+                            mFixMsg.setfTradeHandlingInstr(FIX5JonecDataConst.FIX5JonecFieldValue.TRADE_HANDLING_INSTR_ONEPARTYREPORTFORMATCHING);
                             
                             zFixMsg = mFixMsg.msgToString();
                             zFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zFixMsg,true,true,mTrxCtl.getConnectionName());

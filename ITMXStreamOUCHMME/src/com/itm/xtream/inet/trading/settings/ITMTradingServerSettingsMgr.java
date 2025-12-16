@@ -53,6 +53,7 @@ public class ITMTradingServerSettingsMgr {
         public int order_reply_timeout = 0;
         public int order_racing_mode = 1; //. 1 = single order, 2 = all order
         public int order_racing_max_delay = 200;
+        public boolean fix5_only = false; //.20250917
         public OUCH_OrderRacing[] order_racing_time;
         public OUCH_OrderRetry[] order_retry_time;
         public OUCH_OrderRacing[] order_racing_time_ca;
@@ -137,6 +138,7 @@ public class ITMTradingServerSettingsMgr {
         public int reconseqmode = 0;
         public boolean calcheader = false;
         public boolean autoselect = false;
+        public boolean fororder = true;
     }
     
     public class DTF_Client{

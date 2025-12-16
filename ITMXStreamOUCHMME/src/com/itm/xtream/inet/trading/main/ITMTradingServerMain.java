@@ -5,6 +5,11 @@
  */
 package com.itm.xtream.inet.trading.main;
 
+import com.itm.fix5.data.helpers.FIX5CheckSumHelper;
+import com.itm.fix5.data.helpers.FIX5DateTimeHelper;
+import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataOrderMassStatusRequest;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTradeCaptureReportRequest;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
@@ -24,6 +29,8 @@ import com.itm.xtream.inet.trading.racing.mgr.ITMTradingServerRacingMgr;
 import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 import com.itm.xtream.inet.trading.sync.connection.ITMTradingServerSyncConnectionMgr;
 import com.itm.xtream.inet.trading.viewer.ITMComponentLayoutHelper;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -146,6 +153,7 @@ public class ITMTradingServerMain {
                                     , arrConnection.reconseqmode
                                     , arrConnection.calcheader
                                     , arrConnection.autoselect
+                                    , arrConnection.fororder ? FIX5IDXBridgeController.FIX5IDXSubGroupMessageType.FIX5_ORDER_ENTRY : FIX5IDXBridgeController.FIX5IDXSubGroupMessageType.FIX5_DROP_COPY
                             );
                         }
                     }

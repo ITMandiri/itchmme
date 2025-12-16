@@ -9,6 +9,7 @@ import com.itm.fix5.data.helpers.FIX5CheckSumHelper;
 import com.itm.fix5.data.helpers.FIX5DateTimeHelper;
 import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataNewOrderSingle;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataQuoteResponse;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
@@ -28,6 +29,7 @@ import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.SheetOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.replytimeout.mgr.ITMTradingServerReplyTimeOutMgr;
+import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 import java.util.HashMap;
 
 /**
@@ -58,7 +60,7 @@ public class JONECSimWorkDataNewOrder {
                 //.process:
                 switch (mInputMsgRequest.getfHandlInst()) {
                     case ORIDataConst.ORIFieldValue.HANDLINST_NORMAL:
-                        if (ITMTradingServerConsts.EngineSetup.FIX5_ONLY){
+                        if (ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only){
                             FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                             if (mTrxCtl != null){
                                 FIX5JonecDataNewOrderSingle mNormalNewOrder = new FIX5JonecDataNewOrderSingle(new HashMap());
@@ -283,6 +285,7 @@ public class JONECSimWorkDataNewOrder {
                             //.noPartySub
                             mAdvNewOrder.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
                             mAdvNewOrder.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
+//                            mAdvNewOrder.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"");                            
                             if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
                                 mAdvNewOrder.setfPartySubID(mInputMsgRequest.getfText());
                             }   
@@ -302,7 +305,7 @@ public class JONECSimWorkDataNewOrder {
                             mAdvNewOrder.setfSingleQuoteIndicator("N");
                             mAdvNewOrder.setfSecurityID(mInputMsgRequest.getfSecurityID());
                             mAdvNewOrder.setfSecurityIDSource("M");
-                            mAdvNewOrder.setfSettlMethod("2");
+                            mAdvNewOrder.setfSettlMethod(mInputMsgRequest.getfSettleMethod());
                             if (mInputMsgRequest.getfSide().equalsIgnoreCase(ORIDataConst.ORIFieldValue.SIDE_BUY)) {
                                 mAdvNewOrder.setfBidPx(StringHelper.fromDouble(mInputMsgRequest.getfPrice()));
                             } else {
@@ -327,6 +330,64 @@ public class JONECSimWorkDataNewOrder {
                     case ORIDataConst.ORIFieldValue.HANDLINST_NEGOTIATIONDEAL:
                         //.???:
                         ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @");
+                        break;
+                    case ORIDataConst.ORIFieldValue.HANDLINST_QUOTE_RESPONSE:
+                        FIX5IDXBridgeController mTrxCt = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
+                        if (mTrxCt != null){
+                            FIX5JonecDataQuoteResponse mQuoteRes = new FIX5JonecDataQuoteResponse(new HashMap());
+                            mQuoteRes.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.QUOTE_RESPONSE);
+                            mQuoteRes.setfMsgSeqNum(mTrxCt.getNextTXSequencedNo());
+                            mQuoteRes.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+                            mQuoteRes.setfSenderSubID(mTrxCt.getTraderCode());
+                            
+                            mQuoteRes.setfQuoteRespID(mInputMsgRequest.getfClOrdID());
+                            mQuoteRes.setfQuoteID(mInputMsgRequest.getfQuoteID());
+                            mQuoteRes.setfQuoteRespType("1");
+                            mQuoteRes.setfOrderCapacity("A");
+                            mQuoteRes.setfNoPartyIDs(StringHelper.fromInt(3));
+                            //.executing trader
+                            mQuoteRes.setfPartyID1(mTrxCt.getTraderCode());
+                            mQuoteRes.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mQuoteRes.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
+                            //.noPartySub
+                            mQuoteRes.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
+                            mQuoteRes.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
+                            if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+                                mQuoteRes.setfPartySubID(mInputMsgRequest.getfText());
+                            }   
+                            mQuoteRes.setfPartySubIDType(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
+                            //.executing firm
+                            mQuoteRes.setfPartyID2(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
+                            mQuoteRes.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mQuoteRes.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
+                            //.customer account
+                            mQuoteRes.setfPartyID3(mInputMsgRequest.getfComplianceID());
+                            mQuoteRes.setfPartyIDSource3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mQuoteRes.setfPartyRole3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_24_CUSTOMER_ACCOUNT);
+                            
+                            mQuoteRes.setfSymbol(mInputMsgRequest.getfSymbol()+"_NG");
+                            mQuoteRes.setfSecurityID(mInputMsgRequest.getfSecurityID());
+                            mQuoteRes.setfSecurityIDSource("M");
+                            mQuoteRes.setfSettlMethod(mInputMsgRequest.getfSettleMethod());
+                            mQuoteRes.setfOrderQty(StringHelper.fromLong(mInputMsgRequest.getfOrderQty()));
+                            mQuoteRes.setfSide(mInputMsgRequest.getfSide());
+                            mQuoteRes.setfOrdType("D");
+                            mQuoteRes.setfText((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())) ? mInputMsgRequest.getfText() : "Advertisement Response");
+                            mQuoteRes.setfPrice(StringHelper.fromDouble(mInputMsgRequest.getfPrice()));
+                            
+                            String zQuoteResMsg = mQuoteRes.msgToString();
+                            zQuoteResMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zQuoteResMsg,true,true,mTrxCt.getConnectionName());
+
+                            if (!mTrxCt.sendMessageDirect(zQuoteResMsg)){
+                                //.???:
+                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @cannot send");
+                            }
+                            //.???:
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Found route @new order as advertisement");
+                        }else{
+                            //.???:
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Found route @new order as advertisement but no controller");
+                        }
                         break;
                     default:
                         //.???:

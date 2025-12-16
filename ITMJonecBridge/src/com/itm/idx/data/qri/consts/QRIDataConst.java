@@ -165,6 +165,8 @@ public class QRIDataConst {
         public final static String MsgSubValue1             = "9003";
         public final static String MsgSubType2              = "9004";
         public final static String MsgSubValue2             = "9005";
+        
+        public final static String ReportType               = "9006";
         //.
         public final static String Checksum                 = "10";
     }
@@ -203,6 +205,28 @@ public class QRIDataConst {
         }
         
         public String getValue(){
+            return value;
+        }
+        
+        public String getDesc(){
+            return desc;
+        }
+    }
+    
+    public enum ReportType{
+        NEGDEAL                             (0, "NegDeal"),
+        QUOTE_RESPONSE                      (1, "QuoteResponse");
+        
+        
+        public int value;
+        public String desc;
+
+        private ReportType(int val, String desc) {
+            this.value = val;
+            this.desc = desc;
+        }
+        
+        public int getValue(){
             return value;
         }
         

@@ -56,14 +56,14 @@ public class FIX5JonecMsgTransRecvHandler implements FIX5IDXBridgeListener {
         
         FIX5JonecDataHeader mMsgHdr = (FIX5JonecDataHeader)messageObject;
         if (mMsgHdr != null){
-            SheetOfFIX5JonecRequest mSheet = BookOfFIX5JonecRequest.getInstance.retrieveSheetRecv(mMsgHdr.getfMsgSeqNum());
+            SheetOfFIX5JonecRequest mSheet = BookOfFIX5JonecRequest.getInstance.retrieveSheetRecv(mMsgHdr.getfMsgSeqNum(), ConnectionName);
             if (mSheet == null){
                 mSheet = new SheetOfFIX5JonecRequest(mMsgHdr.getfMsgSeqNum());
                 mSheet.setFixMsg(messageLine);
-                BookOfFIX5JonecRequest.getInstance.addOrUpdateSheetRecv(mSheet);
+                BookOfFIX5JonecRequest.getInstance.addOrUpdateSheetRecv(mSheet, ConnectionName);//.20251128: tambahan connection name untuk backup map object
             }else{
                 mSheet.setFixMsg(messageLine);
-                BookOfFIX5JonecRequest.getInstance.backupProcessorRecv.backupMapObjectToFile(mMsgHdr.getfMsgSeqNum(), mSheet);
+                BookOfFIX5JonecRequest.getInstance.backupProcessorRecv.backupMapObjectToFile2(mMsgHdr.getfMsgSeqNum(), mSheet, ConnectionName);//.20251128: tambahan connection name untuk backup map object
             }
         }
         
@@ -78,14 +78,14 @@ public class FIX5JonecMsgTransRecvHandler implements FIX5IDXBridgeListener {
         System.out.println("FIX5-SENT#" + ConnectionName + "=\t" + channel.getChannelID() + "\t" + messageLine);
         
         Long vMsgSeq = controller.getBridgeSockHandler().getFix5JonecMsgMapper().findMsgSeqNum(messageLine);
-        SheetOfFIX5JonecRequest mSheet = BookOfFIX5JonecRequest.getInstance.retrieveSheetSend(vMsgSeq);
+        SheetOfFIX5JonecRequest mSheet = BookOfFIX5JonecRequest.getInstance.retrieveSheetSend(vMsgSeq, ConnectionName);
         if (mSheet == null){
             mSheet = new SheetOfFIX5JonecRequest(vMsgSeq);
             mSheet.setFixMsg(messageLine);
-            BookOfFIX5JonecRequest.getInstance.addOrUpdateSheetSend(mSheet);
+            BookOfFIX5JonecRequest.getInstance.addOrUpdateSheetSend(mSheet, ConnectionName);//.20251128: tambahan connection name untuk backup map object
         }else{
             mSheet.setFixMsg(messageLine);
-            BookOfFIX5JonecRequest.getInstance.backupProcessorSend.backupMapObjectToFile(vMsgSeq, mSheet);
+            BookOfFIX5JonecRequest.getInstance.backupProcessorSend.backupMapObjectToFile2(vMsgSeq, mSheet, ConnectionName); //.20251128: tambahan connection name untuk backup map object
         }
         
     }

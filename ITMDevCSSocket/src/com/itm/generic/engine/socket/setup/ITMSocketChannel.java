@@ -7,17 +7,22 @@ package com.itm.generic.engine.socket.setup;
 import com.itm.generic.engine.socket.setup.ITMSocketVarsConsts.SocketSetup;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -42,6 +47,10 @@ public class ITMSocketChannel {
     private boolean fChannelAlreadyWasted                       = false; //.channel sudah tidak terpakai.
     //.custom line factory:
     private boolean fCustomLineFactory                          = false;
+    //.20251128
+    //. keterangan untuk fLineReaderVersion, nilai 0/1 = default newline, nilai 2 = fix checksum
+    private int fLineReaderVersion                              = 0;
+    private final String FIX_TAG_CHECKSUM                       = "10";
     private ITMSocketCustomeLineFactoryInterface fCustomLineFactoryWorker;
     
     private final Object lockWrite = new Object();
@@ -55,6 +64,14 @@ public class ITMSocketChannel {
         this.fConnectionName = zConnectionName;
         this.fCustomLineFactoryWorker = fCustomLineFactoryWorker;
         this.fCustomLineFactory = (fCustomLineFactoryWorker != null);
+        //.EXXX.
+    }
+    
+    public ITMSocketChannel(String zConnectionName, ITMSocketCustomeLineFactoryInterface fCustomLineFactoryWorker, int iLineReaderVersion) {
+        this.fConnectionName = zConnectionName;
+        this.fCustomLineFactoryWorker = fCustomLineFactoryWorker;
+        this.fCustomLineFactory = (fCustomLineFactoryWorker != null);
+        this.fLineReaderVersion = iLineReaderVersion;
         //.EXXX.
     }
     
@@ -231,7 +248,13 @@ public class ITMSocketChannel {
                         if (fCustomLineFactory){
                             ost.write(zMessageLine.concat(SocketSetup.NEW_LINE).getBytes());
                         }else{
-                            ost.write(zMessageLine.concat(SocketSetup.NEW_LINE).getBytes());
+                            //.20251127: untuk fix5 direct
+                            if (fLineReaderVersion == 2) {
+                                ost.write(zMessageLine.getBytes());
+                            } else { //. untuk fix5 via api
+                                ost.write(zMessageLine.concat(SocketSetup.NEW_LINE).getBytes());
+                            }
+                            
                         }
                         //////////ost.flush();
                         raiseOnSent(zMessageLine);
@@ -507,6 +530,7 @@ public class ITMSocketChannel {
         private AtomicBoolean bRdWorkerMustRun                  = new AtomicBoolean(false);
         private BufferedReader mNewLineBuffReader               = null;
         private DataInputStream mCustomBuffReader               = null;
+        private InputStream mCustomInputStream                  = null;
         
         public synchronized void resumeWorker(){
             try{
@@ -562,6 +586,7 @@ public class ITMSocketChannel {
                                 }else{
                                     mNewLineBuffReader = new BufferedReader(new InputStreamReader(fSocket.getInputStream()));
                                 }
+                                mCustomInputStream = fSocket.getInputStream();
                             }catch(IOException ex0){
                                 //.EXXX.
                                 System.err.println(ex0);
@@ -602,6 +627,11 @@ public class ITMSocketChannel {
         public void run() {
             BufferedReader mNewLineReader = null;
             DataInputStream mCustomReader = null;
+            InputStream in;
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            
+            in = mCustomInputStream;
+            
             if (isfCustomLineFactory()){
                 mCustomReader = mCustomBuffReader;
             }else{
@@ -631,16 +661,72 @@ public class ITMSocketChannel {
                                     }
                                 }
                             }else{
-                                if (mNewLineReader != null) {
-                                    String zReadLine = mNewLineReader.readLine();
-                                    if (zReadLine == null){
-                                        //.ada baca kosong tidak benar:
-                                        break;
+                                if (fLineReaderVersion <= 1) {
+                                    if (mNewLineReader != null) {
+                                        String zReadLine = mNewLineReader.readLine();
+                                        if (zReadLine == null){
+                                            //.ada baca kosong tidak benar:
+                                            break;
+                                        }
+                                        if (zReadLine.length() > 0){
+                                            raiseOnMessage(zReadLine);
+                                        }
                                     }
-                                    if (zReadLine.length() > 0){
-                                        raiseOnMessage(zReadLine);
+                                } else if (fLineReaderVersion == 2) {
+                                    int b;
+                                    if (in != null) {
+
+
+                                        while ((b = in.read()) != -1) {
+
+                                            buffer.write(b);
+
+                                            byte[] arr = buffer.toByteArray();
+                                            int len = arr.length;
+
+                                            // FIX message minimal punya "10=XYZ<SOH>"
+                                            if (len < 7) continue;
+
+                                            // Cari pola "10=nnn<SOH>"
+                                            for (int i = 0; i < len - 6; i++) {
+                                                // cek "10="
+                                                if (arr[i] == '1' && arr[i+1] == '0' && arr[i+2] == '=') {
+
+                                                    // cek checksum fixed 3 digit
+                                                    if (isDigit(arr[i+3]) && isDigit(arr[i+4]) && isDigit(arr[i+5])) {
+
+                                                        // cek SOH
+                                                        if (arr[i+6] == 0x01) {
+
+                                                            // -> message FIX sempurna ditemukan
+                                                            int msgLength = i + 7;
+
+                                                            byte[] msgBytes = Arrays.copyOfRange(arr, 0, msgLength);
+                                                            String msg = new String(msgBytes, StandardCharsets.US_ASCII);
+//
+//                                                            // display friendly
+//                                                            System.out.println("FIX Message Received: " + msg);
+
+                                                            // deliver ke handler
+                                                            raiseOnMessage(msg);
+
+                                                            // sisanya masih bisa berisi FIX message berikutnya
+                                                            byte[] remaining = Arrays.copyOfRange(arr, msgLength, len);
+
+                                                            buffer.reset();
+                                                            buffer.write(remaining);
+
+                                                            break; // keluar dari for, kembali ke read loop
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
                                     }
                                 }
+                                
                             }
                         }catch(IOException ex0){
                             //.EXXX.
@@ -669,6 +755,11 @@ public class ITMSocketChannel {
             //.EXXX.
             StopChannel();
         }
+        
+        private boolean isDigit(byte b) {
+            return b >= '0' && b <= '9';
+        }
+
         
     }
     

@@ -166,6 +166,52 @@ public class ITMSocketCtrlClient {
         return bOut;
     }
     
+    protected synchronized boolean connectFix(String zInputServerAddress, int iInputServerPort, int iConnectTimeOut){
+        boolean bOut = false;
+        try{
+            if ((zInputServerAddress != null) && (zInputServerAddress.length() > 0) && (iInputServerPort >= SocketSetup.I_REF_PORT_MIN_NUMBER) && (iInputServerPort <= SocketSetup.I_REF_PORT_MAX_NUMBER) && (iConnectTimeOut >= 0)){
+                if (fServerChannel == null){
+                    fServerChannel = new ITMSocketChannel(this.fConnectionName, this.fCustomLineFactoryWorker, 2);
+                    //.set events:
+                    fServerChannel.setSocketListeners(this.fServerListenersList);
+                }
+                if (fServerChannel.isChannelAlreadyWasted()){
+                    //.ganti channel:
+                    ITMSocketChannel newSch = new ITMSocketChannel(this.fConnectionName, this.fCustomLineFactoryWorker, 2);
+                    //.backup events:
+                    newSch.setSocketListeners(this.fServerListenersList);
+                    //.backup queue:
+                    newSch.setfQueue(fServerChannel.getfQueue());
+                    fServerChannel = newSch;
+                }
+                Socket sock = fServerChannel.getSocket();
+                if ((sock == null) || (fServerChannel.isClosed()) || (fServerChannel.isInputShutdown()) || (fServerChannel.isOutputShutdown()) || (!fServerChannel.isSocketWasWorking())){
+                    try{
+                        sock = new Socket();
+//////////                        sock.setReceiveBufferSize(2 * 1024 * 1024);
+                        SocketAddress sockAddr = new InetSocketAddress(zInputServerAddress, iInputServerPort);
+                        sock.connect(sockAddr, iConnectTimeOut);
+                        //.menunggu sampai connect atau sampai tidak bisa connect ke exception:
+                        sock.setKeepAlive(true);
+                        fServerChannel.setSupplyAddress(zInputServerAddress);
+                        fServerChannel.setSupplyPort(iInputServerPort);
+                        fServerChannel.setChannelID(ITMSocketCtrlGeneral.getInstance.generateClientChannelID()); //.unique.
+                        fServerChannel.StartChannel(sock);
+                        bOut = true;
+                    }catch(Exception ex1){
+                        fServerChannel.raiseOnError(ex1);
+                    }
+                }else{
+                    bOut = true;
+                }
+            }
+        }catch(Exception ex0){
+            //.EXXX.
+            System.err.println(ex0);
+        }
+        return bOut;
+    }
+    
     protected synchronized boolean disconnect(){
         boolean bOut = false;
         try{

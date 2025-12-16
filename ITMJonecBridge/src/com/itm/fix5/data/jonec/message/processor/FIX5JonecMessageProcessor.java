@@ -15,12 +15,15 @@ import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataHeartbeat;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataLogonReply;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataLogoutReply;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataOrderCancelReject;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataQuoteResponse;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataQuoteStatusReport;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataReject;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataResendRequest;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataSequenceReset;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTestRequest;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTradeCaptureReport;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTradeCaptureReportAck;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTradeCaptureReportRequestAck;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataUnknownMessage;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
 import java.util.ArrayList;
@@ -193,6 +196,15 @@ public class FIX5JonecMessageProcessor {
                         break;
                     case FIX5JonecMsgType.INDICATIVE_QUOTE:
                         mOut = msgTypeNewOrderSingle(mapInputFields);
+                        break;
+                    case FIX5JonecMsgType.QUOTE_RESPONSE:
+                        mOut = msgTypeQuoteResponse(mapInputFields);
+                        break;
+                    case FIX5JonecMsgType.QUOTE_STATUS_REPORT:
+                        mOut = msgTypeQuoteStatusReport(mapInputFields);
+                        break;
+                    case FIX5JonecMsgType.TRADE_CAPTURE_REPORT_REQUEST_ACK:
+                        mOut = msgTypeTradeCaptureReportRequestAck(mapInputFields);
                         break;
                     default:
                         //.EXXX.
@@ -566,6 +578,66 @@ public class FIX5JonecMessageProcessor {
                 //.???.
                 //.confirm:
                 //.???.
+                //.selesai.                
+            }else{
+                //.input map kosong / kurang:
+                //.EXXX.
+            }
+        }catch(Exception ex0){
+            //.EXXX.
+        }
+        return mOut;
+    }
+    
+    private FIX5IDXMessage msgTypeQuoteResponse(Map<String, ArrayList<String>> mapInputFields){
+        FIX5IDXMessage mOut = null;
+        try{
+            if ((mapInputFields != null) && (mapInputFields.size() > 2)){ //.harus ada header + data + trailer.
+                //.mapping message:
+                FIX5JonecDataQuoteResponse msg = new FIX5JonecDataQuoteResponse(mapInputFields);
+                msg.assignMessage();
+                //.confirm:
+                mOut = msg;
+                //.selesai.                     
+            }else{
+                //.input map kosong / kurang:
+                //.EXXX.
+            }
+        }catch(Exception ex0){
+            //.EXXX.
+        }
+        return mOut;
+    }
+    
+    private FIX5IDXMessage msgTypeQuoteStatusReport(Map<String, ArrayList<String>> mapInputFields){
+        FIX5IDXMessage mOut = null;
+        try{
+            if ((mapInputFields != null) && (mapInputFields.size() > 2)){ //.harus ada header + data + trailer.
+                //.mapping message:
+                FIX5JonecDataQuoteStatusReport msg = new FIX5JonecDataQuoteStatusReport(mapInputFields);
+                msg.assignMessage();
+                //.confirm:
+                mOut = msg;
+                //.selesai.                     
+            }else{
+                //.input map kosong / kurang:
+                //.EXXX.
+            }
+        }catch(Exception ex0){
+            //.EXXX.
+        }
+        return mOut;
+    }
+    
+    private FIX5IDXMessage msgTypeTradeCaptureReportRequestAck(Map<String, ArrayList<String>> mapInputFields){
+        FIX5IDXMessage mOut = null;
+        try{
+            if ((mapInputFields != null) && (mapInputFields.size() > 2)){ //.harus ada header + data + trailer.
+                //.mapping message:
+                FIX5JonecDataTradeCaptureReportRequestAck msg = new FIX5JonecDataTradeCaptureReportRequestAck(mapInputFields);
+                msg.assignMessage();
+                //.confirm:
+                mOut = msg;
                 //.selesai.                
             }else{
                 //.input map kosong / kurang:

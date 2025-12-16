@@ -53,12 +53,16 @@ public class FIX5JonecWorkDataTradeCaptureReport {
     public void doWork(ITMSocketChannel channel, FIX5IDXBridgeController controller, FIX5JonecDataTradeCaptureReport mInputMsgRequest){
         try{
             if ((controller != null) && (mInputMsgRequest != null)){
+                //.untuk stock dari ack ini dinormalize dulu
+                mInputMsgRequest.setfSymbol(FIX5CheckSumHelper.fixNegDealNormalizeStock(mInputMsgRequest.getfSymbol()));
+                System.err.println("TRADE CAPTURE REPORT = "+mInputMsgRequest.msgToString());
                 
                 boolean bIsValid = false;
                 boolean bIsCounterpart = false;
                 boolean bIsInisiator = false;
                 
-                long vOrderToken = BookOfJONECSimToken.getInstance.findTokenByBrokerRef(mInputMsgRequest.getfTradeReportRefID());
+//                long vOrderToken = BookOfJONECSimToken.getInstance.findTokenByBrokerRef(mInputMsgRequest.getfTradeReportRefID());
+                long vOrderToken = BookOfJONECSimToken.getInstance.findTokenByBrokerRef(mInputMsgRequest.getfClOrderID());
                 SheetOfJONECSimOriginRequest mOriginRequest = null;
                 SheetOfJONECSimEveryRequest mEveryRequest = null;
                 
@@ -71,80 +75,59 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                 String zBrokerID = "";
                 String zCounterpartTraderID = "";
                 String zCounterpartBrokerID = "";
+                //.todo: apakah trade id perlu ditambahkan side atau tidak ????????????????????????????????????????????????????????????
+//                String zTrdMatchIDNew = mInputMsgRequest.getfSide1() + mInputMsgRequest.getfTrdMatchID();
                 
-                if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
-                    zTraderID = mInputMsgRequest.getfPartyID1a();
+                String zTrdMatchIDNew = mInputMsgRequest.getfTrdMatchID();
+                
+                if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
+                    zTraderID = mInputMsgRequest.getfPartyID1a(); //.SHJFE1
                 }
-                if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID1b();
                 }
-                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID1c();
                 }
-                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID1d();
                 }
-                if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID2a();
                 }
-                if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID2b();
                 }
-                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID2c();
                 }
-                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_36_ENTERING_TRADER)){
+                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER)){
                     zTraderID = mInputMsgRequest.getfPartyID2d();
                 }
                 
-                if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
-                    zBrokerID = mInputMsgRequest.getfPartyID1a();
+                if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
+                    zBrokerID = mInputMsgRequest.getfPartyID1a(); //.SH
                 }
-                if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID1b();
                 }
-                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID1c();
                 }
-                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID1d();
                 }
-                if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID2a();
                 }
-                if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID2b();
                 }
-                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID2c();
                 }
-                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_7_ENTERING_FIRM)){
+                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM)){
                     zBrokerID = mInputMsgRequest.getfPartyID2d();
-                }
-                
-                if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID1a();
-                }
-                if (mInputMsgRequest.getfPartyRole1b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID1b();
-                }
-                if (mInputMsgRequest.getfPartyRole1c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID1c();
-                }
-                if (mInputMsgRequest.getfPartyRole1d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID1d();
-                }
-                if (mInputMsgRequest.getfPartyRole2a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID2a();
-                }
-                if (mInputMsgRequest.getfPartyRole2b().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID2b();
-                }
-                if (mInputMsgRequest.getfPartyRole2c().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID2c();
-                }
-                if (mInputMsgRequest.getfPartyRole2d().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_37_CONTRA_TRADER)){
-                    zCounterpartTraderID = mInputMsgRequest.getfPartyID2d();
                 }
                 
                 if (mInputMsgRequest.getfPartyRole1a().equalsIgnoreCase(FIX5JonecFieldValue.PARTY_ROLE_17_CONTRA_FIRM)){
@@ -185,234 +168,213 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                     zCounterpartBrokerID = (zCounterpartTraderID.length() > 2 ? (zCounterpartTraderID.substring(0, 2).toUpperCase()) : zCounterpartTraderID.toUpperCase() );
                 }
                 
+                //.20251204: jika twoside bisa dipastikan bahwa zCounterpartTraderID = zTraderID, zCounterpartBrokerID = zBrokerID
+                if (zBrokerID.equalsIgnoreCase(FIX5JonecFieldValue.SENDER_COMP_ID)) {
+                    zCounterpartBrokerID = zBrokerID;
+                    zCounterpartTraderID = zTraderID;
+                }
+                
+                //. di pspp alleged new sudah pasti dari kiriman broker lain, sehingga broker ref bukan punya kita
                 if (mInputMsgRequest.getfTradeReportType().equalsIgnoreCase(FIX5JonecFieldValue.TRADE_REPORT_TYPE_ALLEGED)){
                     //.ALLEGED(INPUT):
-                    ORIDataNegotiationDeal mOriginRequestMsg = null;
-                    if ((vOrderToken > 0) && (mOriginRequest != null) && (mEveryRequest != null)){
-                        if (mOriginRequest.getIdxMessage() instanceof ORIDataNegotiationDeal){
-                            mOriginRequestMsg = ((ORIDataNegotiationDeal)mOriginRequest.getIdxMessage());
-                            //.alleged dari broker sendiri (crossing) ataupun twoside sebagai inisiator:
-                            if ((mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide())) && (mInputMsgRequest.getfTradeReportTransType().equalsIgnoreCase(FIX5JonecFieldValue.TRADE_REPORT_TRANS_TYPE_NEW))){
-                                //.inisiator(???):
-                                bIsValid = true;
-                                bIsCounterpart = false;
-                                bIsInisiator = true;
-                                //.buat executionreport(reply):
-                                ORIDataNegotiationDealReply mReplyMsg = new ORIDataNegotiationDealReply(new HashMap());
-                                
-                                mReplyMsg.setfBundleMessageVersion(mOriginRequestMsg.getfBundleMessageVersion());
-                                mReplyMsg.setfBundleConnectionName(mOriginRequestMsg.getfBundleConnectionName());
-                                mReplyMsg.setfNegotiationDealReplyType(ORINegotiationDealReplyType.ReplyOK);
-                                mReplyMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
-                                mReplyMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
-                                mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                                mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_NEW);
-                                mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_NEW);
-                                mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_NEW);
-                                mReplyMsg.setfSymbol(mInputMsgRequest.getfSymbol());
-                                mReplyMsg.setfSide(mInputMsgRequest.getfSide1());
-                                mReplyMsg.setfSettlDate(mOriginRequestMsg.getfSettlDate());
-                                mReplyMsg.setfSettlDeliveryType(mOriginRequestMsg.getfSettlDeliveryType());
-                                mReplyMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
-                                mReplyMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
-                                mReplyMsg.setfLeavesQty(0);
-                                mReplyMsg.setfCumQty(0);
-                                mReplyMsg.setfAvgPx(0);
-                                mReplyMsg.setfHandlInst(mOriginRequestMsg.getfHandlInst());
-                                mReplyMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
-                                mReplyMsg.setfLastShares(0);
-                                
-                                JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
-                                if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
-                                    if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
-                                        //... .
-                                    }else{
-                                        //.???:
-                                        ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send direct");
-                                    }
-                                }else{
-                                    //.???:
-                                    ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send");
-                                }
-                            }else if (mInputMsgRequest.getfTradeReportTransType().equalsIgnoreCase("") || (!mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide()))){
-                                //.destination(???):
-                                bIsValid = true;
-                                bIsCounterpart = true;
-                            }else{
-                                bIsValid = false;
-                                bIsCounterpart = false;
-                                //.???:
-                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @alleged(input) invalid TradeReportTransType:" + mInputMsgRequest.getfTradeReportTransType());
-                            }
-                        }else{
-                            bIsValid = false;
-                            bIsCounterpart = false;
-                            //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @alleged(input) invalid BrokerRef from TradeReportRefID:" + mInputMsgRequest.getfTradeReportRefID());
-                        }
-                    }else{
-                        //.alleged dari broker lain:
-                        bIsValid = true;
-                        bIsCounterpart = true;
-                    }
-                    if (bIsValid){
-                        //.buat qrinegdeallist(martin):
-                        QRIDataNegDealListMessage mNegDealListMsg = new QRIDataNegDealListMessage(new HashMap());
-                        
-                        mNegDealListMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
-                        if (bIsInisiator){
-                            mNegDealListMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
-                        }else{
-                            mNegDealListMsg.setfClOrdID("");
-                        }
-                        mNegDealListMsg.setfClientID(zTraderID);
-                        mNegDealListMsg.setfExecBroker(zBrokerID);
-                        mNegDealListMsg.setfNoContraBrokers(1);
-                        mNegDealListMsg.setfContraBroker(zCounterpartBrokerID);
-                        mNegDealListMsg.setfContraTrader(zCounterpartTraderID);
-                        mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime())));
-                        mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
-                        mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NEW);
-                        if (bIsInisiator){
-                            mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.CONFIRMED_DEAL.getValue());
-                        }else{
-                            mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.UNCONFIRMED_DEAL.getValue());
-                        }
-                        mNegDealListMsg.setfAccount(
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN) ? ORIFieldValue.ACCOUNT_I :
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER) ? ORIFieldValue.ACCOUNT_A :
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_INDONESIAN) ? ORIFieldValue.ACCOUNT_S :
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_FOREIGNER) ? ORIFieldValue.ACCOUNT_F :
-                                mInputMsgRequest.getfAccountType1()
-                        );
-                        mNegDealListMsg.setfFutSettDate((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlDate())) ? mInputMsgRequest.getfSettlDate() : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDate() : ""));
-                        mNegDealListMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlMethod())) ? (mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
-                        mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
-                        mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
-                        mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
-                        mNegDealListMsg.setfSide(mInputMsgRequest.getfSide1());
-                        mNegDealListMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
-                        mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                        mNegDealListMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
-                        mNegDealListMsg.setfLeavesQty(0);
-                        mNegDealListMsg.setfCumQty(0);
-                        mNegDealListMsg.setfAvgPx(0);
-                        mNegDealListMsg.setfText("  " + mInputMsgRequest.getfTradeReportID() + "/" + mInputMsgRequest.getfExecID() + " ");
-                        mNegDealListMsg.setfClearingAccount(" ");
-                        mNegDealListMsg.setfComplianceID((mOriginRequestMsg != null) ? mOriginRequestMsg.getfComplianceID() : "");
-                        mNegDealListMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
+                    //.buat qrinegdeallist(martin):
+                    QRIDataNegDealListMessage mNegDealListMsg = new QRIDataNegDealListMessage(new HashMap());
 
-                        //. save orderlist ke memory martin
-                        BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
-                        //. broadcast orderlist via martin
-                        BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);
-                    }
-                    //.???:
-                    ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.INFO, "Found route @alleged(input)");
+                    mNegDealListMsg.setfOrderID(mInputMsgRequest.getfTradeID());
+                    mNegDealListMsg.setfClOrdID(""); //.tidak ada broker refnya karena kiriman dari orang lain
+                    
+                    //. untuk oneside, pencatatan record broker dan trader dibalik
+//                    mNegDealListMsg.setfClientID(zTraderID);
+//                    mNegDealListMsg.setfExecBroker(zBrokerID);
+//                    mNegDealListMsg.setfContraBroker(zCounterpartBrokerID);
+//                    mNegDealListMsg.setfContraTrader(zCounterpartTraderID);
+
+                    mNegDealListMsg.setfClientID(zCounterpartTraderID);
+                    mNegDealListMsg.setfExecBroker(zCounterpartBrokerID);
+                    mNegDealListMsg.setfContraBroker(zBrokerID);
+                    mNegDealListMsg.setfContraTrader(zTraderID);
+                    
+                    mNegDealListMsg.setfNoContraBrokers(1);
+                    mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime())));
+                    mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                    mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NEW);
+                    mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.UNCONFIRMED_DEAL.getValue());
+                    mNegDealListMsg.setfAccount(ORIFieldValue.ACCOUNT_I);
+                    mNegDealListMsg.setfFutSettDate(mInputMsgRequest.getfSettlDate());
+                    mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod());
+                    mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
+                    mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
+                    mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
+                    //.jika ada nego dari broker lain, side yang disimpan dibalik
+                    mNegDealListMsg.setfSide(mInputMsgRequest.getfSide1().equals(ORIFieldValue.SIDE_BUY) ? FIX5JonecFieldValue.SIDE_SELL : FIX5JonecFieldValue.SIDE_BUY);
+                    mNegDealListMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
+                    mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime()));
+                    mNegDealListMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
+                    mNegDealListMsg.setfLeavesQty(0);
+                    mNegDealListMsg.setfCumQty(0);
+                    mNegDealListMsg.setfAvgPx(0);
+                    mNegDealListMsg.setfText("  " + mInputMsgRequest.getfTradeReportID() + "/" + mInputMsgRequest.getfExecID() + " ");
+                    mNegDealListMsg.setfClearingAccount(" ");
+                    mNegDealListMsg.setfComplianceID("");
+                    mNegDealListMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
+
+                    //. save orderlist ke memory martin
+                    BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
+                    //. broadcast orderlist via martin
+                    BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);
+                    
+                //. untuk menghandle cancel negdeal dari broker lain    
+                }else if (mInputMsgRequest.getfTradeReportType().equalsIgnoreCase(FIX5JonecFieldValue.TRADE_REPORT_TYPE_ALLEGED_CANCEL)){
+                    //.ALLEGED(CANCEL):
+                    //.buat qrinegdeallist(martin):
+                    QRIDataNegDealListMessage mNegDealListMsg = new QRIDataNegDealListMessage(new HashMap());
+
+                    mNegDealListMsg.setfOrderID(mInputMsgRequest.getfTradeID());
+                    mNegDealListMsg.setfClOrdID(""); //.tidak ada broker refnya karena kiriman dari orang lain
+                    
+                    //. untuk oneside, pencatatan record broker dan trader dibalik
+//                    mNegDealListMsg.setfClientID(zTraderID);
+//                    mNegDealListMsg.setfExecBroker(zBrokerID);
+//                    mNegDealListMsg.setfContraBroker(zCounterpartBrokerID);
+//                    mNegDealListMsg.setfContraTrader(zCounterpartTraderID);
+
+                    mNegDealListMsg.setfClientID(zCounterpartTraderID);
+                    mNegDealListMsg.setfExecBroker(zCounterpartBrokerID);
+                    mNegDealListMsg.setfContraBroker(zBrokerID);
+                    mNegDealListMsg.setfContraTrader(zTraderID);
+                    
+                    mNegDealListMsg.setfNoContraBrokers(1);
+                    mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime())));
+                    mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                    mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_CANCELLED);
+                    mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.WITHDRAWN_DEAL.getValue());
+                    mNegDealListMsg.setfAccount(ORIFieldValue.ACCOUNT_I);
+                    mNegDealListMsg.setfFutSettDate(mInputMsgRequest.getfSettlDate());
+                    mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod());
+                    mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
+                    mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
+                    mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
+                    //.jika ada nego dari broker lain, side yang disimpan dibalik
+                    mNegDealListMsg.setfSide(mInputMsgRequest.getfSide1().equals(ORIFieldValue.SIDE_BUY) ? FIX5JonecFieldValue.SIDE_SELL : FIX5JonecFieldValue.SIDE_BUY);
+                    mNegDealListMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
+                    mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+                    mNegDealListMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
+                    mNegDealListMsg.setfLeavesQty(0);
+                    mNegDealListMsg.setfCumQty(0);
+                    mNegDealListMsg.setfAvgPx(0);
+                    mNegDealListMsg.setfText("  " + mInputMsgRequest.getfTradeReportID() + "/" + mInputMsgRequest.getfExecID() + " ");
+                    mNegDealListMsg.setfClearingAccount(" ");
+                    mNegDealListMsg.setfComplianceID("");
+                    mNegDealListMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
+
+                    //. save orderlist ke memory martin
+                    BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
+                    //. broadcast orderlist via martin
+                    BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);    
                 }else if (mInputMsgRequest.getfTradeReportType().equalsIgnoreCase(FIX5JonecFieldValue.TRADE_REPORT_TYPE_ACCEPT)){
                     //.CONFIRM:
                     //.???:
                     ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @accept(confirm)");
                 }else if (mInputMsgRequest.getfTradeReportType().equalsIgnoreCase(FIX5JonecFieldValue.TRADE_REPORT_TYPE_DECLINE)){
                     //.DECLINE(REJECT):
-                    ORIDataNegotiationDeal mOriginRequestMsg = null;                    
-                    if ((vOrderToken > 0) && (mOriginRequest != null) && (mEveryRequest != null)){
-                        if (mOriginRequest.getIdxMessage() instanceof ORIDataNegotiationDeal){
-                            mOriginRequestMsg = ((ORIDataNegotiationDeal)mOriginRequest.getIdxMessage());
-                            if ((mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.Crossing || mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide)
-                                && (mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
-                                ){
-                                //.inisiator(???):
-                                bIsValid = true;
-                                bIsCounterpart = false;
-                                bIsInisiator = true;
-                            }else if ((mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.Crossing || mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide)
-                                && (mInputMsgRequest.getfSide2().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
-                                ){
-                                //.confirmator(???):
-                                bIsValid = true;
-                                bIsCounterpart = true;
-                                bIsInisiator = false;
-                            }else if ((mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.Confirmation)
-                                && (mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
-                                ){
-                                //.confirmator(???):
-                                bIsValid = true;
-                                bIsCounterpart = true;
-                                bIsInisiator = false;
-                            }else{
-                                bIsValid = false;
-                                bIsCounterpart = false;
-                                bIsInisiator = false;
-                            }
-                        }else{
-                            bIsValid = false;
-                            bIsCounterpart = false;
-                            //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @decline(reject) invalid BrokerRef from TradeReportRefID:" + mInputMsgRequest.getfTradeReportRefID());
-                        }
-                    }else{
-                        //.submit dari broker lain:
-                        bIsValid = false;
-                        bIsCounterpart = true;
-                    }
-                    if (bIsValid){
-                        //.buat executionreport(reply):
-                        ORIDataNegotiationDealCancelReply mReplyMsg = new ORIDataNegotiationDealCancelReply(new HashMap());
-                        
-                        mReplyMsg.setfBundleMessageVersion((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleMessageVersion() : "");
-                        mReplyMsg.setfBundleConnectionName((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleConnectionName() : "");
-                        mReplyMsg.setfNegotiationDealCancelReplyType(ORIDataNegotiationDealCancelReply.ORINegotiationDealCancelReplyType.OK);
-
-                        mReplyMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
-                        
-                        mReplyMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
-                        mReplyMsg.setfExecRefID(mInputMsgRequest.getfTradeReportRefID());
-                        
-                        mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                        mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_CANCEL);
-                        mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_CANCELLED);
-                        mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_CANCELLED);
-                        mReplyMsg.setfSymbol(" ");
-                        mReplyMsg.setfSide(" ");
-                        mReplyMsg.setfLeavesQty(0);
-                        mReplyMsg.setfCumQty(0);
-                        mReplyMsg.setfAvgPx(0);
-                        mReplyMsg.setfHandlInst((mOriginRequestMsg != null) ? mOriginRequestMsg.getfHandlInst() : ORIFieldValue.HANDLINST_NEGOTIATIONDEAL);
-                        mReplyMsg.setfLastPx(0);
-                        mReplyMsg.setfLastShares(0);
-                        
-                        JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
-                        if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
-                            if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
-                                //... .
-                            }else{
-                                //.???:
-                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send direct @submit(trade)");
-                            }
-                        }else{
-                            //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send @submit(trade)");
-                        }
-                        
-                        //.buat qrinegdeallist(martin):
-                        QRIDataNegDealListMessage mNegDealListMsg = BookOfMARTINNegDealList.getInstance.retrieveSheet(StringHelper.toLong(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(),false)));
-                        if (mNegDealListMsg != null){
-                            mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_CANCELLED);
-                            mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.WITHDRAWN_DEAL.getValue());
-                        }
-                        
-                        //. save orderlist ke memory martin
-                        BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
-                        //. broadcast orderlist via martin
-                        BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);
-                        
-                        //.???:
-                        ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "Found route @decline(reject) and Valid");
-                    }else{
-                        //.???:
-                        ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "Found route @decline(reject) but Invalid");
-                    }
+//                    ORIDataNegotiationDeal mOriginRequestMsg = null;                    
+//                    if ((vOrderToken > 0) && (mOriginRequest != null) && (mEveryRequest != null)){
+//                        if (mOriginRequest.getIdxMessage() instanceof ORIDataNegotiationDeal){
+//                            mOriginRequestMsg = ((ORIDataNegotiationDeal)mOriginRequest.getIdxMessage());
+//                            if ((mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.Crossing || mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide)
+//                                && (mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
+//                                ){
+//                                //.inisiator(???):
+//                                bIsValid = true;
+//                                bIsCounterpart = false;
+//                                bIsInisiator = true;
+//                            }else if ((mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.Crossing || mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide)
+//                                && (mInputMsgRequest.getfSide2().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
+//                                ){
+//                                //.confirmator(???):
+//                                bIsValid = true;
+//                                bIsCounterpart = true;
+//                                bIsInisiator = false;
+//                            }else if ((mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.Confirmation)
+//                                && (mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
+//                                ){
+//                                //.confirmator(???):
+//                                bIsValid = true;
+//                                bIsCounterpart = true;
+//                                bIsInisiator = false;
+//                            }else{
+//                                bIsValid = false;
+//                                bIsCounterpart = false;
+//                                bIsInisiator = false;
+//                            }
+//                        }else{
+//                            bIsValid = false;
+//                            bIsCounterpart = false;
+//                            //.???:
+//                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @decline(reject) invalid BrokerRef from TradeReportRefID:" + mInputMsgRequest.getfTradeReportRefID());
+//                        }
+//                    }else{
+//                        //.submit dari broker lain:
+//                        bIsValid = false;
+//                        bIsCounterpart = true;
+//                    }
+//                    if (bIsValid){
+//                        //.buat executionreport(reply):
+//                        ORIDataNegotiationDealCancelReply mReplyMsg = new ORIDataNegotiationDealCancelReply(new HashMap());
+//                        
+//                        mReplyMsg.setfBundleMessageVersion((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleMessageVersion() : "");
+//                        mReplyMsg.setfBundleConnectionName((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleConnectionName() : "");
+//                        mReplyMsg.setfNegotiationDealCancelReplyType(ORIDataNegotiationDealCancelReply.ORINegotiationDealCancelReplyType.OK);
+//
+//                        mReplyMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
+//                        
+//                        mReplyMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
+//                        mReplyMsg.setfExecRefID(mInputMsgRequest.getfTradeReportRefID());
+//                        
+//                        mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+//                        mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_CANCEL);
+//                        mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_CANCELLED);
+//                        mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_CANCELLED);
+//                        mReplyMsg.setfSymbol(" ");
+//                        mReplyMsg.setfSide(" ");
+//                        mReplyMsg.setfLeavesQty(0);
+//                        mReplyMsg.setfCumQty(0);
+//                        mReplyMsg.setfAvgPx(0);
+//                        mReplyMsg.setfHandlInst((mOriginRequestMsg != null) ? mOriginRequestMsg.getfHandlInst() : ORIFieldValue.HANDLINST_NEGOTIATIONDEAL);
+//                        mReplyMsg.setfLastPx(0);
+//                        mReplyMsg.setfLastShares(0);
+//                        
+//                        JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
+//                        if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
+//                            if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
+//                                //... .
+//                            }else{
+//                                //.???:
+//                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send direct @submit(trade)");
+//                            }
+//                        }else{
+//                            //.???:
+//                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send @submit(trade)");
+//                        }
+//                        
+//                        //.buat qrinegdeallist(martin):
+//                        QRIDataNegDealListMessage mNegDealListMsg = BookOfMARTINNegDealList.getInstance.retrieveSheet(StringHelper.toLong(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(),false)));
+//                        if (mNegDealListMsg != null){
+//                            mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_CANCELLED);
+//                            mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.WITHDRAWN_DEAL.getValue());
+//                        }
+//                        
+//                        //. save orderlist ke memory martin
+//                        BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
+//                        //. broadcast orderlist via martin
+//                        BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);
+//                        
+//                        //.???:
+//                        ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "Found route @decline(reject) and Valid");
+//                    }else{
+//                        //.???:
+//                        ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "Found route @decline(reject) but Invalid");
+//                    }
                     //.???:
                     //ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @decline(reject)");
                 }else if (mInputMsgRequest.getfTradeReportType().equalsIgnoreCase(FIX5JonecFieldValue.TRADE_REPORT_TYPE_SUBMIT)){
@@ -422,7 +384,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         if (mOriginRequest.getIdxMessage() instanceof ORIDataNegotiationDeal){
                             mOriginRequestMsg = ((ORIDataNegotiationDeal)mOriginRequest.getIdxMessage());
                             if ((mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.Crossing || mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide)
-                                && (mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
+//                                && (mInputMsgRequest.getfSide1().equalsIgnoreCase(mOriginRequestMsg.getfSide()))
                                 ){
                                 //.inisiator(???):
                                 bIsValid = true;
@@ -444,58 +406,62 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                             bIsValid = false;
                             bIsCounterpart = false;
                             //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @submit(trade) invalid BrokerRef from TradeReportRefID:" + mInputMsgRequest.getfTradeReportRefID());
+                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @submit(trade) invalid BrokerRef from ClOrderID:" + mInputMsgRequest.getfClOrderID());
                         }
                     }else{
                         //.submit dari broker lain:
                         bIsValid = false;
                         bIsCounterpart = true;
+                        System.out.println("Invalid TradeReportType Submit = "+mInputMsgRequest.msgToString());
                     }
                     if (bIsValid){
                         //.buat executionreport(reply):
-                        ORIDataNegotiationDealReply mReplyMsg = new ORIDataNegotiationDealReply(new HashMap());
-
-                        mReplyMsg.setfBundleMessageVersion((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleMessageVersion() : "");
-                        mReplyMsg.setfBundleConnectionName((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleConnectionName() : "");
-                        mReplyMsg.setfNegotiationDealReplyType(ORINegotiationDealReplyType.ConfirmationOK);
-                        
-                        mReplyMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
-
-                        mReplyMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
-
-                        mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                        mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_NEW);
-                        mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_NEW);
-                        if ((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfTrdMatchID())) && (!mInputMsgRequest.getfTrdMatchID().equalsIgnoreCase("0"))){
-                            mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_FULLY_MATCH);
-                        }else{
-                            mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_NEW);
-                        }
-                        mReplyMsg.setfSymbol(mInputMsgRequest.getfSymbol());
-                        mReplyMsg.setfSide(mInputMsgRequest.getfSide1());
-                        mReplyMsg.setfSettlDate((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlDate())) ? mInputMsgRequest.getfSettlDate() : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDate() : ""));
-                        mReplyMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlMethod())) ? (mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
-                        mReplyMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
-                        mReplyMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
-                        mReplyMsg.setfLeavesQty(0);
-                        mReplyMsg.setfCumQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
-                        mReplyMsg.setfAvgPx(0);
-                        mReplyMsg.setfHandlInst((mOriginRequestMsg != null) ? mOriginRequestMsg.getfHandlInst() : ORIFieldValue.HANDLINST_NEGOTIATIONDEAL);
-                        mReplyMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
-                        mReplyMsg.setfLastShares(0);
-                        
-                        JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
-                        if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
-                            if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
-                                //... .
-                            }else{
-                                //.???:
-                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send direct @submit(trade)");
-                            }
-                        }else{
-                            //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send @submit(trade)");
-                        }
+                        //.20251203: sementara diremark, karena sudah dihandle dari fixOE (FIX5JonecWorkDataTradeCaptureReportAck)
+//                        ORIDataNegotiationDealReply mReplyMsg = new ORIDataNegotiationDealReply(new HashMap());
+//
+//                        mReplyMsg.setfBundleMessageVersion((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleMessageVersion() : "");
+//                        mReplyMsg.setfBundleConnectionName((mOriginRequestMsg != null) ? mOriginRequestMsg.getfBundleConnectionName() : "");
+//                        mReplyMsg.setfNegotiationDealReplyType(ORINegotiationDealReplyType.ConfirmationOK);
+//                        
+//                        //.20251203: ada 2 alternatif antara ambil tag 37 (orderID) / tradeReportID, untuk sementara yg dipakai orderID
+////                        mReplyMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
+//                        mReplyMsg.setfOrderID(mInputMsgRequest.getfOrderID());
+//
+//                        mReplyMsg.setfClOrdID(mInputMsgRequest.getfClOrderID());
+//
+//                        mReplyMsg.setfExecID(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
+//                        mReplyMsg.setfExecTransType(ORIFieldValue.EXECTRANSTYPE_NEW);
+//                        mReplyMsg.setfExecType(ORIFieldValue.EXECTYPE_NEW);
+//                        if ((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfTrdMatchID())) && (!mInputMsgRequest.getfTrdMatchID().equalsIgnoreCase("0"))){
+//                            mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_FULLY_MATCH);
+//                        }else{
+//                            mReplyMsg.setfOrdStatus(ORIFieldValue.ORDSTATUS_NEW);
+//                        }
+//                        mReplyMsg.setfSymbol(mInputMsgRequest.getfSymbol());
+//                        mReplyMsg.setfSide(mInputMsgRequest.getfSide1());
+//                        mReplyMsg.setfSettlDate((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlDate())) ? mInputMsgRequest.getfSettlDate() : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDate() : ""));
+//                        mReplyMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlMethod())) ? (mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
+//                        mReplyMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
+//                        mReplyMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
+//                        mReplyMsg.setfLeavesQty(0);
+//                        mReplyMsg.setfCumQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
+//                        mReplyMsg.setfAvgPx(0);
+//                        mReplyMsg.setfHandlInst((mOriginRequestMsg != null) ? mOriginRequestMsg.getfHandlInst() : ORIFieldValue.HANDLINST_NEGOTIATIONDEAL);
+//                        mReplyMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
+//                        mReplyMsg.setfLastShares(0);
+//                        
+//                        JONECSimCallbackProcessor mClientLine = JONECSimCallbackController.getInstance.getActiveChannelProcessorByConnName(mReplyMsg.getfBundleConnectionName());
+//                        if ((mClientLine != null) && (mClientLine.getAlreadyLoggedIn()) && ((mClientLine.getChChannel() != null))){
+//                            if (mClientLine.getChChannel().sendMessageDirect(mReplyMsg.msgToString())){
+//                                //... .
+//                            }else{
+//                                //.???:
+//                                ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send direct @submit(trade)");
+//                            }
+//                        }else{
+//                            //.???:
+//                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send @submit(trade)");
+//                        }
                         
                         //.buat qrinegdeallist(martin):
                         boolean bNegDealListFirstFound = false;
@@ -507,10 +473,11 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         }
                         
                         if (!bNegDealListFirstFound){
+                            //.????????????????????????? antara menggunakan orderID atau TradeReportID
                             mNegDealListMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
                         }
                         
-                        mNegDealListMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
+                        mNegDealListMsg.setfClOrdID(mInputMsgRequest.getfClOrderID());
                         mNegDealListMsg.setfClientID(zTraderID);
                         mNegDealListMsg.setfExecBroker(zBrokerID);
                         mNegDealListMsg.setfNoContraBrokers(1);
@@ -519,7 +486,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime())));
                         mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
                         
-                        if ((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfTrdMatchID())) && (!mInputMsgRequest.getfTrdMatchID().equalsIgnoreCase("0"))){
+                        if ((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfMatchStatus())) && (mInputMsgRequest.getfMatchStatus().equalsIgnoreCase("0"))){
                             mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NORMAL_MATCH);
                             mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.MATCHED_DEAL.getValue());
                         }else{
@@ -551,7 +518,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                             mNegDealListMsg.setfCumQty(0);
                         }
                         mNegDealListMsg.setfAvgPx(0);
-                        mNegDealListMsg.setfText("  " + mInputMsgRequest.getfTradeReportID() + "/" + mInputMsgRequest.getfExecID() + "/" + mInputMsgRequest.getfTrdMatchID() + " ");
+                        mNegDealListMsg.setfText("  " + mInputMsgRequest.getfTradeReportID() + "/" + mInputMsgRequest.getfExecID() + "/" + zTrdMatchIDNew + " ");
                         mNegDealListMsg.setfClearingAccount(" ");
                         mNegDealListMsg.setfComplianceID((mOriginRequestMsg != null) ? mOriginRequestMsg.getfComplianceID() : "");
                         mNegDealListMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));
@@ -564,8 +531,8 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         //.buat qritradelist(martin):
                         QRIDataTradeListMessage mTradeListMsg = new QRIDataTradeListMessage(new HashMap());
                         mTradeListMsg.setfOrderID(StringHelper.toLong(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false)));
-                        mTradeListMsg.setfClOrdID(mInputMsgRequest.getfTradeReportRefID());
-                        mTradeListMsg.setfSecondaryOrderID(StringHelper.toLong(mInputMsgRequest.getfTrdMatchID()));
+                        mTradeListMsg.setfClOrdID(mInputMsgRequest.getfClOrderID());
+                        mTradeListMsg.setfSecondaryOrderID(StringHelper.toLong(zTrdMatchIDNew));
                         mTradeListMsg.setfTransactionTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
                         mTradeListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
                         mTradeListMsg.setfClientID(zTraderID);

@@ -300,6 +300,60 @@ public class ITMMapBackupProcessor implements Runnable {
         }
         return mOut;
     }
+    //.20251128: tambah connection name karena sekarang koneksinya bisa lebih dari 1
+    public synchronized boolean backupMapObjectToFile2(Object mKey, Object mValue, String zConnectionName){
+        boolean mOut = false;
+        try{
+            if ((mKey != null) && (mValue != null) && (this.oTargetMap != null)){
+                boolean bUseJSON = false;
+                String zKeyField = "";
+                String zValueField = "";
+                String zFinalLine = "";
+                if (mKey instanceof Double){
+                    zKeyField = StringHelper.fromDouble((double)mKey);
+                }else if (mKey instanceof Long){
+                    zKeyField = StringHelper.fromLong((long)mKey);
+                }else if (mKey instanceof Integer){
+                    zKeyField = StringHelper.fromInt((int)mKey);
+                }else if (mKey instanceof String){
+                    zKeyField = (String)mKey;
+                }else{
+                    zKeyField = mKey.toString();
+                }
+                if (mValue instanceof Double){
+                    bUseJSON = false;
+                    zValueField = StringHelper.fromDouble((double)mValue);
+                }else if (mValue instanceof Long){
+                    bUseJSON = false;
+                    zValueField = StringHelper.fromLong((long)mValue);
+                }else if (mValue instanceof Integer){
+                    bUseJSON = false;
+                    zValueField = StringHelper.fromInt((int)mValue);
+                }else if (mValue instanceof String){
+                    bUseJSON = false;
+                    zValueField = (String)mValue;
+                }else{
+                    bUseJSON = true;
+                    Gson mGson = new GsonBuilder().create();
+                    zValueField = mGson.toJson(mValue, this.tTargetMapValueType);
+                }
+                //.20251128: sekarang key nya ditambah connection name karena sekarang koneksinya bisa lebih dari 1
+                zKeyField = generateMapBackupKey(zKeyField, zConnectionName);
+                zFinalLine = "M|" + zKeyField + "|" + ((bUseJSON ? "1" : "0") + "|" + zValueField + "|OK");
+                if (!StringHelper.isNullOrEmpty(zFinalLine)){
+                    this.clqInMemoryMapLines.add(zFinalLine);
+                    mOut = true;
+                }
+            }
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "exception to backup map for:" + zBackupCode + " > err:" + ex0);
+        }
+        return mOut;
+    }
+    
+    public String generateMapBackupKey(String seq, String connectionName) {
+        return seq + "-" + connectionName;
+    }
     
     public synchronized boolean backupMapObjectToFile(Object mKey, Object mValue){
         boolean mOut = false;

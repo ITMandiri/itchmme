@@ -21,6 +21,8 @@ import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataOrderCancelRequest;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataOrderMassActionReport;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataOrderMassActionRequest;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataPositionReport;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataQuoteResponse;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataQuoteStatusReport;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataReject;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataRequestforPositions;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataResendRequest;
@@ -28,6 +30,7 @@ import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataSequenceReset;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTestRequest;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTradeCaptureReport;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTradeCaptureReportAck;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataTradeCaptureReportRequestAck;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataUnknownMessage;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
@@ -47,6 +50,8 @@ import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataOr
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataOrderMassActionReport;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataOrderMassActionRequest;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataPositionReport;
+import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataQuoteResponse;
+import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataQuoteStatusReport;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataReject;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataRequestforPositions;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataResendRequest;
@@ -54,6 +59,7 @@ import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataSe
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTestRequest;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTradeCaptureReport;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTradeCaptureReportAck;
+import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTradeCaptureReportRequestAck;
 
 /**
  *
@@ -143,6 +149,15 @@ public class FIX5JonecMsgTransRecvBridge {
                 mOut = true;
             }else if (messageObject instanceof FIX5JonecDataPositionReport){
                 FIX5JonecWorkDataPositionReport.getInstance.doWork(channel, controller, (FIX5JonecDataPositionReport) messageObject);
+                mOut = true;
+            }else if (messageObject instanceof FIX5JonecDataQuoteResponse){
+                FIX5JonecWorkDataQuoteResponse.getInstance.doWork(channel, controller, (FIX5JonecDataQuoteResponse) messageObject);
+                mOut = true;
+            }else if (messageObject instanceof FIX5JonecDataQuoteStatusReport){
+                FIX5JonecWorkDataQuoteStatusReport.getInstance.doWork(channel, controller, (FIX5JonecDataQuoteStatusReport) messageObject);
+                mOut = true;
+            }else if (messageObject instanceof FIX5JonecDataTradeCaptureReportRequestAck){
+                FIX5JonecWorkDataTradeCaptureReportRequestAck.getInstance.doWork(channel, controller, (FIX5JonecDataTradeCaptureReportRequestAck) messageObject);
                 mOut = true;
             }
             

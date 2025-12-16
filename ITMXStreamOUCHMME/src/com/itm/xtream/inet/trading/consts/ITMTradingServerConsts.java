@@ -13,7 +13,7 @@ import com.itm.idx.data.jonec.consts.JonecConst;
  */
 public class ITMTradingServerConsts {
     
-    public final static String SVR_APP_VERSION_BUILD                = "1.22.06.14 build_ab_2025.08.29bx-MME TRIAL"; //."1.22.03.25 build_ab_2022.03.25dx"; //."1.21.12.28 build_ab_2022.03.18bx"; //."1.21.10.04 build_ab_2021.10.04a"; //."1.21.07.22 build_sh_2021.07.22a"; //."1.21.07.06 build_sh_2021.07.06b"; //. 1.20.05.27 build_sh_2020.05.27a
+    public final static String SVR_APP_VERSION_BUILD                = "1.22.06.14 build_ab_2025.12.11ax-MME TRIAL"; //."1.22.03.25 build_ab_2022.03.25dx"; //."1.21.12.28 build_ab_2022.03.18bx"; //."1.21.10.04 build_ab_2021.10.04a"; //."1.21.07.22 build_sh_2021.07.22a"; //."1.21.07.06 build_sh_2021.07.06b"; //. 1.20.05.27 build_sh_2020.05.27a
     public final static String SVR_APP_CUSTOM_CAPTION               = "OUCH 5.0.0.1 Build 22.02.25"; //. special request for custom  caption    
     public final static String SVR_PROTOCOL_VERSION                 = "1aa";
     public final static String SVR_SETTINGS_MINIMUM_VERSION         = "1.20.05.27";

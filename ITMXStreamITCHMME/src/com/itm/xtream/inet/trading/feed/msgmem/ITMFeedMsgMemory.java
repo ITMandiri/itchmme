@@ -192,7 +192,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                             if (arrMarketSegmentName.length > 1) {
-                                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                zBoardCode = arrMarketSegmentName[1];
                             }
                         }
                         
@@ -258,7 +258,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                             if (arrMarketSegmentName.length > 1) {
-                                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                zBoardCode = arrMarketSegmentName[1];
                             }
                         }
                         
@@ -318,7 +318,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                             if (arrMarketSegmentName.length > 1) {
-                                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                zBoardCode = arrMarketSegmentName[1];
                             }
                         }
                         
@@ -384,7 +384,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                             if (arrMarketSegmentName.length > 1) {
-                                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                zBoardCode = arrMarketSegmentName[1];
                             }
                         }
                         fMsg.setSecurityCode(zStockCode);
@@ -451,7 +451,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                                     String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                                     String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                                     if (arrMarketSegmentName.length > 1) {
-                                        zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                        zBoardCode = arrMarketSegmentName[1];
                                     }
                                 }
                                 
@@ -530,7 +530,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                                     String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                                     String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                                     if (arrMarketSegmentName.length > 1) {
-                                        zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                        zBoardCode = arrMarketSegmentName[1];
                                     }
                                 }
                                 
@@ -704,13 +704,15 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             zStockCode = zSymbol.split("_")[0];
                             zBoardCode = zSymbol.split("_")[1];
                         }
-                        String zStockName = mMsg.getLongName().trim();
+                        //.20251113: long name ada yang kosong, pakai asset extended name
+//                        String zStockName = mMsg.getLongName().trim();
+                        String zStockName = mMsg.getAssetExtendedName().trim();
                         String zMarketSegment = "";
                         String zStockID = StringHelper.fromLong(mMsg.getIssuerId());
                         String zStockType = "";
                         String zPreOpening = "";
                         String zSymboxSfx = "0";
-
+                       
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(mMsg.getMarketSegmentId());
                         if (mSheetMarketSegmentDirectory != null) {
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
@@ -871,7 +873,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         //. simpan ke table database
                         //. simpan stock yang equity saja
                         if (mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
-                            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+//                            System.out.println(mCmpRec.getfSecurityCode() + " = " + mCmpRec.getfSecurityName());
+//                            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
                         }
                     }
                     
@@ -1365,7 +1368,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                             if (arrMarketSegmentName.length > 1) {
-                                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                zBoardCode = arrMarketSegmentName[1];
                             }
                         }
                         
@@ -1421,7 +1424,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             mCmpRec.setfStockType(zMarketSegment);
                             if (value.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
 //                                System.out.println(zStockCode);
-                                DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+//                                DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
                             }
                         }
                         
@@ -1434,6 +1437,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     boolean isSendRecord = false;
                     
                     SheetOfITCHOrderBookDirectoryMDF sheetOD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
+                    
                     
                     if (sheetOD != null 
                             && (mMsg.getPriceType() == ITCHConsts.ITCHPriceTypeField.PRICE_TYPE_EVER_LAST 
@@ -1457,6 +1461,9 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             zBoardCode = zSymbol.split("_")[1];
                         }
                         
+                        if (zStockCode.toUpperCase().contains("ANTM")) {
+                             System.out.println("sheetOD.getMessage().getSymbol()");
+                        }
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
                             zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
@@ -1467,7 +1474,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                             if (arrMarketSegmentName.length > 1) {
-                                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                zBoardCode = arrMarketSegmentName[1];
                             }
                         }
                         if (mMsg.getPrice() == 0) {
@@ -1495,7 +1502,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         mCmpRec.setfPrevPrice(StringHelper.fromDouble(prevPrice));
 
                         //. simpan ke table database
-                        DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+//                        DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
                         
                         fMsg.setPrevPrice(String.valueOf(prevPrice));
                         fMsg.setHighPrice(String.valueOf(highPrice));
@@ -1558,7 +1565,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
                             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
                             if (arrMarketSegmentName.length > 1) {
-                                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                                zBoardCode = arrMarketSegmentName[1];
                             }
                         }
                         
@@ -1584,7 +1591,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         mCmpRec.setfPrevPrice(StringHelper.fromDouble(prevPrice));
 
                         //. simpan ke table database
-                        DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+//                        DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
                         
                         fMsg.setPrevPrice(String.valueOf(prevPrice));
                         fMsg.setHighPrice(String.valueOf(highPrice));
@@ -1673,18 +1680,18 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         //. ke memory string
         lstFeedStr.add(_msg);
         
-//        try
-//        {
-//            //System.out.println(_msg);
-//            String filename= o.getDate() + ".raw";
-//            FileWriter fw = new FileWriter(filename, true); 
-//            fw.write(_msg + "ZZ\r\n");//appends the string to the file
-//            fw.close();
-//        }
-//        catch(IOException ioe)
-//        {
-//            System.err.println("IOException: " + ioe.getMessage());
-//        }
+        try
+        {
+            //System.out.println(_msg);
+            String filename= o.getDate() + ".raw";
+            FileWriter fw = new FileWriter(filename, true); 
+            fw.write(_msg + "ZZ\r\n");//appends the string to the file
+            fw.close();
+        }
+        catch(IOException ioe)
+        {
+            System.err.println("IOException: " + ioe.getMessage());
+        }
         
     }
     private int getCurTimeHHmm(){
@@ -1783,7 +1790,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
             String arrMarketSegmentName[] = zMarketSegmentName.split("_");
             if (arrMarketSegmentName.length > 1) {
-                zBoardCode = arrMarketSegmentName[arrMarketSegmentName.length - 1];
+                zBoardCode = arrMarketSegmentName[1];
             }
         }
 
@@ -1820,7 +1827,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         mCmpRec.setfSecurityTradingStatus(szStockStatus);
         //. simpan ke table database
         if (sheetOBD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
-            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+//            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
         }
         
     }

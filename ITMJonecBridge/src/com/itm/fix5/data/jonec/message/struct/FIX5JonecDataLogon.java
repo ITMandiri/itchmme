@@ -179,7 +179,7 @@ public class FIX5JonecDataLogon extends FIX5JonecDataHeader {
                 sb.append(getfText()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
             sb.append(FIX5JonecFieldTag.DEFAULTAPPLVERID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-            sb.append(getfDefaultApplVerID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            sb.append(getfDefaultApplVerID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);           
             zOut = sb.toString();
         }catch(Exception ex0){
             //.EXXX.

@@ -22,6 +22,11 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
         FIX5_JONEC_MESSAGE
     }
     
+    public enum FIX5IDXSubGroupMessageType{
+        FIX5_ORDER_ENTRY,
+        FIX5_DROP_COPY
+    }
+    
     public enum FIX5IDXBridgeStatus{ //.connecting, connected, disconnecting, disconnected.
         SCK_DISCONNECTED        (0, "Disconnected"),
         SCK_DISCONNECTING       (1, "Disconnecting"),
@@ -47,6 +52,7 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
     private int iRefCheckInterval                               = 0;
     
     private FIX5IDXGroupMessageType msgGroupType                    = FIX5IDXGroupMessageType.FIX5_JONEC_MESSAGE;
+    private FIX5IDXSubGroupMessageType msgSubGroupType              = FIX5IDXSubGroupMessageType.FIX5_ORDER_ENTRY;
     private FIX5IDXBridgeStatus stsBridgeStatus                     = FIX5IDXBridgeStatus.SCK_DISCONNECTED;
     
     private final AtomicBoolean bMustConnected                      = new AtomicBoolean(false);
@@ -56,6 +62,8 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
     private boolean bIsAdminPasswordExpired                     = false;
     private boolean bIsAdminPasswordNearExpire                  = false;
     private String zLastMessage                                 = "";
+    //.20251128
+    private boolean bIsAdminSubscribed                          = false;
     
     //.fix5auth&configurations:
     private int fConnectionOrderNo                              = 0;
@@ -135,6 +143,17 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
         this.msgGroupType = msgGroupType;
     }
     
+    public FIX5IDXSubGroupMessageType getMsgSubGroupType() {
+        if (this.msgSubGroupType == null){
+            this.msgSubGroupType = FIX5IDXSubGroupMessageType.FIX5_ORDER_ENTRY;
+        }
+        return this.msgSubGroupType;
+    }
+
+    public void setMsgSubGroupType(FIX5IDXSubGroupMessageType msgSubGroupType) {
+        this.msgSubGroupType = msgSubGroupType;
+    }
+    
     public FIX5IDXBridgeStatus getStsBridgeStatus() {
         if (this.stsBridgeStatus == null){
             this.stsBridgeStatus = FIX5IDXBridgeStatus.SCK_DISCONNECTED;
@@ -178,6 +197,14 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
 
     public void setLastMessage(String zLastMessage) {
         this.zLastMessage = zLastMessage;
+    }
+
+    public boolean getIsAdminSubscribed() {
+        return bIsAdminSubscribed;
+    }
+
+    public void setIsAdminSubscribed(boolean bIsAdminSubscribed) {
+        this.bIsAdminSubscribed = bIsAdminSubscribed;
     }
     
     //.fix5auth&configurations:
@@ -353,7 +380,7 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
                 //.set (awal) status:
                 stsBridgeStatus = FIX5IDXBridgeStatus.SCK_CONNECTING;
                 //.coba koneksi:
-                connect(this.zRefServerAddress, this.iRefServerPort, this.iRefTryConnectTimeOut);
+                connectFix(this.zRefServerAddress, this.iRefServerPort, this.iRefTryConnectTimeOut);
             }
             //.proses-inworker:
             verifyConnection();
@@ -510,7 +537,7 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
                                 //.set (awal) status:
                                 stsBridgeStatus = FIX5IDXBridgeStatus.SCK_CONNECTING;
                                 //.coba koneksi:
-                                connect(zRefServerAddress, iRefServerPort, iRefTryConnectTimeOut);
+                                connectFix(zRefServerAddress, iRefServerPort, iRefTryConnectTimeOut);
                                 //.cek status:
                                 stsBridgeStatus = (isConnected() ? FIX5IDXBridgeStatus.SCK_CONNECTED : FIX5IDXBridgeStatus.SCK_DISCONNECTED );
                             }

@@ -36,6 +36,9 @@ public class ORIDataNewOrder extends ORIDataHeader {
     private String fText                                        = "";//
     private String fClearingAccount                             = "";//
     private String fComplianceID                                = "";//
+    //.20251126
+    private String fSettleMethod                                = "";//
+    private String fQuoteID                                     = "";//
     
     public ORIDataNewOrder(Map<String, String> inputMsgFields) {
         super(inputMsgFields);
@@ -192,6 +195,22 @@ public class ORIDataNewOrder extends ORIDataHeader {
     public void setfComplianceID(String fComplianceID) {
         this.fComplianceID = fComplianceID;
     }
+
+    public String getfSettleMethod() {
+        return fSettleMethod;
+    }
+
+    public void setfSettleMethod(String fSettleMethod) {
+        this.fSettleMethod = fSettleMethod;
+    }
+
+    public String getfQuoteID() {
+        return fQuoteID;
+    }
+
+    public void setfQuoteID(String fQuoteID) {
+        this.fQuoteID = fQuoteID;
+    }
     
     public boolean assignMessage(){
         boolean bOut = false;
@@ -261,6 +280,12 @@ public class ORIDataNewOrder extends ORIDataHeader {
                         case ORIDataConst.ORIFieldTag.COMPLIANCEID:
                             setfComplianceID(zValue);
                             break;
+                        case ORIDataConst.ORIFieldTag.SETTLEMETHOD:
+                            setfSettleMethod(zValue);
+                            break;
+                        case ORIDataConst.ORIFieldTag.QUOTEID:
+                            setfQuoteID(zValue);
+                            break;
                         default:
                             break;
                     }
@@ -277,6 +302,8 @@ public class ORIDataNewOrder extends ORIDataHeader {
         String zOut = "";
         try{
             StringBuilder sb = new StringBuilder();
+            sb.append(ORIFieldTag.QUOTEID).append(ORIFieldFmt.KV_SEPARATOR);
+            sb.append(getfQuoteID()).append(ORIFieldFmt.FIELD_SEPARATOR);
             sb.append(ORIFieldTag.CLORDID).append(ORIFieldFmt.KV_SEPARATOR);
             sb.append(getfClOrdID()).append(ORIFieldFmt.FIELD_SEPARATOR);
             sb.append(ORIFieldTag.CLIENTID).append(ORIFieldFmt.KV_SEPARATOR);
@@ -319,6 +346,8 @@ public class ORIDataNewOrder extends ORIDataHeader {
             sb.append(getfClearingAccount()).append(ORIFieldFmt.FIELD_SEPARATOR);
             sb.append(ORIFieldTag.COMPLIANCEID).append(ORIFieldFmt.KV_SEPARATOR);
             sb.append(getfComplianceID()).append(ORIFieldFmt.FIELD_SEPARATOR);
+            sb.append(ORIFieldTag.SETTLEMETHOD).append(ORIFieldFmt.KV_SEPARATOR);
+            sb.append(getfSettleMethod()).append(ORIFieldFmt.FIELD_SEPARATOR);
             //... .
             zOut = sb.toString();
         }catch(Exception ex0){

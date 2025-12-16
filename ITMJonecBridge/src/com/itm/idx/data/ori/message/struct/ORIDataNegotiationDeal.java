@@ -6,6 +6,7 @@ package com.itm.idx.data.ori.message.struct;
 
 import com.itm.idx.data.ori.consts.ORIDataConst;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
+import com.itm.idx.data.jonec.consts.JonecConst;
 import com.itm.idx.data.ori.consts.ORIDataConst.ORIFieldValue;
 import com.itm.idx.data.ori.consts.ORIDataConst.ORIFieldValueLength;
 import java.util.Map;
@@ -359,6 +360,11 @@ public class ORIDataNegotiationDeal extends ORIDataHeader {
                 String zTagFieldText = getfText();
                 if (StringHelper.isNullOrEmpty(zTagFieldText)){
                     setfNegotiationDealType(ORINegotiationDealType.Confirmation);
+                }else if (zTagFieldText.length() <= 12){
+                    setfNegotiationDealType(ORINegotiationDealType.Confirmation);
+                    int pFieldPosBegin = 0;
+                    int pFieldPosEnd = (pFieldPosBegin + ORIFieldValueLength.ORDER_NEGDEAL_SUB_TEXT_COUNTERPART_USERID);
+                    setSfCounterpartUserID(StringHelper.trimStr(zTagFieldText.substring(pFieldPosBegin, pFieldPosEnd)));
                 }else if (zTagFieldText.length() >= 73){
                     setfNegotiationDealType(ORINegotiationDealType.Crossing);
                     int pFieldPosBegin = 0;
@@ -393,6 +399,9 @@ public class ORIDataNegotiationDeal extends ORIDataHeader {
                     pFieldPosBegin = pFieldPosEnd;
                     pFieldPosEnd = (pFieldPosBegin + ORIFieldValueLength.ORDER_NEGDEAL_SUB_TEXT_REMINDER_TIME_INTERVAL);
                     setSfReminderTimeInterval(StringHelper.toInt(StringHelper.trimStr(zTagFieldText.substring(pFieldPosBegin, pFieldPosEnd))));
+                    pFieldPosBegin = pFieldPosEnd;
+                    pFieldPosEnd = (pFieldPosBegin + ORIFieldValueLength.ORDER_NEGDEAL_SUB_TEXT_COUNTERPART_TRADING_ID);
+                    setSfCounterpartTradingID(StringHelper.trimStr(zTagFieldText.substring(pFieldPosBegin, pFieldPosEnd)));
                 }
             }
         }catch(Exception ex0){
