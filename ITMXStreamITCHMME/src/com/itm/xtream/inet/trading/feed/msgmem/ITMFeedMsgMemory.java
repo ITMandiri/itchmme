@@ -184,7 +184,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                         }
                         
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getMarketSegmentId());
@@ -250,7 +251,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                         }
                         
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getMarketSegmentId());
@@ -310,7 +312,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                         }
                         
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getMarketSegmentId());
@@ -376,7 +379,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                         }
                         
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getMarketSegmentId());
@@ -443,7 +447,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                                 
                                 SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getIssuerId());
                                 if (mSheetIssuerDirectory != null) {
-                                    zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                                    //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                                    zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                                 }
                                 
                                 SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getMarketSegmentId());
@@ -522,7 +527,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                                 
                                 SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getIssuerId());
                                 if (mSheetIssuerDirectory != null) {
-                                    zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                                    //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                                    zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                                 }
                                 
                                 SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getMarketSegmentId());
@@ -707,12 +713,16 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         //.20251113: long name ada yang kosong, pakai asset extended name
 //                        String zStockName = mMsg.getLongName().trim();
                         String zStockName = mMsg.getAssetExtendedName().trim();
+                        //.jika getAssetExtendedName kosong, coba ambil dari longname
+                        if (StringHelper.isNullOrEmpty(zStockName)) {
+                            zStockName = mMsg.getLongName().trim();
+                        }
                         String zMarketSegment = "";
                         String zStockID = StringHelper.fromLong(mMsg.getIssuerId());
                         String zStockType = "";
                         String zPreOpening = "";
                         String zSymboxSfx = "0";
-                       
+                        
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(mMsg.getMarketSegmentId());
                         if (mSheetMarketSegmentDirectory != null) {
                             String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
@@ -725,9 +735,10 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
 
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(mMsg.getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockID = StringHelper.fromLong(mSheetIssuerDirectory.getMessage().getIssuerId());
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
-                            zStockName = mSheetIssuerDirectory.getMessage().getLongName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockID = StringHelper.fromLong(mSheetIssuerDirectory.getMessage().getIssuerId());
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+//                            zStockName = mSheetIssuerDirectory.getMessage().getLongName().trim();
                         }
 
                         if (!FEEDMsgHelper.getInstance.mapSendStockData.containsKey(zStockCode)){
@@ -806,17 +817,18 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             }
 
                             zSymboxSfx += mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName();
-
-                            if (zSymboxSfx.equalsIgnoreCase(QRIDataConst.SymbolSfx.BoardRG.getValue())){
+                            
+                            //.20260110: Nilai zSymboxSfx dari marketSegment "0WATCH-CALL_RG", maka sekarang pengkondisiannya menggunakan constains _Board saja
+                            if (zSymboxSfx.contains("_RG")){
                                 mCmpRec.setfBoard_RG(StringHelper.fromInt(QRIDataConst.QRIFieldValue.BOARD_SET));
                                 mCmpRec.setfBoard_RG(StringHelper.fromLong(mMsg.getOrderBookId()));
                                 mCmpRec.setfLastPrice_RG(StringHelper.fromDouble(0));
                                 mCmpRec.setfLotSize(StringHelper.fromLong(mMsg.getRoundLotSize()));
-                            }else if (zSymboxSfx.equalsIgnoreCase(QRIDataConst.SymbolSfx.BoardTN.getValue())){
+                            }else if (zSymboxSfx.contains("_TN")){
                                 mCmpRec.setfBoard_TN(StringHelper.fromInt(QRIDataConst.QRIFieldValue.BOARD_SET));
                                 mCmpRec.setfBoard_TN(StringHelper.fromLong(mMsg.getOrderBookId()));
                                 mCmpRec.setfLastPrice_TN(StringHelper.fromDouble(0));
-                            }else if (zSymboxSfx.equalsIgnoreCase(QRIDataConst.SymbolSfx.BoardNG.getValue())){
+                            }else if (zSymboxSfx.contains("_NG")){
                                 mCmpRec.setfBoard_NG(StringHelper.fromInt(QRIDataConst.QRIFieldValue.BOARD_SET));
                                 mCmpRec.setfLotSize(null);
                                 mCmpRec.setfBoard_NG(StringHelper.fromLong(mMsg.getOrderBookId()));
@@ -874,7 +886,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         //. simpan stock yang equity saja
                         if (mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
 //                            System.out.println(mCmpRec.getfSecurityCode() + " = " + mCmpRec.getfSecurityName());
-//                            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+                            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
                         }
                     }
                     
@@ -1360,7 +1372,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                         }
                         
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getMarketSegmentId());
@@ -1393,6 +1406,79 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     //...
                 } else if (itchMessage instanceof ITCHMsgIndicativeQuote){
                     //...
+                    ITCHMsgIndicativeQuote mMsg = (ITCHMsgIndicativeQuote)itchMessage;
+                    
+                    SheetOfITCHOrderBookDirectoryMDF sheetOD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
+                        
+                    if (sheetOD != null && mMsg.getIndicativeQuoteId() > 0){ //. new order
+//                        System.out.println(mMsg);
+                        long lQtyTraded = 0;
+                        
+//                        lPriceDecimals = sheetOD.getMessage().getDecimalsInPrice();
+//                        mMsg.setPriceDecimals(lPriceDecimals);
+                        //. FEEDMsgOrder
+                        String mOrderVerb = String.valueOf((char)mMsg.getSide());
+                        if (mOrderVerb == null) mOrderVerb = "";
+                        
+                        if (mOrderVerb.equalsIgnoreCase("B")){
+                            mOrderVerb = "0";
+                        }else if (mOrderVerb.equalsIgnoreCase("A")){
+                            mOrderVerb = "1";
+                        }
+                        
+                        FEEDMsgOrder fMsg = new FEEDMsgOrder();
+                        String zSymbol = sheetOD.getMessage().getSymbol().trim();
+                        String arrSymbol[] = zSymbol.split("_");
+                        String zStockCode = zSymbol;
+                        String zBoardCode = "";
+                        if (arrSymbol.length > 1) {
+                            zStockCode = arrSymbol[0];
+                            zBoardCode = arrSymbol[1];
+                        }
+                        fMsg.setOrderTime(ITMSoupBinTCPBridgePacketFormat.getTimeDataFeedFormatFromDate(mSheet.getMessageDate())); //. ???
+                        fMsg.setOrderCommand(String.valueOf(mOrderVerb));
+                        
+                        SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getIssuerId());
+                        if (mSheetIssuerDirectory != null) {
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                        }
+                        
+                        SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getMarketSegmentId());
+                        if (mSheetMarketSegmentDirectory != null) {
+                            String zMarketSegmentName = mSheetMarketSegmentDirectory.getMessage().getMarketSegmentName().trim();
+                            String arrMarketSegmentName[] = zMarketSegmentName.split("_");
+                            if (arrMarketSegmentName.length > 1) {
+                                zBoardCode = arrMarketSegmentName[1];
+                            }
+                        }
+                        
+                        fMsg.setSecurityCode(zStockCode);
+                        fMsg.setBoardCode(zBoardCode);
+                        fMsg.setBrokerCode(""); 
+                        fMsg.setPrice(String.valueOf(mMsg.getPrice()));
+                        fMsg.setVolume(String.valueOf((mMsg.getQuantity() + lQtyTraded) * sheetOD.getMessage().getRoundLotSize())); //. ???
+                        fMsg.setBalance(String.valueOf(mMsg.getQuantity() * sheetOD.getMessage().getRoundLotSize())); //. ???
+//                        String mDomicile = mMsg.getDomicile();
+//                        if (mDomicile == null) mDomicile = "";
+//                        
+//                        if (mDomicile.equalsIgnoreCase("i")){
+//                            mDomicile = "D";
+//                        }else if (mDomicile.equalsIgnoreCase("a")){
+//                            mDomicile = "F";
+//                        }
+                        
+                        fMsg.setInvType("");
+                        fMsg.setOrderNo(String.valueOf(mMsg.getIndicativeQuoteId()));
+                        
+                        fMsg.setBestBidPrice("0"); //. ???
+                        fMsg.setBestBidVol("0"); //. ???
+                        fMsg.setBestOfferPrice("0"); //. ???
+                        fMsg.setBestOfferVol("0"); //. ???
+                        fMsg.setOrderRef("000000000000");
+                        
+                        ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                    }
                 } else if (itchMessage instanceof ITCHMsgIssuerDirectory){
                     //...
                 } else if (itchMessage instanceof ITCHMsgMarketByPrice){
@@ -1424,7 +1510,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             mCmpRec.setfStockType(zMarketSegment);
                             if (value.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
 //                                System.out.println(zStockCode);
-//                                DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+                                DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
                             }
                         }
                         
@@ -1438,18 +1524,18 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     
                     SheetOfITCHOrderBookDirectoryMDF sheetOD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
                     
-                    
                     if (sheetOD != null 
                             && (mMsg.getPriceType() == ITCHConsts.ITCHPriceTypeField.PRICE_TYPE_EVER_LAST 
                             || mMsg.getPriceType() == ITCHConsts.ITCHPriceTypeField.PRICE_TYPE_CLOSING_PRICE) 
                             && mMsg.getPrice() > 0) {
-                        //. dikirim sebagai prev price
-                        isSendRecord = true;
+                        
+                        //. hanya proses stock yang equity
+                        if (sheetOD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
+                            //. dikirim sebagai prev price
+                            isSendRecord = true;
+                        }
                     }
                     if (isSendRecord) {
-                        if (sheetOD.getMessage().getFinancialProduct() != ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
-                            System.out.println(sheetOD.getMessage().getSymbol());
-                        }
                         //. FEEDMsgStockSummary
                         FEEDMsgStockSummary fMsg = new FEEDMsgStockSummary();
                         String zSymbol = sheetOD.getMessage().getSymbol().trim();
@@ -1461,12 +1547,10 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             zBoardCode = zSymbol.split("_")[1];
                         }
                         
-                        if (zStockCode.toUpperCase().contains("ANTM")) {
-                             System.out.println("sheetOD.getMessage().getSymbol()");
-                        }
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                         }
                         
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getMarketSegmentId());
@@ -1502,7 +1586,9 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         mCmpRec.setfPrevPrice(StringHelper.fromDouble(prevPrice));
 
                         //. simpan ke table database
-//                        DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+                        if (sheetOD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
+                            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+                        }
                         
                         fMsg.setPrevPrice(String.valueOf(prevPrice));
                         fMsg.setHighPrice(String.valueOf(highPrice));
@@ -1540,8 +1626,11 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     SheetOfITCHOrderBookDirectoryMDF sheetOD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
                     
                     if (sheetOD != null) {
-                        //. dikirim sebagai ohlc
-                        isSendRecord = true;
+                        //. hanya proses stock yang equity
+                        if (sheetOD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
+                            //. dikirim sebagai ohlc
+                            isSendRecord = true;
+                        }
                     }
                     if (isSendRecord) {
                         //. FEEDMsgStockSummary
@@ -1557,7 +1646,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         
                         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getIssuerId());
                         if (mSheetIssuerDirectory != null) {
-                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+                            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//                            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
                         }
                         
                         SheetOfITCHMarketSegmentDirectory mSheetMarketSegmentDirectory = BookOfITCHMarketSegmentDirectory.getInstance.retrieveSheet(sheetOD.getMessage().getMarketSegmentId());
@@ -1591,7 +1681,9 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         mCmpRec.setfPrevPrice(StringHelper.fromDouble(prevPrice));
 
                         //. simpan ke table database
-//                        DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+                        if (sheetOD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
+                            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+                        }
                         
                         fMsg.setPrevPrice(String.valueOf(prevPrice));
                         fMsg.setHighPrice(String.valueOf(highPrice));
@@ -1680,18 +1772,18 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         //. ke memory string
         lstFeedStr.add(_msg);
         
-        try
-        {
-            //System.out.println(_msg);
-            String filename= o.getDate() + ".raw";
-            FileWriter fw = new FileWriter(filename, true); 
-            fw.write(_msg + "ZZ\r\n");//appends the string to the file
-            fw.close();
-        }
-        catch(IOException ioe)
-        {
-            System.err.println("IOException: " + ioe.getMessage());
-        }
+//        try
+//        {
+//            //System.out.println(_msg);
+//            String filename= o.getDate() + ".raw";
+//            FileWriter fw = new FileWriter(filename, true); 
+//            fw.write(_msg + "ZZ\r\n");//appends the string to the file
+//            fw.close();
+//        }
+//        catch(IOException ioe)
+//        {
+//            System.err.println("IOException: " + ioe.getMessage());
+//        }
         
     }
     private int getCurTimeHHmm(){
@@ -1796,7 +1888,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
 
         SheetOfITCHIssuerDirectory mSheetIssuerDirectory = BookOfITCHIssuerDirectory.getInstance.retrieveSheet(sheetOBD.getMessage().getIssuerId());
         if (mSheetIssuerDirectory != null) {
-            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
+            //.20251224: sementara diremark karena antara stockcode yang ada di issuerDirectory dengan orderBookDirectory ada yang berbeda
+//            zStockCode = mSheetIssuerDirectory.getMessage().getName().trim();
         }
         fSuspendReleaseStock.setSecurityCode(zStockCode);
 
@@ -1827,7 +1920,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         mCmpRec.setfSecurityTradingStatus(szStockStatus);
         //. simpan ke table database
         if (sheetOBD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY) {
-//            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
+            DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
         }
         
     }
