@@ -10,7 +10,9 @@ import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts;
 import com.itm.soupbintcp.bridge.packetformat.ITMSoupBinTCPBridgePacketFormat;
 import com.itm.xtream.inet.trading.feed.util.FEEDMsgHelper;
 import com.itm.xtream.inet.trading.fix5.jonec.books.BookOfFIX5JonecRequest;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimBrokerRef;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimCalcQty;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimConnection;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -75,6 +77,12 @@ public class JONECSimAccess implements Runnable {
         BookOfJONECSimEveryRequest.getInstance.backupProcessor.restoreMapFromFile();
         System.out.println("restoring data BookOfJONECSimCalcQty..");
         BookOfJONECSimCalcQty.getInstance.backupProcessor.restoreMapFromFile();
+        //.20260313: restore connection name by broker ref
+        System.out.println("restoring data BookOfJONECSimConnection..");
+        BookOfJONECSimConnection.getInstance.backupProcessorBrokerRefsToConnectionNames.restoreMapFromFile();
+        //.20260422: restore brokerRef Sequence
+        System.out.println("restoring data BookOfJONECSimBrokerRef..");
+        BookOfJONECSimBrokerRef.getInstance.backupProcessorBrokerRefsSequence.restoreMapFromFile();
         //.orderlist dan tradelist
         System.out.println("restoring data BookOfMARTINOrderList..");
         BookOfMARTINOrderList.getInstance.backupProcessor.restoreMapFromFile();

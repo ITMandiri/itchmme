@@ -68,45 +68,89 @@ public class FIX5JonecWorkDataQuoteResponse {
             if ((StringHelper.isNullOrEmpty(zBrokerID)) && (!StringHelper.isNullOrEmpty(zTraderID))){
                 zBrokerID = (zTraderID.length() > 2 ? (zTraderID.substring(0, 2).toUpperCase()) : zTraderID.toUpperCase() );
             }
-                
-            QRIDataNegDealListMessage mNegDealListMsg = new QRIDataNegDealListMessage(new HashMap());
             
-            mNegDealListMsg.setfReportType(QRIDataConst.ReportType.QUOTE_RESPONSE.value);
-            mNegDealListMsg.setfOrderID(mInputMsgRequest.getfQuoteRespID());
-            mNegDealListMsg.setfClOrdID(mInputMsgRequest.getfQuoteID()); 
+            if (mInputMsgRequest.getfQuoteRespType().equalsIgnoreCase(FIX5JonecDataConst.FIX5JonecFieldValue.QUOTE_RESPONSE_TYPE_HIT)) {
+                QRIDataNegDealListMessage mNegDealListMsg = new QRIDataNegDealListMessage(new HashMap());
+            
+                mNegDealListMsg.setfReportType(QRIDataConst.ReportType.QUOTE_RESPONSE.value);
+                mNegDealListMsg.setfOrderID(mInputMsgRequest.getfQuoteRespID());
+                mNegDealListMsg.setfClOrdID(mInputMsgRequest.getfQuoteID()); 
 
-            mNegDealListMsg.setfClientID(zTraderID);
-            mNegDealListMsg.setfExecBroker(zBrokerID);
-            mNegDealListMsg.setfContraBroker(zBrokerID);
-            mNegDealListMsg.setfContraTrader(zTraderID);
+                mNegDealListMsg.setfClientID(zTraderID);
+                mNegDealListMsg.setfExecBroker(zBrokerID);
+                mNegDealListMsg.setfContraBroker(zBrokerID);
+                mNegDealListMsg.setfContraTrader(zTraderID);
 
-            mNegDealListMsg.setfNoContraBrokers(1);
-            mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime())));
-            mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
-            mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NEW);
-            mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.UNCONFIRMED_DEAL.getValue());
-            mNegDealListMsg.setfAccount(ORIDataConst.ORIFieldValue.ACCOUNT_I);
-            mNegDealListMsg.setfFutSettDate(mInputMsgRequest.getfValidUntilTime());
-            mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod());
-            mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
-            mNegDealListMsg.setfSymbolSfx("0");
-            mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
-            mNegDealListMsg.setfSide(mInputMsgRequest.getfSide().equals(ORIDataConst.ORIFieldValue.SIDE_BUY) ? FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_BUY : FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_SELL);
-            mNegDealListMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfPrice()));
-            mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime()));
-            mNegDealListMsg.setfLastPx(0);
-            mNegDealListMsg.setfLeavesQty(0);
-            mNegDealListMsg.setfCumQty(0);
-            mNegDealListMsg.setfAvgPx(0);
-            mNegDealListMsg.setfText("");
-            mNegDealListMsg.setfClearingAccount(" ");
-            mNegDealListMsg.setfComplianceID("");
-            mNegDealListMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+                mNegDealListMsg.setfNoContraBrokers(1);
+                mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime())));
+                mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_NEW);
+                mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.UNCONFIRMED_DEAL.getValue());
+                mNegDealListMsg.setfAccount(ORIDataConst.ORIFieldValue.ACCOUNT_I);
+                mNegDealListMsg.setfFutSettDate(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfValidUntilTime()));
+                mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIDataConst.ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIDataConst.ORIFieldValue.SETTLDELIVERYTYPE_FREE);
+                mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
+                mNegDealListMsg.setfSymbolSfx("0");
+                mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
+                mNegDealListMsg.setfSide(mInputMsgRequest.getfSide().equals(ORIDataConst.ORIFieldValue.SIDE_BUY) ? FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_BUY : FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_SELL);
+                mNegDealListMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfPrice()));
+                mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime()));
+                mNegDealListMsg.setfLastPx(0);
+                mNegDealListMsg.setfLeavesQty(0);
+                mNegDealListMsg.setfCumQty(0);
+                mNegDealListMsg.setfAvgPx(0);
+                mNegDealListMsg.setfText("");
+                mNegDealListMsg.setfClearingAccount(" ");
+                mNegDealListMsg.setfComplianceID("");
+                mNegDealListMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
 
-            //. save orderlist ke memory martin
-            BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
-            //. broadcast orderlist via martin
-            BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);
+                //. save orderlist ke memory martin
+                BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
+                //. broadcast orderlist via martin
+                BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);
+            } else if (mInputMsgRequest.getfQuoteRespType().equalsIgnoreCase(FIX5JonecDataConst.FIX5JonecFieldValue.QUOTE_RESPONSE_TYPE_CANCEL)) {
+                QRIDataNegDealListMessage mNegDealListMsg = new QRIDataNegDealListMessage(new HashMap());
+            
+                mNegDealListMsg.setfReportType(QRIDataConst.ReportType.QUOTE_RESPONSE.value);
+                mNegDealListMsg.setfOrderID(mInputMsgRequest.getfQuoteRespID());
+                mNegDealListMsg.setfClOrdID(mInputMsgRequest.getfQuoteID()); 
+
+                mNegDealListMsg.setfClientID(zTraderID);
+                mNegDealListMsg.setfExecBroker(zBrokerID);
+                mNegDealListMsg.setfContraBroker(zBrokerID);
+                mNegDealListMsg.setfContraTrader(zTraderID);
+
+                mNegDealListMsg.setfNoContraBrokers(1);
+                mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime())));
+                mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
+                mNegDealListMsg.setfExecType(QRIDataConst.QRIFieldValue.EXECTYPE_CANCELLED);
+                mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.WITHDRAWN_DEAL.getValue());
+                mNegDealListMsg.setfAccount(ORIDataConst.ORIFieldValue.ACCOUNT_I);
+                mNegDealListMsg.setfFutSettDate(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfValidUntilTime()));
+                mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecDataConst.FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIDataConst.ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIDataConst.ORIFieldValue.SETTLDELIVERYTYPE_FREE);
+                mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
+                mNegDealListMsg.setfSymbolSfx("0");
+                mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
+                mNegDealListMsg.setfSide(mInputMsgRequest.getfSide().equals(ORIDataConst.ORIFieldValue.SIDE_BUY) ? FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_BUY : FIX5JonecDataConst.FIX5JonecFieldValue.SIDE_SELL);
+                mNegDealListMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfPrice()));
+                mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(StringHelper.isNullOrEmpty(mInputMsgRequest.getfTransactTime()) ? mInputMsgRequest.getfSendingTime() : mInputMsgRequest.getfTransactTime()));
+                mNegDealListMsg.setfLastPx(0);
+                mNegDealListMsg.setfLeavesQty(0);
+                mNegDealListMsg.setfCumQty(0);
+                mNegDealListMsg.setfAvgPx(0);
+                mNegDealListMsg.setfText("");
+                mNegDealListMsg.setfClearingAccount(" ");
+                mNegDealListMsg.setfComplianceID("");
+                mNegDealListMsg.setfOrderQty(StringHelper.toLong(mInputMsgRequest.getfOrderQty()));
+
+                //. save orderlist ke memory martin
+                BookOfMARTINNegDealList.getInstance.addOrUpdateSheet(mNegDealListMsg);
+                //. broadcast orderlist via martin
+                BookOfMARTINNegDealList.getInstance.brodcastToSubscriber(mNegDealListMsg);
+            } else {
+                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Unknown Quote Response Type -> "+mInputMsgRequest.getfQuoteRespType());
+            }
+            
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, ex0);
         }

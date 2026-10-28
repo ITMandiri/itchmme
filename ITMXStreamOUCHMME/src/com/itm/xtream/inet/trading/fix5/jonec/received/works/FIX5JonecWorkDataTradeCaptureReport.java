@@ -24,6 +24,7 @@ import com.itm.idx.data.ori.message.struct.ORIDataNegotiationDealReply.ORINegoti
 import com.itm.idx.data.qri.consts.QRIDataConst;
 import com.itm.idx.data.qri.message.struct.QRIDataNegDealListMessage;
 import com.itm.idx.data.qri.message.struct.QRIDataTradeListMessage;
+import com.itm.xtream.inet.trading.dcsplitter.bridge.DCSplitterServerInputBridge;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimCalcQty;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
@@ -55,7 +56,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
             if ((controller != null) && (mInputMsgRequest != null)){
                 //.untuk stock dari ack ini dinormalize dulu
                 mInputMsgRequest.setfSymbol(FIX5CheckSumHelper.fixNegDealNormalizeStock(mInputMsgRequest.getfSymbol()));
-                System.err.println("TRADE CAPTURE REPORT = "+mInputMsgRequest.msgToString());
+//                System.err.println("TRADE CAPTURE REPORT = "+mInputMsgRequest.msgToString());
                 
                 boolean bIsValid = false;
                 boolean bIsCounterpart = false;
@@ -201,7 +202,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                     mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.UNCONFIRMED_DEAL.getValue());
                     mNegDealListMsg.setfAccount(ORIFieldValue.ACCOUNT_I);
                     mNegDealListMsg.setfFutSettDate(mInputMsgRequest.getfSettlDate());
-                    mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod());
+                    mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE);
                     mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
                     mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
                     mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
@@ -250,7 +251,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                     mNegDealListMsg.setfOrdStatus(QRIDataConst.NegDealStatus.WITHDRAWN_DEAL.getValue());
                     mNegDealListMsg.setfAccount(ORIFieldValue.ACCOUNT_I);
                     mNegDealListMsg.setfFutSettDate(mInputMsgRequest.getfSettlDate());
-                    mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod());
+                    mNegDealListMsg.setfSettlDeliveryType(mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE);
                     mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
                     mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
                     mNegDealListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
@@ -379,6 +380,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                     //ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @decline(reject)");
                 }else if (mInputMsgRequest.getfTradeReportType().equalsIgnoreCase(FIX5JonecFieldValue.TRADE_REPORT_TYPE_SUBMIT)){
                     //.SUBMIT(TRADE):
+                    //.di pspp ketika order RG melalui fix oe, maka akan dikirimkan TCR juga sebagai trade, jadi disini tidak hanya board NG
                     ORIDataNegotiationDeal mOriginRequestMsg = null;
                     if ((vOrderToken > 0) && (mOriginRequest != null) && (mEveryRequest != null)){
                         if (mOriginRequest.getIdxMessage() instanceof ORIDataNegotiationDeal){
@@ -463,9 +465,23 @@ public class FIX5JonecWorkDataTradeCaptureReport {
 //                            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @cannot send @submit(trade)");
 //                        }
                         
+                        //.orderID yang digabung dengan side, khusus untuk twoside
+                        String zOrderID2 = mInputMsgRequest.getfOrderID() + mInputMsgRequest.getfSide1();
+                        
                         //.buat qrinegdeallist(martin):
                         boolean bNegDealListFirstFound = false;
-                        QRIDataNegDealListMessage mNegDealListMsg = BookOfMARTINNegDealList.getInstance.retrieveSheet(StringHelper.toLong(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(),false)));
+                        QRIDataNegDealListMessage mNegDealListMsg;
+                        //.????????????????????????? untuk sementara, twoside antara menggunakan orderID ambil dari TradeReportID
+                        //.untuk sementara jika oneside (beda broker), order id ambil dari orderID (tag 37)
+                        if (mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide) {
+                            //.twoside
+//                            mNegDealListMsg = BookOfMARTINNegDealList.getInstance.retrieveSheet(StringHelper.toLong(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(),false)));
+                            mNegDealListMsg = BookOfMARTINNegDealList.getInstance.retrieveSheet(StringHelper.toLong(zOrderID2));
+                        } else {
+                            //.oneside
+                            mNegDealListMsg = BookOfMARTINNegDealList.getInstance.retrieveSheet(StringHelper.toLong(mInputMsgRequest.getfOrderID()));
+                        }
+                        
                         if (mNegDealListMsg == null){
                             mNegDealListMsg = new QRIDataNegDealListMessage(new HashMap());
                         }else{
@@ -473,8 +489,16 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         }
                         
                         if (!bNegDealListFirstFound){
-                            //.????????????????????????? antara menggunakan orderID atau TradeReportID
-                            mNegDealListMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
+                            //.????????????????????????? untuk sementara, twoside antara menggunakan orderID ambil dari TradeReportID
+                            //.untuk sementara jika oneside (beda broker), order id ambil dari orderID (tag 37)
+                            if (mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide) {
+                                //.twoside
+//                                mNegDealListMsg.setfOrderID(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false));
+                                mNegDealListMsg.setfOrderID(zOrderID2);
+                            } else {
+                                //.oneside
+                                mNegDealListMsg.setfOrderID(mInputMsgRequest.getfOrderID());
+                            }
                         }
                         
                         mNegDealListMsg.setfClOrdID(mInputMsgRequest.getfClOrderID());
@@ -483,6 +507,11 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         mNegDealListMsg.setfNoContraBrokers(1);
                         mNegDealListMsg.setfContraBroker(zCounterpartBrokerID);
                         mNegDealListMsg.setfContraTrader(zCounterpartTraderID);
+                        //. khusus oneside (beda broker) dan confirm: untuk mempertahankan contra brokernya, supaya di klien nya tidak kebalik
+                        if (mOriginRequestMsg.getfNegotiationDealType() != ORINegotiationDealType.TwoSide) {
+                            mNegDealListMsg.setfContraBroker(mOriginRequestMsg.getSfCounterpartUserID().substring(0, 2).toUpperCase());
+                            mNegDealListMsg.setfContraTrader(mOriginRequestMsg.getSfCounterpartUserID());
+                        }
                         mNegDealListMsg.setfExecID(StringHelper.toInt(FIX5DateTimeHelper.getServerIDXTimeExecReportStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime())));
                         mNegDealListMsg.setfExecTransType(QRIDataConst.QRIFieldValue.EXECTRANSTYPE_STATUS);
                         
@@ -495,14 +524,15 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         }
                         
                         mNegDealListMsg.setfAccount(
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN) ? ORIFieldValue.ACCOUNT_I :
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER) ? ORIFieldValue.ACCOUNT_A :
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_INDONESIAN) ? ORIFieldValue.ACCOUNT_S :
-                                mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_FOREIGNER) ? ORIFieldValue.ACCOUNT_F :
-                                mInputMsgRequest.getfAccountType1()
+                                mOriginRequestMsg.getfAccount().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN) ? ORIFieldValue.ACCOUNT_I :
+                                mOriginRequestMsg.getfAccount().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER) ? ORIFieldValue.ACCOUNT_A :
+                                mOriginRequestMsg.getfAccount().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_INDONESIAN) ? ORIFieldValue.ACCOUNT_S :
+                                mOriginRequestMsg.getfAccount().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_HOUSE_FOREIGNER) ? ORIFieldValue.ACCOUNT_F :
+                                mOriginRequestMsg.getfAccount()
                         );
                         
                         mNegDealListMsg.setfFutSettDate((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlDate())) ? mInputMsgRequest.getfSettlDate() : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDate() : ""));
+                        //.konstanta dibursa VP = 1 di db VP = 0, FOP dibursa = 2 di db = 1 (saat ini masih dipertahankan), ketika kirim harus diconvert balik
                         mNegDealListMsg.setfSettlDeliveryType((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfSettlMethod())) ? (mInputMsgRequest.getfSettlMethod().equalsIgnoreCase(FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT) ? ORIFieldValue.SETTLDELIVERYTYPE_VERSUS : ORIFieldValue.SETTLDELIVERYTYPE_FREE) : ((mOriginRequestMsg != null) ? mOriginRequestMsg.getfSettlDeliveryType() : ""));
                         mNegDealListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
                         mNegDealListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
@@ -530,7 +560,16 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         
                         //.buat qritradelist(martin):
                         QRIDataTradeListMessage mTradeListMsg = new QRIDataTradeListMessage(new HashMap());
-                        mTradeListMsg.setfOrderID(StringHelper.toLong(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false)));
+                        //.????????????????????????? untuk sementara, twoside antara menggunakan orderID ambil dari TradeReportID
+                        //.untuk sementara jika oneside (beda broker), order id ambil dari orderID (tag 37)
+                        if (mOriginRequestMsg.getfNegotiationDealType() == ORINegotiationDealType.TwoSide) {
+                            //.twoside
+//                            mTradeListMsg.setfOrderID(StringHelper.toLong(FIX5CheckSumHelper.fixNegDealTradeReportID(mInputMsgRequest.getfTradeReportID(), false)));
+                            mTradeListMsg.setfOrderID(StringHelper.toLong(zOrderID2));
+                        } else {
+                            //.oneside
+                            mTradeListMsg.setfOrderID(StringHelper.toLong(mInputMsgRequest.getfOrderID()));
+                        }
                         mTradeListMsg.setfClOrdID(mInputMsgRequest.getfClOrderID());
                         mTradeListMsg.setfSecondaryOrderID(StringHelper.toLong(zTrdMatchIDNew));
                         mTradeListMsg.setfTransactionTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
@@ -539,8 +578,14 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                         mTradeListMsg.setfSide(mInputMsgRequest.getfSide1());
                         mTradeListMsg.setfExecBroker(zBrokerID);
                         mTradeListMsg.setfContraTrader(zCounterpartTraderID);
-                        
                         mTradeListMsg.setfContraBroker(zCounterpartBrokerID);
+                        
+                        //. khusus oneside (beda broker) dan confirm: untuk mempertahankan contra brokernya, supaya di klien nya tidak kebalik
+                        if (mOriginRequestMsg.getfNegotiationDealType() != ORINegotiationDealType.TwoSide) {
+                            mTradeListMsg.setfContraBroker(mOriginRequestMsg.getSfCounterpartUserID().substring(0, 2).toUpperCase());
+                            mTradeListMsg.setfContraTrader(mOriginRequestMsg.getSfCounterpartUserID());
+                        }
+                        
                         mTradeListMsg.setfAccount(
                                 mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN) ? ORIFieldValue.ACCOUNT_I :
                                 mInputMsgRequest.getfAccountType1().equals(FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_FOREIGNER) ? ORIFieldValue.ACCOUNT_A :
@@ -549,7 +594,7 @@ public class FIX5JonecWorkDataTradeCaptureReport {
                                 mInputMsgRequest.getfAccountType1()
                         );
                         mTradeListMsg.setfSymbol(mInputMsgRequest.getfSymbol());
-                        mTradeListMsg.setfSymbolSfx("0" + mInputMsgRequest.getfSecuritySubType());
+                        mTradeListMsg.setfSymbolSfx(mOriginRequestMsg.getfSymbolSfx());
                         mTradeListMsg.setfSecurityID(mInputMsgRequest.getfSecurityID());
                         mTradeListMsg.setfPrice(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
                         mTradeListMsg.setfCumQty(StringHelper.toLong(mInputMsgRequest.getfLastQty()));

@@ -14,6 +14,7 @@ import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.AppClient
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
+import com.itm.idx.data.qri.util.StringUtil;
 import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketController;
 import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketController.OUCHBridgeStatus;
 import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketMgr;
@@ -23,6 +24,9 @@ import com.itm.xtream.inet.trading.sync.connection.ITMTradingServerSyncConnectio
 import com.itm.xtream.inet.trading.viewer.ITMComponentLayoutHelper;
 import com.itm.xtream.inet.trading.viewer.ITMDialogToolFIX5ChangePassword;
 import com.itm.xtream.inet.trading.viewer.ITMSoupBinTCPViewFrame;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -34,10 +38,16 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -84,7 +94,7 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
 //            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(AppClientCode.CLIENT_RELI_LS)){
 //                this.setTitle(ITMTradingServerConsts.SVR_APP_CUSTOM_CAPTION);
 //            }else{
-                this.setTitle("X-stream INET Trading Server" + " [" + ITMTradingServerConsts.SVR_APP_VERSION_BUILD + "] - " + ITMFileLoggerVarsConsts.APP_CLIENT_CODE);
+                this.setTitle("X-stream MME Trading Server" + " [" + ITMTradingServerConsts.SVR_APP_VERSION_BUILD + "] - " + ITMFileLoggerVarsConsts.APP_CLIENT_CODE);
             //}
 
             //.perbaikan:
@@ -157,7 +167,7 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
             sequenceRenderer.setHorizontalAlignment(JLabel.RIGHT);
             jTableIdxConnectionList.getColumnModel().getColumn(jTableIdxConnectionList.getColumn(Z_REF_TABLE_COLUMN_SEQUENCE).getModelIndex()).setCellRenderer(sequenceRenderer);
             
-            
+
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
         }
@@ -273,6 +283,8 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
                     }
                 }
             }
+            //.20260902: sesuaikan lebar kolom berdasarkan lebar teks
+            autoResizeColumns(this.jTableIdxConnectionList); 
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
         }
@@ -411,6 +423,40 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
         }
     }
+    //.20260902: sesuaikan lebar kolom berdasarkan lebar teks
+    private void autoResizeColumns(JTable table) {
+        try{
+            FontMetrics fm = table.getFontMetrics(table.getFont());
+
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                int width = 0;
+
+                // Header
+                width = fm.stringWidth(table.getColumnName(col));
+
+                // Isi tabel
+                for (int row = 0; row < table.getRowCount(); row++) {
+                    Object value = table.getValueAt(row, col);
+                    if (value != null) {
+                        width = Math.max(width, fm.stringWidth(value.toString()));
+                    }
+                }
+
+                // Padding kiri + kanan
+                width += 20;
+
+                TableColumn column = table.getColumnModel().getColumn(col);
+                //.kecualikan kolom message
+                if (table.getColumnName(col).equalsIgnoreCase(Z_REF_TABLE_COLUMN_MESSAGE)) {
+                    column.setMinWidth(width);
+                }
+                column.setMaxWidth(width + 150);
+                
+            }
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
+        }
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -469,6 +515,7 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableIdxConnectionList.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         jTableIdxConnectionList.setRowHeight(22);
         jTableIdxConnectionList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -480,13 +527,24 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
         });
         jScrollPanelList.setViewportView(jTableIdxConnectionList);
         if (jTableIdxConnectionList.getColumnModel().getColumnCount() > 0) {
-            jTableIdxConnectionList.getColumnModel().getColumn(0).setResizable(false);
-            jTableIdxConnectionList.getColumnModel().getColumn(0).setPreferredWidth(30);
+            jTableIdxConnectionList.getColumnModel().getColumn(0).setMinWidth(50);
+            jTableIdxConnectionList.getColumnModel().getColumn(0).setPreferredWidth(50);
+            jTableIdxConnectionList.getColumnModel().getColumn(0).setMaxWidth(50);
+            jTableIdxConnectionList.getColumnModel().getColumn(1).setMinWidth(130);
             jTableIdxConnectionList.getColumnModel().getColumn(1).setPreferredWidth(130);
-            jTableIdxConnectionList.getColumnModel().getColumn(2).setPreferredWidth(40);
+            jTableIdxConnectionList.getColumnModel().getColumn(1).setMaxWidth(300);
+            jTableIdxConnectionList.getColumnModel().getColumn(2).setMinWidth(60);
+            jTableIdxConnectionList.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jTableIdxConnectionList.getColumnModel().getColumn(2).setMaxWidth(100);
+            jTableIdxConnectionList.getColumnModel().getColumn(3).setMinWidth(90);
             jTableIdxConnectionList.getColumnModel().getColumn(3).setPreferredWidth(90);
+            jTableIdxConnectionList.getColumnModel().getColumn(3).setMaxWidth(120);
+            jTableIdxConnectionList.getColumnModel().getColumn(4).setMinWidth(40);
             jTableIdxConnectionList.getColumnModel().getColumn(4).setPreferredWidth(40);
-            jTableIdxConnectionList.getColumnModel().getColumn(5).setPreferredWidth(60);
+            jTableIdxConnectionList.getColumnModel().getColumn(4).setMaxWidth(70);
+            jTableIdxConnectionList.getColumnModel().getColumn(5).setMinWidth(80);
+            jTableIdxConnectionList.getColumnModel().getColumn(5).setPreferredWidth(80);
+            jTableIdxConnectionList.getColumnModel().getColumn(5).setMaxWidth(120);
             jTableIdxConnectionList.getColumnModel().getColumn(6).setPreferredWidth(180);
         }
 
@@ -576,12 +634,12 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPanelList, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
+                    .addComponent(jScrollPanelList)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButtonDoRefreshConnList, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabelBottomInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabelBottomInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                         .addComponent(jButtonDoConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonDoDisconnect, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -631,7 +689,80 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
 
     private void jTableIdxConnectionListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableIdxConnectionListMouseClicked
         // TODO add your handling code here:
-        
+        //.20260421: tampilkan messagebox untuk melihat message
+        if (evt.getClickCount() == 2) {
+            int row = jTableIdxConnectionList.getSelectedRow();
+
+            if (row != -1) {
+                Object value = jTableIdxConnectionList.getValueAt(row, 6); //.ambil kolom message
+                String zConnName = jTableIdxConnectionList.getValueAt(row, 1).toString(); //.ambil kolom connection name
+//                javax.swing.JOptionPane.showMessageDialog(null, 
+//                    value);
+                //.20260511
+                //.textbox untuk set sequence
+                JTextField txtSeq = new JTextField();
+                txtSeq.setPreferredSize(new Dimension(120, 25));
+                JPanel panelInput = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                panelInput.add(new JLabel("Set Sequence : "));
+                panelInput.add(txtSeq);
+
+                Object[] message;
+                Object[] options;
+                
+                //.cek apakah dapat error message seq num, jika iya tambah button untuk fix
+                if (value.toString().contains("MsgSeqNum")) {
+                    options = new Object[]{"Close", "Fix Sequence"};
+                    message = new Object[]{
+                       value,
+                       panelInput
+                    };
+                     //.cari kata expecting untuk mendapatkan nilai sequence yang valid
+                    Pattern pattern = Pattern.compile("expecting (\\d+)");
+                    Matcher matcher = pattern.matcher(value.toString());
+                    if (matcher.find()) {
+                        String expecting = matcher.group(1);
+                        System.out.println(expecting); 
+                        txtSeq.setText(expecting);
+                    }
+                } else {
+                     options = new Object[]{"Close"};
+                     message = new Object[]{
+                       value
+                    };
+                }
+                
+                
+                //.tampilkan dialog
+                int pilih = JOptionPane.showOptionDialog(
+                    null,
+                    message,
+                    "Message",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+                );
+                
+                //.jika dipilih button fix sequence
+                if (pilih == 1) {
+                    
+                    long newSeq = StringUtil.toLong(txtSeq.getText());
+
+                    for(ConcurrentHashMap.Entry<String, FIX5IDXBridgeController> entry : FIX5IDXBridgeManager.getInstance.getChmFIX5ConnLines().entrySet()) {
+                        FIX5IDXBridgeController mController = entry.getValue();
+                        if (mController != null){
+                            if (zConnName.equalsIgnoreCase(mController.getConnectionName())) {
+                                mController.setCurrentTXSequencedNo(newSeq);
+                            }
+
+                        }
+                    }
+                    //.coba connect ulang connection yang bermasalah
+                    FIX5IDXBridgeManager.getInstance.connectFIX5ConnLine(zConnName);
+                }
+            }
+        }
     }//GEN-LAST:event_jTableIdxConnectionListMouseClicked
 
     private void jTableIdxConnectionListMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableIdxConnectionListMousePressed

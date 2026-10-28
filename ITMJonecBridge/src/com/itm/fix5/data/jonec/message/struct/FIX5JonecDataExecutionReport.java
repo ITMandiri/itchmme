@@ -4,6 +4,7 @@
  */
 package com.itm.fix5.data.jonec.message.struct;
 
+import com.itm.fix5.data.helpers.FIX5CheckSumHelper;
 import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst.FIX5JonecFieldFmt;
 import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst.FIX5JonecFieldTag;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
@@ -65,7 +66,10 @@ public class FIX5JonecDataExecutionReport extends FIX5JonecDataHeader {
     
     //.getsets:
     public String getfClOrdID() {
-        return fClOrdID;
+        //.20260422: normalize brokerRef
+//        return fClOrdID;
+        return FIX5CheckSumHelper.fixNormalizeBrokerRef(fClOrdID);
+
     }
 
     public void setfClOrdID(String fClOrdID) {
@@ -105,7 +109,9 @@ public class FIX5JonecDataExecutionReport extends FIX5JonecDataHeader {
     }
     
     public String getfOrigClOrdID() {
-        return fOrigClOrdID;
+        //.20260422: normalize brokerRef
+//        return fClOrdID;
+        return FIX5CheckSumHelper.fixNormalizeBrokerRef(fOrigClOrdID);
     }
 
     public void setfOrigClOrdID(String fOrigClOrdID) {

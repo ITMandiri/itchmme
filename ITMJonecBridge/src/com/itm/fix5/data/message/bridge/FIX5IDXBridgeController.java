@@ -79,6 +79,7 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
     //.sequencedno & recovery:
     private long fCurrentTXSequencedNo                          = 0; //.sequenceno yg sudah valid dan dipakai saat ini (transmitted);
     private long fCurrentRXSequencedNo                          = 0; //.sequenceno yg sudah valid dan dipakai saat ini (received);
+    private long fPrevRXSequencedNo                             = 0; //.20260922: tambahan untuk cek sequence terakhir
     
     //.select:
     private boolean bAutoSelect                                     = false;
@@ -296,6 +297,14 @@ public class FIX5IDXBridgeController extends ITMSocketCtrlClient {
 
     public void setCurrentRXSequencedNo(long fCurrentRXSequencedNo) {
         this.fCurrentRXSequencedNo = fCurrentRXSequencedNo;
+    }
+
+    public long getfPrevRXSequencedNo() {
+        return fPrevRXSequencedNo;
+    }
+
+    public void setfPrevRXSequencedNo(long fPrevRXSequencedNo) {
+        this.fPrevRXSequencedNo = fPrevRXSequencedNo;
     }
     
     public synchronized long getNextTXSequencedNo(){

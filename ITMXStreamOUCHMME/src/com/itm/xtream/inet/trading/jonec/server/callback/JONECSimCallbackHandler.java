@@ -63,7 +63,12 @@ public class JONECSimCallbackHandler implements ITMSocketListener {
 
     @Override
     public void onMessage(ITMSocketChannel channel, String messageLine) {
-        JONECSimInputBridge.getInstance.processMessage(channel, messageLine);
+        if (messageLine.equalsIgnoreCase("IDXPING")){ //.20260706: tambahan ping dari ts
+            System.err.println("PING From TS");
+        } else {
+            JONECSimInputBridge.getInstance.processMessage(channel, messageLine);
+        }
+        
     }
 
     @Override

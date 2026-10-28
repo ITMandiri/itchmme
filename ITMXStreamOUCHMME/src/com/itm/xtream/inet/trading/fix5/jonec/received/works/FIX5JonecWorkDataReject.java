@@ -28,7 +28,7 @@ public class FIX5JonecWorkDataReject {
     public void doWork(ITMSocketChannel channel, FIX5IDXBridgeController controller, FIX5JonecDataReject mInputMsgRequest){
         try{
             if (controller != null){
-                
+                System.err.println("DATA REJECT = "+mInputMsgRequest);
             }
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);

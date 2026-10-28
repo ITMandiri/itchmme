@@ -203,6 +203,7 @@ public class BookOfFIX5JonecRequest {
                             }
                         }
                         mController.setCurrentRXSequencedNo(vMaxSeq);
+                        mController.setfPrevRXSequencedNo(vMaxSeq); //.20260922
                         if (vMaxSeq > mOut){
                             mOut = vMaxSeq;
                         }

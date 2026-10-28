@@ -17,6 +17,7 @@ import com.itm.generic.engine.socket.setup.ITMSocketChannel;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
 import com.itm.idx.data.ori.consts.ORIDataConst;
 import com.itm.idx.data.ori.message.struct.ORIDataOrderMassCancel;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimConnection;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -53,6 +54,9 @@ public class JONECSimWorkDataOrderMassCancel {
                 String zFixMsg = "";
                 FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                 if (mTrxCtl != null){
+                    //.20260313
+                    BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
+                                
                     mFixMsg = new FIX5JonecDataOrderMassActionRequest(new HashMap());
                     mFixMsg.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.ORDER_MASS_ACTION_REQUEST);
                     mFixMsg.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());

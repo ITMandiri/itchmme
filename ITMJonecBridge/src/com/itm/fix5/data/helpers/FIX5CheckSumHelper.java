@@ -310,4 +310,14 @@ public class FIX5CheckSumHelper {
         }
         return zOut;
     }
+    
+    public static String fixNormalizeBrokerRef(String vBrokerRef){
+        String mOut = "";
+        try{
+            mOut = vBrokerRef.split("_")[0];
+        }catch(Exception ex0){
+            
+        }
+        return mOut;
+    }
 }

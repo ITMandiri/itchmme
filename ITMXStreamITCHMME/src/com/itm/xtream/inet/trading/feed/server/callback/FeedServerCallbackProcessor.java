@@ -157,6 +157,8 @@ public class FeedServerCallbackProcessor implements Runnable {
                                         
                                         if (bNeedToLog){
                                             ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "MIS.iToBeSendSequenceNo value:" + iToBeSendSequenceNo + " > message:" + zToBeSendDataFeedLine);
+                                            //.20260525: untuk menghandle log yang over
+                                            bNeedToLog = false;
                                         }
                                         if ((zToBeSendDataFeedLine != null) && (zToBeSendDataFeedLine.length() > 0)){
                                             chChannel.sendMessageDirect(zToBeSendDataFeedLine);

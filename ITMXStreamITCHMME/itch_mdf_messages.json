@@ -898,7 +898,7 @@
 						"len": 1,
 						"value": "",
 						"type": "Integer",
-						"notes": "Supported values: 1 = Externally Set, 5 = Settlement, 6 = Ever Last, 11 = Closing Price",
+						"notes": "Supported values: 1 = Externally Set, 5 = Settlement, 6 = Ever Last, 11 = Closing Price, 12 = Adjusted Closing Price",
 						"source": ""
 					},
 					{
@@ -1106,6 +1106,15 @@
 						"value": "",
 						"type": "Integer",
 						"notes": "The maximum price level (for example 10). The value may be changed during the day. Price levels > Maximum Level are not applicable and shall be deleted by a consumer of the Market by Price Message.",
+						"source": ""
+					},
+					{
+						"name": "Number Of Items",
+						"offset": 10,
+						"len": 1,
+						"value": "",
+						"type": "Integer",
+						"notes": "The number of price level items in the array.",
 						"source": ""
 					}
 				]

@@ -110,6 +110,7 @@ public class FIX5JonecDataConst {
         
         public static final String ORD_TYPE_MARKET                              = "1";
         public static final String ORD_TYPE_LIMIT                               = "2";
+        public static final String ORD_TYPE_MARKET_TO_LIMIT                     = "K";
         
         public static final String SECURITY_TYPE_MULTILEGINSTRUMENT             = "MLEG";
         public static final String SECURITY_TYPE_OTHER                          = "OTHER";
@@ -130,6 +131,12 @@ public class FIX5JonecDataConst {
         public static final String MASS_STATUS_REQ_TYPE_SNAPSHOT                = "701";
         public static final String MASS_STATUS_REQ_TYPE_SUBSCRIBE               = "702";
         public static final String MASS_STATUS_REQ_TYPE_UNSUBSCRIBE             = "703";
+        
+        public static final String QUOTE_STATUS_REJECTED                        = "5";
+        public static final String QUOTE_STATUS_CANCELLED                       = "17";
+        
+        public static final String QUOTE_RESPONSE_TYPE_HIT                      = "1";
+        public static final String QUOTE_RESPONSE_TYPE_CANCEL                   = "7";
         
     }
     
@@ -1178,6 +1185,9 @@ public class FIX5JonecDataConst {
         public static final String NORELATEDTRADES                              = "1855";
         public static final String RELATEDTRADEID                               = "1856";
         public static final String RELATEDTRADEIDSOURCE                         = "1857";
+        public static final String SELFMATCHPREVENTIONID                        = "2362";
+        public static final String DISPLAYQTY                                   = "1138";
+        public static final String QUOTERESPNO                                  = "1751"; //.20260312
     }
     
 }

@@ -47,6 +47,8 @@ public class FeedConsts {
         public final static String TRADINGSTATUS_STATUS_MATCHING_PRE_OPEN       = "s";
         public final static String TRADINGSTATUS_STATUS_NON_CANCELLATION        = "t";
         public final static String TRADINGSTATUS_STATUS_TRADING_HALT            = "u";
+        public final static String TRADINGSTATUS_STATUS_CALCULATE_CP            = "v";
+        public final static String TRADINGSTATUS_STATUS_OPEN                    = "w";
         public final static String TRADINGSTATUS_MSG_MARKET_EQ                  = "EQ";
         public final static String TRADINGSTATUS_MSG_INSTRUMENT_ORDI            = "ORDI";
         public final static String TRADINGSTATUS_MSG_INSTRUMENT_ORDI_PREOPEN    = "ORDI_PREOPEN";
@@ -77,13 +79,13 @@ public class FeedConsts {
         public static final String TRADINGSTATUS_PRE_CLOSE                      = "Pre-Closing";
         public static final String TRADINGSTATUS_PRE_OPEN                       = "Pre-Opening";
         public static final String TRADINGSTATUS_RANDOM_CLOSE                   = "Random Closing";
-        public static final String TRADINGSTATUS_SESSION_1_NG                   = "Session 1 NG";
+        public static final String TRADINGSTATUS_SESSION_1_NG                   = "Session 1 - NG";
         public static final String TRADINGSTATUS_SESSION_1_RF                   = "Session 1 Regular Futures";
         public static final String TRADINGSTATUS_SESSION_1_RG                   = "Session 1 Regular";
         public static final String TRADINGSTATUS_SESSION_1_RG_CALL              = "Call Auction Session 1";
         public static final String TRADINGSTATUS_SESSION_1_TN                   = "Session 1 Cash";
         public static final String TRADINGSTATUS_SESSION_1_TN_CALL              = "Call Auction Session 1 - TN";
-        public static final String TRADINGSTATUS_SESSION_2_NG                   = "Session 2 NG";
+        public static final String TRADINGSTATUS_SESSION_2_NG                   = "Session 2 - NG";
         public static final String TRADINGSTATUS_SESSION_2_RF                   = "Session 2 Regular Futures";
         public static final String TRADINGSTATUS_SESSION_2_RG                   = "Session 2 Regular";
         public static final String TRADINGSTATUS_SESSION_2_RG_CALL              = "Call Auction Session 2";
@@ -109,6 +111,19 @@ public class FeedConsts {
         public final static String TRADINGSTATUS_TYPE_MSG_RF                    = "rf";
         public final static String TRADINGSTATUS_TYPE_MSG_RG                    = "rg";
         public final static String TRADINGSTATUS_TYPE_MSG_TN                    = "tn";
+        
+    }
+    //.20261014: untuk market by price
+    public class MBPAction {
+        public final static String MBP_ACTION_UPDATE                            = "U";
+        public final static String MBP_ACTION_INSERT                            = "I";
+        public final static String MBP_ACTION_DELETE                            = "D";
+        
+    }
+    
+    public class MBPSide {
+        public final static String MBP_SIDE_BID                                 = "BD";
+        public final static String MBP_SIDE_OFFER                               = "OF";
         
     }
 }

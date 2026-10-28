@@ -54,6 +54,8 @@ public class ITMTradingServerSettingsMgr {
         public int order_racing_mode = 1; //. 1 = single order, 2 = all order
         public int order_racing_max_delay = 200;
         public boolean fix5_only = false; //.20250917
+        public boolean ouch_only = false; //.20260225
+        public int ptr_interval_second = 0; //.20260929
         public OUCH_OrderRacing[] order_racing_time;
         public OUCH_OrderRetry[] order_retry_time;
         public OUCH_OrderRacing[] order_racing_time_ca;
@@ -65,6 +67,7 @@ public class ITMTradingServerSettingsMgr {
         public FIX_Connection[] fix5_connections;
         public DTF_Client datafeed_client;
         public XCH_Client splitter_client;
+        public XCH_Client splitter_dropcopy;//.20260702
         public SIM_Connection[] jonec_client_connections;
         public SIM_Connection[] martin_client_connections;
         
@@ -296,6 +299,9 @@ public class ITMTradingServerSettingsMgr {
             if (this.mSettings.server_settings.splitter_client == null){ //.apm:20220315:ref hrn;
                 this.mSettings.server_settings.splitter_client = new XCH_Client();                
             }
+            if (this.mSettings.server_settings.splitter_dropcopy == null){ //.20260702
+                this.mSettings.server_settings.splitter_dropcopy = new XCH_Client();                
+            }
             if (this.mSettings.server_settings.fix5_connections == null){
                 this.mSettings.server_settings.fix5_connections = new FIX_Connection[]{};                
             }
@@ -356,6 +362,8 @@ public class ITMTradingServerSettingsMgr {
         return mOut;
     }
     
-    
+    public boolean isDropCopySplitter() {
+        return (getSettings().server_settings.splitter_dropcopy.port > 0);
+    }
     
 }

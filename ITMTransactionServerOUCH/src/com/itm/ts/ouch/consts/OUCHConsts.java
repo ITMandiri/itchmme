@@ -210,7 +210,15 @@ public class OUCHConsts {
         public static final int REJECTED_ORDER_REASON_OUCH_INVALID_TIF                                      = -800010;
         public static final int REJECTED_ORDER_REASON_OUCH_CAN_NOT_CANCEL                                   = -800014;
         public static final int REJECTED_ORDER_REASON_OUCH_THROTTLING                                       = -800020;
-        public static final int REJECTED_ORDER_REASON_ME_MARKET_MAKER_PROTECTION                            = -405044;
+        public static final int REJECTED_ORDER_REASON_ME_MARKET_MAKER_PROTECTION                            = -405044;      
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_LONG_CONSUMPTION_ACCOUNT                   = -405058;
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_LONG_CONSUMPTION_INVESTOR                  = -405060;
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_SHORT_CONSUMPTION_ACCOUNT                  = -405062;
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_SHORT_CONSUMPTION_INVESTOR                 = -405064;
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_DELTA_FACTOR                               = -405065;
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_DELTA_ORDERBOOK                            = -405067;
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_VEGA_FACTOR                                = -405069;
+        public static final int REJECTED_ORDER_REASON_ME_INVALID_VEGA_ORDERBOOK                             = -405071;        
         public static final int REJECTED_ORDER_REASON_ME_MATCH_BID_ASK                                      = -420023;
         public static final int REJECTED_ORDER_REASON_ME_MATCH_VALIDITY                                     = -420025;
         public static final int REJECTED_ORDER_REASON_ME_MATCH_MARBOUNCE                                    = -420027;

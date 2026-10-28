@@ -23,6 +23,8 @@ import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketMgr;
 import com.itm.ts.ouch.consts.OUCHConsts;
 import com.itm.ts.ouch.structs.OUCHMsgReplaceOrder;
 import com.itm.xtream.inet.trading.consts.ITMTradingServerConsts;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimBrokerRef;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimConnection;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -67,6 +69,16 @@ public class JONECSimWorkDataOrderAmend {
                             
                             FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                             if (mTrxCtl != null){
+                                //.20260313
+                                BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
+                                //.20260423: cek brokerRef ori apakah menggunakan sequence (handle order retry), jika ada di memory maka pakai brokerRef ori yang menggunakan sequence
+                                String newBrokerRef = mInputMsgRequest.getfOrigClOrdID();
+                                if (BookOfJONECSimBrokerRef.getInstance.hasBrokerRef(mInputMsgRequest.getfOrigClOrdID())) {
+                                    if (BookOfJONECSimBrokerRef.getInstance.findSeqBrokerRef(mInputMsgRequest.getfOrigClOrdID()) > 0) {
+                                        newBrokerRef += "_" + BookOfJONECSimBrokerRef.getInstance.findSeqBrokerRef(mInputMsgRequest.getfOrigClOrdID());
+                                    }
+                                }
+                                
                                 FIX5JonecDataOrderCancelReplaceRequest mNormalAmdOrder = new FIX5JonecDataOrderCancelReplaceRequest(new HashMap());
                                 mNormalAmdOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.ORDER_CANCEL_REPLACE_REQUEST);
                                 mNormalAmdOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
@@ -74,16 +86,19 @@ public class JONECSimWorkDataOrderAmend {
                                 mNormalAmdOrder.setfSenderSubID(mTrxCtl.getTraderCode());
 
                                 mNormalAmdOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
-                                mNormalAmdOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
+//                                mNormalAmdOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
+                                //.20260423: menggunakan metode brokerRef ori yang baru
+                                mNormalAmdOrder.setfOrigClOrdID(newBrokerRef);
                                 mNormalAmdOrder.setfOrderID(mInputMsgRequest.getfOrderID());
 
                                 mNormalAmdOrder.setfSymbol(mInputMsgRequest.getfSymbol()+"_RG");
                                 
-                                mNormalAmdOrder.setfSecuritySubType(FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_SUB_TYPE_RG); //.###???
+//                                mNormalAmdOrder.setfSecuritySubType(FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_SUB_TYPE_RG); //.###???
                                 if (mOriginReqSheet != null && mOriginReqSheet.getIdxMessage() != null){
                                     if (mOriginReqSheet.getIdxMessage() instanceof ORIDataNewOrder){
                                         ORIDataNewOrder mOriginORIOrder = (ORIDataNewOrder)mOriginReqSheet.getIdxMessage();
                                         mNormalAmdOrder.setfSecuritySubType(mOriginORIOrder.getfSymbolSfx().replace("0", ""));
+                                        mNormalAmdOrder.setfSymbol(mInputMsgRequest.getfSymbol() + mOriginORIOrder.getfSymbolSfx().replace("0", "_"));
                                     }
                                 }
                                 
@@ -100,14 +115,20 @@ public class JONECSimWorkDataOrderAmend {
                                 mNormalAmdOrder.setfPrice(StringHelper.fromDouble(mInputMsgRequest.getfPrice()));
                                 mNormalAmdOrder.setfSide(mInputMsgRequest.getfSide());
                                 mNormalAmdOrder.setfTransactTime(mNormalAmdOrder.getfSendingTime());
-                                mNormalAmdOrder.setfText((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())) ? mInputMsgRequest.getfText() : "Amend Advertisement");
+                                mNormalAmdOrder.setfText((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())) ? mInputMsgRequest.getfText() : "Amend Normal");
                                 //////mNormalAmdOrder.setfOrdType(FIX5JonecFieldValue.ORD_TYPE_LIMIT);
                                 //////mNormalAmdOrder.setfTimeInForce(
                                 //////        (mInputMsgRequest.getfTimeInForce().equalsIgnoreCase(ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION)) ? FIX5JonecFieldValue.TIME_IN_FORCE_SESSION : 
                                 //////        (mInputMsgRequest.getfTimeInForce().equalsIgnoreCase(ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY)) ? FIX5JonecFieldValue.TIME_IN_FORCE_DAY : 
                                 //////        FIX5JonecFieldValue.TIME_IN_FORCE_DAY
                                 //////        );
-                                mNormalAmdOrder.setfTimeInForce(mInputMsgRequest.getfTimeInForce()); //. TimeInForce Fix4.2 = TimeInForce 5
+//                                mNormalAmdOrder.setfTimeInForce(mInputMsgRequest.getfTimeInForce()); //. TimeInForce Fix4.2 = TimeInForce 5
+                                //.20260908: difix tidak ada tipe session, hanya ada day, fak, fok
+                                if (mInputMsgRequest.getfTimeInForce().equalsIgnoreCase(ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION)) {
+                                    mNormalAmdOrder.setfTimeInForce(ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY);
+                                } else {
+                                    mNormalAmdOrder.setfTimeInForce(mInputMsgRequest.getfTimeInForce()); //. TimeInForce Fix4.2 = TimeInForce 5
+                                }
                                 
                                 if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_MARKET_NONSTOP)){  //. OrdType Fix4.2 <> OrdType Fix 5
                                     mNormalAmdOrder.setfOrdType(FIX5JonecDataConst.FIX5JonecFieldValue.ORD_TYPE_MARKET);
@@ -138,7 +159,7 @@ public class JONECSimWorkDataOrderAmend {
                                     ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @cannot send as normal");
                                 }
                                 //.???:
-                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Found route @amend order as normal");
+                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Found route @amend order as normal");
                             }else{
                                 //.???:
                                 ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Found route @amend order as normal but no controller");
@@ -230,6 +251,9 @@ public class JONECSimWorkDataOrderAmend {
                     case ORIDataConst.ORIFieldValue.HANDLINST_ADVERTISEMENT:
                         FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                         if (mTrxCtl != null){
+                            //.20260313
+                            BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
+                                
                             FIX5JonecDataOrderCancelReplaceRequest mAdvAmdOrder = new FIX5JonecDataOrderCancelReplaceRequest(new HashMap());
                             mAdvAmdOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.ORDER_CANCEL_REPLACE_REQUEST);
                             mAdvAmdOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());

@@ -145,7 +145,7 @@ public class FIX5JonecWorkDataOrderCancelReject {
                             mReplyMsg.setfCumQty(0);
                             mReplyMsg.setfAvgPx(0);
                             mReplyMsg.setfHandlInst(ORIDataConst.ORIFieldValue.HANDLINST_NORMAL);
-                            mReplyMsg.setfText("Securities cannot be canceled at this time.");
+                            mReplyMsg.setfText(mInputMsgRequest.getfRejectText());
                             mReplyMsg.setfLastPx(0);
                             mReplyMsg.setfLastShares(0);
 

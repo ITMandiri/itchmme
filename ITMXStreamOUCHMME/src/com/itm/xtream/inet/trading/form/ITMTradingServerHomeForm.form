@@ -124,12 +124,12 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPanelList" pref="680" max="32767" attributes="0"/>
-                  <Group type="102" attributes="0">
+                  <Component id="jScrollPanelList" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
                       <Component id="jButtonDoRefreshConnList" min="-2" pref="100" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabelBottomInfo" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabelBottomInfo" min="-2" pref="374" max="-2" attributes="0"/>
+                      <EmptySpace pref="39" max="32767" attributes="0"/>
                       <Component id="jButtonDoConnect" min="-2" pref="100" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jButtonDoDisconnect" min="-2" pref="100" max="-2" attributes="0"/>
@@ -177,34 +177,35 @@
                 <Column editable="false" title="Message" type="java.lang.String"/>
               </Table>
             </Property>
+            <Property name="autoResizeMode" type="int" value="3"/>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
-                <Column maxWidth="-1" minWidth="-1" prefWidth="30" resizable="false">
+                <Column maxWidth="50" minWidth="50" prefWidth="50" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>
                 </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="130" resizable="true">
+                <Column maxWidth="300" minWidth="130" prefWidth="130" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>
                 </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="40" resizable="true">
+                <Column maxWidth="100" minWidth="60" prefWidth="60" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>
                 </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="90" resizable="true">
+                <Column maxWidth="120" minWidth="90" prefWidth="90" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>
                 </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="40" resizable="true">
+                <Column maxWidth="70" minWidth="40" prefWidth="40" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>
                 </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="60" resizable="true">
+                <Column maxWidth="120" minWidth="80" prefWidth="80" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>

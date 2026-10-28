@@ -23,6 +23,8 @@ import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketMgr;
 import com.itm.ts.ouch.consts.OUCHConsts;
 import com.itm.ts.ouch.structs.OUCHMsgEnterOrder;
 import com.itm.xtream.inet.trading.consts.ITMTradingServerConsts;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimBrokerRef;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimConnection;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -63,13 +65,26 @@ public class JONECSimWorkDataNewOrder {
                         if (ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only){
                             FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                             if (mTrxCtl != null){
+                                //.20260313
+                                BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
+                                //.20260421: simpan brokerRef beserta sequence untuk handle order retry, dan gunakan brokerRef_sequence jika terkena retry
+                                String newBrokerRef = mInputMsgRequest.getfClOrdID();
+                                if (BookOfJONECSimBrokerRef.getInstance.hasBrokerRef(mInputMsgRequest.getfClOrdID())) {
+                                    BookOfJONECSimBrokerRef.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), BookOfJONECSimBrokerRef.getInstance.findSeqBrokerRef(mInputMsgRequest.getfClOrdID()) + 1);
+                                    newBrokerRef += "_" + BookOfJONECSimBrokerRef.getInstance.findSeqBrokerRef(mInputMsgRequest.getfClOrdID());
+                                } else {
+                                    BookOfJONECSimBrokerRef.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), 0);
+                                }
+                                
+                                
                                 FIX5JonecDataNewOrderSingle mNormalNewOrder = new FIX5JonecDataNewOrderSingle(new HashMap());
                                 mNormalNewOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.NEW_ORDER_SINGLE);
                                 mNormalNewOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
                                 mNormalNewOrder.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
                                 mNormalNewOrder.setfSenderSubID(mTrxCtl.getTraderCode());
-
-                                mNormalNewOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
+                                //.20260421: brokerRef baru
+//                                mNormalNewOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
+                                mNormalNewOrder.setfClOrdID(newBrokerRef);
                                 mNormalNewOrder.setfHandlInst(StringHelper.fromInt(mInputMsgRequest.getfHandlInst()));
 //                                mNormalNewOrder.setfAccountType(
 //                                        mInputMsgRequest.getfAccount().equals(ORIDataConst.ORIFieldValue.ACCOUNT_I) ? FIX5JonecDataConst.FIX5JonecFieldValue.ACCOUNT_TYPE_CUSTOMER_INDONESIAN : 
@@ -90,15 +105,28 @@ public class JONECSimWorkDataNewOrder {
                                 //////        (mInputMsgRequest.getfTimeInForce().equalsIgnoreCase(ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY)) ? FIX5JonecFieldValue.TIME_IN_FORCE_DAY : 
                                 //////        FIX5JonecFieldValue.TIME_IN_FORCE_DAY
                                 //////        );
-                                mNormalNewOrder.setfTimeInForce(mInputMsgRequest.getfTimeInForce()); //. TimeInForce Fix4.2 = TimeInForce 5
-                                
+//                                mNormalNewOrder.setfTimeInForce(mInputMsgRequest.getfTimeInForce()); //. TimeInForce Fix4.2 = TimeInForce 5
+                                //.20260908: difix tidak ada tipe session, hanya ada day, fak, fok
+                                if (mInputMsgRequest.getfTimeInForce().equalsIgnoreCase(ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_SESSION)) {
+                                    mNormalNewOrder.setfTimeInForce(ORIDataConst.ORIFieldValue.TIMEINFORCE_LIMIT_OR_MARKET_SPLIT_DAY);
+                                } else {
+                                    mNormalNewOrder.setfTimeInForce(mInputMsgRequest.getfTimeInForce()); //. TimeInForce Fix4.2 = TimeInForce 5
+                                }
+                                                                
                                 if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_MARKET_NONSTOP)){  //. OrdType Fix4.2 <> OrdType Fix 5
                                     mNormalNewOrder.setfOrdType(FIX5JonecDataConst.FIX5JonecFieldValue.ORD_TYPE_MARKET);
-                                }else{
+                                    //.20260316: pricenya tidak boleh diinput jika tipe market
+                                    mNormalNewOrder.setfPrice(null);
+                                } else if (mInputMsgRequest.getfOrdType().equalsIgnoreCase(ORIDataConst.ORIFieldValue.ORDTYPE_MARKET_TO_LIMIT)) { //.20260331: untuk order market to limit
+                                    mNormalNewOrder.setfOrdType(FIX5JonecDataConst.FIX5JonecFieldValue.ORD_TYPE_MARKET_TO_LIMIT);
+                                    mNormalNewOrder.setfPrice(null);
+                                } else{
                                     mNormalNewOrder.setfOrdType(FIX5JonecDataConst.FIX5JonecFieldValue.ORD_TYPE_LIMIT);
                                 }
+                                
 
-                                mNormalNewOrder.setfSymbol(mInputMsgRequest.getfSymbol()+"_RG");
+//                                mNormalNewOrder.setfSymbol(mInputMsgRequest.getfSymbol()+"_RG");
+                                mNormalNewOrder.setfSymbol(mInputMsgRequest.getfSymbol() + mInputMsgRequest.getfSymbolSfx().replace("0", "_"));
 //                                mNormalNewOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0", ""));
                                 mNormalNewOrder.setfNoPartyIDs(StringHelper.fromInt(3));
                                 //.executing trader
@@ -248,6 +276,8 @@ public class JONECSimWorkDataNewOrder {
                     case ORIDataConst.ORIFieldValue.HANDLINST_ADVERTISEMENT:
                         FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                         if (mTrxCtl != null){
+                            //.20260313
+                            BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
                             FIX5JonecDataNewOrderSingle mAdvNewOrder = new FIX5JonecDataNewOrderSingle(new HashMap());
                             mAdvNewOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.INDICATIVE_QUOTE);
                             mAdvNewOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
@@ -334,6 +364,8 @@ public class JONECSimWorkDataNewOrder {
                     case ORIDataConst.ORIFieldValue.HANDLINST_QUOTE_RESPONSE:
                         FIX5IDXBridgeController mTrxCt = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                         if (mTrxCt != null){
+                            //.20260313
+                            BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCt.getConnectionName());
                             FIX5JonecDataQuoteResponse mQuoteRes = new FIX5JonecDataQuoteResponse(new HashMap());
                             mQuoteRes.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.QUOTE_RESPONSE);
                             mQuoteRes.setfMsgSeqNum(mTrxCt.getNextTXSequencedNo());
@@ -342,8 +374,8 @@ public class JONECSimWorkDataNewOrder {
                             
                             mQuoteRes.setfQuoteRespID(mInputMsgRequest.getfClOrdID());
                             mQuoteRes.setfQuoteID(mInputMsgRequest.getfQuoteID());
-                            mQuoteRes.setfQuoteRespType("1");
-                            mQuoteRes.setfOrderCapacity("A");
+                            mQuoteRes.setfQuoteRespType(FIX5JonecDataConst.FIX5JonecFieldValue.QUOTE_RESPONSE_TYPE_HIT);
+                            mQuoteRes.setfOrderCapacity(FIX5JonecDataConst.FIX5JonecFieldValue.ORDER_CAPACITY_AGENCY);
                             mQuoteRes.setfNoPartyIDs(StringHelper.fromInt(3));
                             //.executing trader
                             mQuoteRes.setfPartyID1(mTrxCt.getTraderCode());
@@ -383,7 +415,7 @@ public class JONECSimWorkDataNewOrder {
                                 ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @cannot send");
                             }
                             //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Found route @new order as advertisement");
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Found route @new order as quote response");
                         }else{
                             //.???:
                             ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Found route @new order as advertisement but no controller");

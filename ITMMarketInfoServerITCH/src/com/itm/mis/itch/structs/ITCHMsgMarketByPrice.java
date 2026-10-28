@@ -14,12 +14,14 @@ import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logLevel;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts.logSource;
 import com.itm.soupbintcp.bridge.consts.ITMSoupBinTCPBridgeConsts.SoupBinTCPOffset;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class ITCHMsgMarketByPrice extends ITCHMsgBase {
 
     private int nanos;
     private int orderBookId;
     private byte maximumLevel;
+    private byte numberOfItems; //.20260625
     private PriceLevelItem[] priceLevelItems; // Array untuk PriceLevelItem
 
     public int getNanos() {
@@ -46,6 +48,14 @@ public class ITCHMsgMarketByPrice extends ITCHMsgBase {
         this.maximumLevel = maximumLevel;
     }
 
+    public byte getNumberOfItems() {
+        return numberOfItems;
+    }
+
+    public void setNumberOfItems(byte numberOfItems) {
+        this.numberOfItems = numberOfItems;
+    }
+
     public PriceLevelItem[] getPriceLevelItems() {
         return priceLevelItems;
     }
@@ -56,10 +66,36 @@ public class ITCHMsgMarketByPrice extends ITCHMsgBase {
 
     // Inner class untuk PriceLevelItem
     public static class PriceLevelItem {
+        private String levelUpdateAction;
+        private String side;
+        private byte level;
         private long price;
         private long quantity;
-        private int numberOfOrders;
-        private byte side;
+        private byte numberOfDeletes;
+
+        public String getLevelUpdateAction() {
+            return levelUpdateAction;
+        }
+
+        public void setLevelUpdateAction(String levelUpdateAction) {
+            this.levelUpdateAction = levelUpdateAction;
+        }
+
+        public String getSide() {
+            return side;
+        }
+
+        public void setSide(String side) {
+            this.side = side;
+        }
+
+        public byte getLevel() {
+            return level;
+        }
+
+        public void setLevel(byte level) {
+            this.level = level;
+        }
 
         public long getPrice() {
             return price;
@@ -77,20 +113,12 @@ public class ITCHMsgMarketByPrice extends ITCHMsgBase {
             this.quantity = quantity;
         }
 
-        public int getNumberOfOrders() {
-            return numberOfOrders;
+        public byte getNumberOfDeletes() {
+            return numberOfDeletes;
         }
 
-        public void setNumberOfOrders(int numberOfOrders) {
-            this.numberOfOrders = numberOfOrders;
-        }
-
-        public byte getSide() {
-            return side;
-        }
-
-        public void setSide(byte side) {
-            this.side = side;
+        public void setNumberOfDeletes(byte numberOfDeletes) {
+            this.numberOfDeletes = numberOfDeletes;
         }
     }
 
@@ -99,23 +127,26 @@ public class ITCHMsgMarketByPrice extends ITCHMsgBase {
         boolean mOut = false;
         try {
             if (super.parseMessage(btMessageBytes)) {
-                if (btMessageBytes.length >= 10 + SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD) {
+                if (btMessageBytes.length >= 11 + SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD) {
                     setNanos(decodeInteger(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 1, 4));
                     setOrderBookId(decodeInteger(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 5, 4));
                     setMaximumLevel(decodeByte(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 9, 1));
+                    setNumberOfItems(decodeByte(btMessageBytes, SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 10, 1));
 
-                    int numberOfLevels = getMaximumLevel();
+                    int numberOfLevels = getNumberOfItems();
                     PriceLevelItem[] priceLevelItems = new PriceLevelItem[numberOfLevels];
-                    int offset = SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 10;
+                    int offset = SoupBinTCPOffset.OFFSET_FIELD_PAYLOAD + 11;
 
                     for (int i = 0; i < numberOfLevels; i++) {
                         PriceLevelItem item = new PriceLevelItem();
-                        item.setPrice(decodeLong(btMessageBytes, offset, 8));
-                        item.setQuantity(decodeLong(btMessageBytes, offset + 8, 8));
-                        item.setNumberOfOrders(decodeInteger(btMessageBytes, offset + 16, 4));
-                        item.setSide(decodeByte(btMessageBytes, offset + 20, 1)); // Corrected offset for side
+                        item.setLevelUpdateAction(decodeString(btMessageBytes, offset, 1));
+                        item.setSide(decodeString(btMessageBytes, offset + 1, 1));
+                        item.setLevel(decodeByte(btMessageBytes, offset + 2, 1));
+                        item.setPrice(decodeLong(btMessageBytes, offset + 3, 8)); // Corrected offset for side
+                        item.setQuantity(decodeLong(btMessageBytes, offset + 11, 8));
+                        item.setNumberOfDeletes(decodeByte(btMessageBytes, offset + 19, 1));
                         priceLevelItems[i] = item;
-                        offset += 21; // Increment offset for the next PriceLevelItem
+                        offset += 20; // Increment offset for the next PriceLevelItem
                     }
                     setPriceLevelItems(priceLevelItems);
                     mOut = true;
@@ -136,13 +167,16 @@ public class ITCHMsgMarketByPrice extends ITCHMsgBase {
         buffer.putInt(getNanos());
         buffer.putInt(getOrderBookId());
         buffer.put(getMaximumLevel());
+        buffer.put(getNumberOfItems());
 
         if (getPriceLevelItems() != null) {
             for (PriceLevelItem item : getPriceLevelItems()) {
+                buffer.put(item.getLevelUpdateAction().getBytes(StandardCharsets.US_ASCII));
+                buffer.put(item.getSide().getBytes(StandardCharsets.US_ASCII));
+                buffer.put(item.getLevel());
                 buffer.putLong(item.getPrice());
                 buffer.putLong(item.getQuantity());
-                buffer.putInt(item.getNumberOfOrders());
-                buffer.put(item.getSide());
+                buffer.put(item.getNumberOfDeletes());
             }
         }
         byte[] message = buffer.array();
@@ -150,9 +184,9 @@ public class ITCHMsgMarketByPrice extends ITCHMsgBase {
     }
 
     private int calculateMessageLength() {
-        int length = 10; // Base length: msgType(1) + nanos(4) + orderBookId(4) + maximumLevel(1)
+        int length = 11; // Base length: msgType(1) + nanos(4) + orderBookId(4) + maximumLevel(1) + numberOfItems(1)
         if (getPriceLevelItems() != null) {
-            length += getPriceLevelItems().length * 21; // Each PriceLevelItem is 8 + 8 + 4 + 1 = 21 bytes
+            length += getPriceLevelItems().length * 20; // Each PriceLevelItem is 1 + 1 + 1 + 8 + 8 + 1 = 20 bytes
         }
         return length;
     }

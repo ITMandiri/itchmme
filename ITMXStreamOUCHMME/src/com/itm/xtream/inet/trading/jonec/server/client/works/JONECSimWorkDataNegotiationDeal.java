@@ -21,6 +21,7 @@ import com.itm.idx.data.ori.consts.ORIDataConst.ORIFieldValue;
 import com.itm.idx.data.ori.message.struct.ORIDataNegotiationDeal;
 import com.itm.idx.data.qri.message.struct.QRIDataNegDealListMessage;
 import com.itm.ts.ouch.consts.OUCHConsts;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimConnection;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -58,7 +59,10 @@ public class JONECSimWorkDataNegotiationDeal {
                 FIX5JonecDataTradeCaptureReport mFixMsg;
                 String zFixMsg = "";
                 FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
+                
                 if (mTrxCtl != null){
+                    //.20260313
+                    BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
                     if (null == mInputMsgRequest.getfNegotiationDealType()){
                         //.???:
                         ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, "No route @");
@@ -230,7 +234,8 @@ public class JONECSimWorkDataNegotiationDeal {
 //                            mFixMsg.setfTradeReportTransType(FIX5JonecFieldValue.TRADE_REPORT_TRANS_TYPE_NEW);
                             mFixMsg.setfTradeReportType(FIX5JonecFieldValue.TRADE_REPORT_TYPE_SUBMIT);
                             mFixMsg.setfSettlDate(mInputMsgRequest.getfSettlDate());
-                            mFixMsg.setfSettlMethod(mInputMsgRequest.getfSettlDeliveryType().equals(ORIFieldValue.SETTLDELIVERYTYPE_VERSUS) ? FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT : FIX5JonecFieldValue.DELIVERY_TYPE_FREE_OF_PAYMENT );
+                            //.karena konstanta db dan bursa berbeda, maka perlu diconvert terlebih dahulu
+                            mFixMsg.setfSettlMethod(mInputMsgRequest.getfSettlDeliveryType().equalsIgnoreCase(ORIFieldValue.SETTLDELIVERYTYPE_VERSUS) ? FIX5JonecFieldValue.DELIVERY_TYPE_VERSUS_PAYMENT : FIX5JonecFieldValue.DELIVERY_TYPE_FREE_OF_PAYMENT);
                             mFixMsg.setfSymbol(mInputMsgRequest.getfSymbol()+ "_" +FIX5JonecFieldValue.SECURITY_SUB_TYPE_NG);
                             mFixMsg.setfSecuritySubType("1");
                             mFixMsg.setfLastPx(StringHelper.fromDouble(mInputMsgRequest.getfPrice()));
@@ -255,9 +260,9 @@ public class JONECSimWorkDataNegotiationDeal {
                             mFixMsg.setfNoPartySubIDs1(FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
                             mFixMsg.setfPartySubID1(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");
                                                         
-                            if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+//                            if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
                                 mFixMsg.setfPartySubID1("RZAZ");//????????????????????????????
-                            }
+//                            }
                             mFixMsg.setfPartySubIDType1(FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
                             //.contra firm
                             mFixMsg.setfPartyID1d((!StringHelper.isNullOrEmpty(mInputMsgRequest.getSfCounterpartUserID())) ? mInputMsgRequest.getSfCounterpartUserID().substring(0, 2).toUpperCase() : "");
@@ -268,7 +273,9 @@ public class JONECSimWorkDataNegotiationDeal {
                             mFixMsg.setfSecurityIDSource("M");
                             mFixMsg.setfSecurityType(FIX5JonecFieldValue.SECURITY_TYPE_MULTILEGINSTRUMENT);
                             mFixMsg.setfTransactTime(FIX5DateTimeHelper.getDateTimeFIX5LocalFormatDetail());
-                            mFixMsg.setfTransBkdTime(FIX5DateTimeHelper.getDateTimeFIX5LocalFormatDetail());
+//                            mFixMsg.setfTransBkdTime(FIX5DateTimeHelper.getDateTimeFIX5LocalFormatDetail());
+                            //.20260901: transBkdTime ambil dari inputan lawan 
+                            mFixMsg.setfTransBkdTime(mInputMsgRequest.getfTransactTime());
                             mFixMsg.setfTradeID(StringHelper.fromLong(mInputMsgRequest.getfIOIId()));
                             mFixMsg.setfSecondaryTradeID(StringHelper.fromLong(mInputMsgRequest.getfIOIId()));
                             mFixMsg.setfTradeHandlingInstr(FIX5JonecFieldValue.TRADE_HANDLING_INSTR_ONEPARTYREPORTFORMATCHING);

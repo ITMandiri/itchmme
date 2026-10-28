@@ -119,9 +119,9 @@ public class ITMSoupBinTCPITCHMDFMsgParser {
                             mOut = mObjMarketSegmentDirectory;
                             break;
                         case ITCHConsts.ITCHMDFMessageType.MESSAGETYPE_MARKET_BY_PRICE:
-//                            ITCHMsgMarketByPrice mObjMarketByPrice = new ITCHMsgMarketByPrice();
-//                            mObjMarketByPrice.parseMessage(btMessageBytes);
-//                            mOut = mObjMarketByPrice;
+                            ITCHMsgMarketByPrice mObjMarketByPrice = new ITCHMsgMarketByPrice();
+                            mObjMarketByPrice.parseMessage(btMessageBytes);
+                            mOut = mObjMarketByPrice;
                             break;
                         case ITCHConsts.ITCHMDFMessageType.MESSAGETYPE_TRADE_STATISTICS:
                             ITCHMsgTradeStatistics mObjTradeStatistics = new ITCHMsgTradeStatistics();

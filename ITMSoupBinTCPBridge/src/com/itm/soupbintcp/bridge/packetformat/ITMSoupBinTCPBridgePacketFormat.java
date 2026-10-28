@@ -40,6 +40,8 @@ public class ITMSoupBinTCPBridgePacketFormat {
     
     public final static String DEF_FORMAT_IDX_TRX_TIME_DATAFEED     = "HHmmss";
     public final static String DEF_FORMAT_IDX_TRX_DATE_DATAFEED     = "yyyyMMdd";
+    //.20260730: untuk mengambil jam dan menitnya saja
+    public final static String DEF_FORMAT_IDX_TRX_TIME_WITHOUT_SECOND = "HHmm";
     
     public final static String DEF_FORMAT_IDN_TRX_DATE_NORMAL       = "dd-MMM-yyyy";
     
@@ -876,6 +878,20 @@ public class ITMSoupBinTCPBridgePacketFormat {
         try{
             if (dtInputDate != null){
                 DateFormat cTimeFormat = new SimpleDateFormat(DEF_FORMAT_IDX_TRX_TIME_DATAFEED);
+                zOut = cTimeFormat.format(dtInputDate);
+            }
+        }catch(Exception ex0){
+            //.EXXX.
+        }
+        return zOut;
+    }
+    
+    //.20260730: untuk mengambil jam dan menitnya saja
+    public static String getTimeWithoutSecond(Date dtInputDate){
+        String zOut = "";
+        try{
+            if (dtInputDate != null){
+                DateFormat cTimeFormat = new SimpleDateFormat(DEF_FORMAT_IDX_TRX_TIME_WITHOUT_SECOND);
                 zOut = cTimeFormat.format(dtInputDate);
             }
         }catch(Exception ex0){

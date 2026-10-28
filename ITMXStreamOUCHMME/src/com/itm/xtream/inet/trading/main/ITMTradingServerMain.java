@@ -20,11 +20,13 @@ import com.itm.soupbintcp.bridge.sockets.ITMSoupBinTCPBridgeSocketGeneral;
 import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketMgr;
 import com.itm.xtream.inet.trading.consts.ITMTradingServerConsts;
 import com.itm.xtream.inet.trading.dbaccess.DBAccessManagement;
+import com.itm.xtream.inet.trading.dcsplitter.main.DCSplitterServerAccess;
 import com.itm.xtream.inet.trading.fix5.jonec.callback.FIX5JonecMsgTransRecvHandler;
 import com.itm.xtream.inet.trading.form.ITMTradingServerHomeForm;
 import com.itm.xtream.inet.trading.jonec.server.main.JONECSimAccess;
 import com.itm.xtream.inet.trading.jonec.server.msgmem.works.helper.QRIOrderListPartialSummaryWorker;
 import com.itm.xtream.inet.trading.martin.server.main.MARTINSimAccess;
+import com.itm.xtream.inet.trading.ptr.PTRWorker;
 import com.itm.xtream.inet.trading.racing.mgr.ITMTradingServerRacingMgr;
 import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 import com.itm.xtream.inet.trading.sync.connection.ITMTradingServerSyncConnectionMgr;
@@ -50,7 +52,7 @@ public class ITMTradingServerMain {
         
         System.out.println("*********************************************************");
         System.out.println("/* --------------------------------------------------- */");
-        System.out.println("/* WELCOME TO XTREAM INET TRADING SERVER */");
+        System.out.println("/* WELCOME TO XTREAM MME TRADING SERVER */");
         System.out.println("/* --------------------------------------------------- */");
         System.out.println("/* DEV: PT. INFO TEKNOLOGI MANDIRI */");
         System.out.println("/* CLI: " + ITMFileLoggerVarsConsts.APP_CLIENT_NAME + " */");
@@ -98,7 +100,8 @@ public class ITMTradingServerMain {
             try {
                 //ouch:
                 ITMTradingServerSettingsMgr.CTS_Connection[] arrConnections = ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.ouch_connections;
-                if ((arrConnections != null) && (arrConnections.length > 0)){
+                if ((arrConnections != null) && (arrConnections.length > 0) 
+                        && ((ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.ouch_only) || (!(ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.ouch_only) && !(ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only)))){
                     for (ITMTradingServerSettingsMgr.CTS_Connection arrConnection : arrConnections) {
                         if (arrConnection != null){
                             iConnectionOrderNo++;
@@ -130,7 +133,8 @@ public class ITMTradingServerMain {
             try {
                 //fix5:
                 ITMTradingServerSettingsMgr.FIX_Connection[] arrConnections = ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_connections;
-                if ((arrConnections != null) && (arrConnections.length > 0)){
+                if ((arrConnections != null) && (arrConnections.length > 0) 
+                        && ((ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only) || (!(ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.ouch_only) && !(ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only)))){
                     for (ITMTradingServerSettingsMgr.FIX_Connection arrConnection : arrConnections) {
                         if (arrConnection != null){
                             iConnectionOrderNo++;
@@ -174,13 +178,18 @@ public class ITMTradingServerMain {
             
             mHomeForm.setMainControlsEnableState(false); //.disable controls;
             mHomeForm.setBottomInfoMessage("Restoring Data Files, Please Wait ... .");
-            mHomeForm.setBottomInfoMessage("");
+            mHomeForm.setBottomInfoMessage(System.getProperty("user.dir"));
             mHomeForm.setMainControlsEnableState(true); //.enable controls;
             
             JONECSimAccess.getInstance.runServerOnce();
             MARTINSimAccess.getInstance.runServerOnce();
+            DCSplitterServerAccess.getInstance.runServerOnce();//.20260707
             
             QRIOrderListPartialSummaryWorker.getInstance.startWorker(500);
+            //.20261020: ptr dijalankan jika interval lebih dari 0
+            if (ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.ptr_interval_second > 0) {
+                PTRWorker.getInstance.startWorker(ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.ptr_interval_second * 1000);//.20260929
+            }
             
             ITMTradingServerRacingMgr instanceRacing = ITMTradingServerRacingMgr.getInstance;
             

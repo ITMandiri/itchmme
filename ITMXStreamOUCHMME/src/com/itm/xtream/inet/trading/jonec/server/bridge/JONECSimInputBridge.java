@@ -105,7 +105,7 @@ public class JONECSimInputBridge {
                 ///netWriteMsgln("FAILED", channel);
                 bNeedToDisconnect = true;
             }else if ((messageLine != null) && (messageLine.length() > 0)){
-                System.out.println("@client_message=" + messageLine);
+//                System.out.println("@client_message=" + messageLine);
                 IDXMessage mMsg = oriProcessor.parseMessage(messageLine, true);
                 if (mMsg == null || mMsg instanceof ORIDataUnknownMessage){
                     ///netWriteMsgln("FAILED", channel);

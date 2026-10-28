@@ -115,6 +115,13 @@ public class JONECSimMsgMemWorkRejectedOrder {
                                                     ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
                                                     //. 2022-02-17 : jangan teruskan ke klien
                                                     return;
+                                                case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_OUCH_THROTTLING: //.20260504: ketika dapat throttling, kirim ulang juga
+                                                    // anggap belum buka
+                                                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                    //. di ulangi lagi
+                                                    ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
+                                                    //. 2022-02-17 : jangan teruskan ke klien
+                                                    return;
                                                 default:
                                                     // anggap sudah buka
                                                     ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.INFO, "Dapat message OUCHMsgRejectedOrder untuk trigger doReleaseAllPendingOrder. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
@@ -143,6 +150,13 @@ public class JONECSimMsgMemWorkRejectedOrder {
                                                 ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
                                                 //. 2022-02-17 : jangan teruskan ke klien
                                                 return;
+                                            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_OUCH_THROTTLING: //.20260504: ketika dapat throttling, kirim ulang juga
+                                                // anggap belum buka
+                                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Dapat message OUCHMsgRejectedOrder untuk mengulangi trigger doSendingFirstOrderRacing. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
+                                                //. di ulangi lagi
+                                                ITMTradingServerRacingMgr.getInstance.doSendingFirstOrderRacing();
+                                                //. 2022-02-17 : jangan teruskan ke klien
+                                                return;
                                             default:
                                                 // anggap sudah buka
                                                 ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.INFO, "Dapat message OUCHMsgRejectedOrder untuk trigger doReleaseAllPendingOrder. BrokerRef = " + zBrokerRef + ", OrderToken = " + vOrderToken + ", RejectReason = " + mMessage.getRejectCode());
@@ -156,10 +170,21 @@ public class JONECSimMsgMemWorkRejectedOrder {
                                 //. hrn : sedang tidak ada OrderRacing dari single Order, maka ulangi sampai ada flag accepted // by config jam
                                 boolean bCurrMessageAccepted =  ITMTradingServerRacingMgr.getInstance.getbOrderMessageAccepted();
                                 boolean bRejectShouldRetry = false;
-                                if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_IS_CLOSED == mMessage.getRejectCode()){
-                                    bRejectShouldRetry = true;
-                                }else if (OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_LIMIT_ORDER_NOT_ALLOWED_THIS_TIME == mMessage.getRejectCode()){
-                                    bRejectShouldRetry = true;
+                                switch (mMessage.getRejectCode()) {
+                                    case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ORDERBOOK_IS_CLOSED:
+                                        bRejectShouldRetry = true;
+                                        break;
+                                    case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_LIMIT_ORDER_NOT_ALLOWED_THIS_TIME:
+                                        bRejectShouldRetry = true;
+                                        break;
+                                    case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_MATCH_SST_MARKET_ORD:
+                                        bRejectShouldRetry = true;
+                                        break;
+                                    case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_OUCH_THROTTLING: //.20260504: ketika dapat throttling, kirim ulang juga
+                                        bRejectShouldRetry = true;
+                                        break;
+                                    default:
+                                        break;
                                 }
                                 if (bRejectShouldRetry){
                                     boolean inRetryRange = ITMTradingServerRacingMgr.getInstance.isTimeInRangeOrderRetry(false);

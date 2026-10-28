@@ -124,85 +124,111 @@ public class ITCHConsts {
         public static final String PARTICIPANT_STATUS_ACTIVE                    = "A";
         public static final String PARTICIPANT_STATUS_SUSPENDED                 = "S";
         
+        //.indicative quote statuses:
+        public static final int INDICATIVE_QUOTE_STATUS_NEW                                             = 1;
+        public static final int INDICATIVE_QUOTE_STATUS_ACCEPTED                                        = 2;
+        public static final int INDICATIVE_QUOTE_STATUS_CANCELLED_BY_USER                               = 3;
+        public static final int INDICATIVE_QUOTE_STATUS_CANCELLED_BY_NOT_ENOUGH_QTY                     = 4;
+        public static final int INDICATIVE_QUOTE_STATUS_CANCELLED_BY_SYSTEM                             = 5;
+        public static final int INDICATIVE_QUOTE_STATUS_DECLINED                                        = 6;
+        public static final int INDICATIVE_QUOTE_STATUS_CANCELLED_DUE_TO_SUSPENDED_INVESTOR             = 7;
+        public static final int INDICATIVE_QUOTE_STATUS_CANCELLED_DUE_TO_SUSPENDED_ACCOUNT              = 8;
+        public static final int INDICATIVE_QUOTE_STATUS_CANCELLED_DUE_TO_PRICE_TICK_VALIDATION          = 9;
+        public static final int INDICATIVE_QUOTE_STATUS_CANCELLED_DUE_TO_DECIMALS_IN_QUANTITY_UPDATE    = 10;
         
+        public static final int TRADE_REPORT_TYPE_NOT_A_TRADE_REPORT                        = 0;
+        public static final int TRADE_REPORT_TYPE_NEGOTIATED_DEAL                           = 1;
+        public static final int TRADE_REPORT_TYPE_INDICATIVE                                = 2;
     }
     
     public class ITCHStateField {
-        public static final String STATE_BREAK                                  = "Break";
-        public static final String STATE_BREAK_CALL                             = "Break_Call";
-        public static final String STATE_CALL_RANDOM_CLOSE                      = "Call_RandomClose";
-        public static final String STATE_CLOSE_CALL_AUCTION                     = "Close_CallAuction";
-        public static final String STATE_CLOSE_NG                               = "Close_NG";
-        public static final String STATE_CLOSE_RF                               = "Close_RF";
-        public static final String STATE_CLOSE_RG                               = "Close_RG";
-        public static final String STATE_CLOSE_TN                               = "Close_TN";
-        public static final String STATE_END_OF_DAY                             = "EndofDay";
-        public static final String STATE_MATCHING_CALL_AUCTION                  = "Matching_CallAuction";
-        public static final String STATE_MATCHING_CLOSE                         = "Matching_Close";
-        public static final String STATE_MATCHING_PRE_OPEN                      = "Matching_PreOpen";
-        public static final String STATE_NON_CANCEL                             = "NonCancel";
-        public static final String STATE_POST_TRADE                             = "PostTrade";
-        public static final String STATE_PRE_CLOSE                              = "PreClose";
-        public static final String STATE_PRE_OPEN                               = "PreOpen";
-        public static final String STATE_RANDOM_CLOSE                           = "RandomClose";
-        public static final String STATE_SESSION_1_NG                           = "Session_1_NG";
-        public static final String STATE_SESSION_1_RF                           = "Session_1_RF";
-        public static final String STATE_SESSION_1_RG                           = "Session_1_RG";
-        public static final String STATE_SESSION_1_RG_CALL                      = "Session_1_RG_Call";
-        public static final String STATE_SESSION_1_TN                           = "Session_1_TN";
-        public static final String STATE_SESSION_1_TN_CALL                      = "Session_1_TN_Call";
-        public static final String STATE_SESSION_2_NG                           = "Session_2_NG";
-        public static final String STATE_SESSION_2_RF                           = "Session_2_RF";
-        public static final String STATE_SESSION_2_RG                           = "Session_2_RG";
-        public static final String STATE_SESSION_2_RG_CALL                      = "Session_2_RG_Call";
-        public static final String STATE_SESSION_2_TN_CALL                      = "Session_2_TN_Call";
-        public static final String STATE_SESSION_3_RG_CALL                      = "Session_3_RG_Call";
-        public static final String STATE_SESSION_3_TN_CALL                      = "Session_3_TN_Call";
-        public static final String STATE_SESSION_4_RG_CALL                      = "Session_4_RG_Call";
-        public static final String STATE_SESSION_5_RG_CALL                      = "Session_5_RG_Call";
-        public static final String STATE_SOBD                                   = "SOBD";
-        public static final String STATE_SUSPEND                                = "SuspendKeepOrder";
-        public static final String STATE_TRADING_HALT                           = "Trading_Halt";
-        public static final String STATE_UNSUSPEND                              = "Unsuspend";
+        public static final String STATE_BREAK                  = "Break";
+        public static final String STATE_BREAK_CALL             = "Break_Call";
+        public static final String STATE_CALCULATE_CP           = "Calculate_CP";
+        public static final String STATE_CALL_RANDOM_CLOSE      = "Call_RandomClose";
+        
+        // public static final String STATE_CLOSE_CALL_AUCTION  = "Close_CallAuction"; //.20260625 Not found in latest specification
+        public static final String STATE_CLOSE_NG               = "Close_NG";
+        public static final String STATE_CLOSE_RF               = "Close_RF";
+        public static final String STATE_CLOSE_RG               = "Close_RG";
+        public static final String STATE_CLOSE_TN               = "Close_TN"; 
+        public static final String STATE_CLOSE_INDEX            = "Close_INDEX";
+        public static final String STATE_END_OF_DAY             = "EndofDay";
+        public static final String STATE_MATCHING_CALL_AUCTION  = "Matching_CallAuction";
+        public static final String STATE_MATCHING_CLOSE         = "Matching_Close";
+        public static final String STATE_MATCHING_PRE_OPEN      = "Matching_PreOpen";
+        public static final String STATE_NON_CANCEL             = "NonCancel";
+        public static final String STATE_POST_TRADE             = "PostTrade";
+        public static final String STATE_PRE_CLOSE              = "PreClose";
+        public static final String STATE_PRE_OPEN               = "PreOpen";
+        public static final String STATE_OPEN                   = "Open";
+        public static final String STATE_RANDOM_CLOSE           = "RandomClose";
+        public static final String STATE_SESSION_1_NG           = "Session_1_NG";
+        public static final String STATE_SESSION_1_RF           = "Session_1_RF";
+        public static final String STATE_SESSION_1_RG           = "Session_1_RG";
+        public static final String STATE_SESSION_1_RG_CALL      = "Session_1_RG_Call";
+        public static final String STATE_SESSION_1_TN           = "Session_1_TN";
+        public static final String STATE_SESSION_1_TN_CALL      = "Session_1_TN_Call";
+        public static final String STATE_SESSION_2_NG           = "Session_2_NG";
+        public static final String STATE_SESSION_2_RF           = "Session_2_RF";
+        public static final String STATE_SESSION_2_RG           = "Session_2_RG";
+        public static final String STATE_SESSION_2_RG_CALL      = "Session_2_RG_Call";
+        public static final String STATE_SESSION_2_TN_CALL      = "Session_2_TN_Call";
+        public static final String STATE_SESSION_3_RG_CALL      = "Session_3_RG_Call";
+        public static final String STATE_SESSION_3_TN_CALL      = "Session_3_TN_Call";
+        public static final String STATE_SESSION_4_RG_CALL      = "Session_4_RG_Call";
+        public static final String STATE_SESSION_5_RG_CALL      = "Session_5_RG_Call";
+        public static final String STATE_SOBD                   = "SOBD";        
+        public static final String STATE_SUSPEND                = "Suspend"; //.20260625 Changed from SuspendKeepOrder
+        public static final String STATE_TRADING_HALT           = "Trading_Halt";
+        
+        public static final String STATE_END_PRE_CLOSE          = "EndPreClose"; 
+        // public static final String STATE_UNSUSPEND           = "Unsuspend"; //.20260625 Not found in latest specification
     }
     
     public class ITCHStateDesc {
-        public static final String STATE_BREAK                                  = "Break Session";
-        public static final String STATE_BREAK_CALL                             = "Break Session Call Auction";
-        public static final String STATE_CALL_RANDOM_CLOSE                      = "Random Closing at Call Auction";
-        public static final String STATE_CLOSE_CALL_AUCTION                     = "Closing at Call Auction";
-        public static final String STATE_CLOSE_NG                               = "Close Negotiation";
-        public static final String STATE_CLOSE_RF                               = "Close Regular Futures";
-        public static final String STATE_CLOSE_RG                               = "Close Regular";
-        public static final String STATE_CLOSE_TN                               = "Close Cash";
-        public static final String STATE_END_OF_DAY                             = "End of Day";
-        public static final String STATE_MATCHING_CALL_AUCTION                  = "Matching at Call Auction";
-        public static final String STATE_MATCHING_CLOSE                         = "Matching at Closing Regular";
-        public static final String STATE_MATCHING_PRE_OPEN                      = "Matching at Pre-Opening";
-        public static final String STATE_NON_CANCEL                             = "Non cancellation";
-        public static final String STATE_POST_TRADE                             = "Post Trading";
-        public static final String STATE_PRE_CLOSE                              = "Pre-Closing";
-        public static final String STATE_PRE_OPEN                               = "Pre-Opening";
-        public static final String STATE_RANDOM_CLOSE                           = "Random Closing";
-        public static final String STATE_SESSION_1_NG                           = "Session 1 NG";
-        public static final String STATE_SESSION_1_RF                           = "Session 1 Regular Futures";
-        public static final String STATE_SESSION_1_RG                           = "Session 1 Regular";
-        public static final String STATE_SESSION_1_RG_CALL                      = "Call Auction Session 1";
-        public static final String STATE_SESSION_1_TN                           = "Session 1 Cash";
-        public static final String STATE_SESSION_1_TN_CALL                      = "Call Auction Session 1 - TN";
-        public static final String STATE_SESSION_2_NG                           = "Session 2 NG";
-        public static final String STATE_SESSION_2_RF                           = "Session 2 Regular Futures";
-        public static final String STATE_SESSION_2_RG                           = "Session 2 Regular";
-        public static final String STATE_SESSION_2_RG_CALL                      = "Call Auction Session 2";
-        public static final String STATE_SESSION_2_TN_CALL                      = "Call Auction Session 2 - TN";
-        public static final String STATE_SESSION_3_RG_CALL                      = "Call Auction Session 3";
-        public static final String STATE_SESSION_3_TN_CALL                      = "Call Auction Session 3 - TN";
-        public static final String STATE_SESSION_4_RG_CALL                      = "Call Auction Session 4";
-        public static final String STATE_SESSION_5_RG_CALL                      = "Call Auction Session 5";
-        public static final String STATE_SOBD                                   = "Start of Business Date";
-        public static final String STATE_SUSPEND                                = "Suspend with Cancel Orders";
-        public static final String STATE_TRADING_HALT                           = "Trading Halt by Keeping Orders";
-        public static final String STATE_UNSUSPEND                              = "Unsuspend";
+        public static final String STATE_BREAK                  = "Break Session";
+        public static final String STATE_BREAK_CALL             = "Break Session Call Auction";
+        public static final String STATE_CALCULATE_CP           = "Calculate Closing Price";
+        public static final String STATE_CALL_RANDOM_CLOSE      = "Random Closing at Call Auction";
+        
+        // public static final String STATE_CLOSE_CALL_AUCTION  = "Closing at Call Auction"; //.20260625 Not found in latest specification
+        public static final String STATE_CLOSE_NG               = "Close Negotiation";
+        public static final String STATE_CLOSE_RF               = "Close Regular Futures";
+        public static final String STATE_CLOSE_RG               = "Close Regular";
+        public static final String STATE_CLOSE_TN               = "Close Cash"; 
+        public static final String STATE_CLOSE_INDEX            = "Close Index";
+        public static final String STATE_END_OF_DAY             = "End of Day";
+        public static final String STATE_MATCHING_CALL_AUCTION  = "Matching at Call Auction";
+        public static final String STATE_MATCHING_CLOSE         = "Matching at Closing Regular";
+        public static final String STATE_MATCHING_PRE_OPEN      = "Matching at Pre-Opening";
+        public static final String STATE_NON_CANCEL             = "Non cancellation";
+        public static final String STATE_POST_TRADE             = "Post Trading";
+        public static final String STATE_PRE_CLOSE              = "Pre-Closing";
+        public static final String STATE_PRE_OPEN               = "Pre-Opening";
+        public static final String STATE_OPEN                   = "Open for Index Calculation";
+        public static final String STATE_RANDOM_CLOSE           = "Random Closing";
+        public static final String STATE_SESSION_1_NG           = "Session 1 NG";
+        public static final String STATE_SESSION_1_RF           = "Session 1 Regular Futures";
+        public static final String STATE_SESSION_1_RG           = "Session 1 Regular";
+        public static final String STATE_SESSION_1_RG_CALL      = "Call Auction Session 1";
+        public static final String STATE_SESSION_1_TN           = "Session 1 Cash";
+        public static final String STATE_SESSION_1_TN_CALL      = "Call Auction Session 1 - TN";
+        public static final String STATE_SESSION_2_NG           = "Session 2 NG";
+        public static final String STATE_SESSION_2_RF           = "Session 2 Regular Futures";
+        public static final String STATE_SESSION_2_RG           = "Session 2 Regular";
+        public static final String STATE_SESSION_2_RG_CALL      = "Call Auction Session 2";
+        public static final String STATE_SESSION_2_TN_CALL      = "Call Auction Session 2 - TN";
+        public static final String STATE_SESSION_3_RG_CALL      = "Call Auction Session 3";
+        public static final String STATE_SESSION_3_TN_CALL      = "Call Auction Session 3 - TN";
+        public static final String STATE_SESSION_4_RG_CALL      = "Call Auction Session 4";
+        public static final String STATE_SESSION_5_RG_CALL      = "Call Auction Session 5";
+        public static final String STATE_SOBD                   = "Start of Business Date";
+        public static final String STATE_SUSPEND                = "Suspend with Cancel Orders";
+        public static final String STATE_TRADING_HALT           = "Trading Halt by Keeping Orders";
+        
+        public static final String STATE_END_PRE_CLOSE          = "End Pre-Closing";
+        // public static final String STATE_UNSUSPEND           = "Unsuspend"; //.20260625 Not found in latest specification
     }
     
     public class ITCHFinancialProductField {
@@ -232,7 +258,18 @@ public class ITCHConsts {
         public static final int PRICE_TYPE_SETTLEMENT                           = 5;
         public static final int PRICE_TYPE_EVER_LAST                            = 6;
         public static final int PRICE_TYPE_CLOSING_PRICE                        = 11;
-        
+        public static final int PRICE_TYPE_ADJUSTED_CLOSING_PRICE               = 12; //.20260625
+    }
+    //.20261014: untuk market by price
+    public class ITCHMBPActionField {
+        public static final String ACTION_CHANGE                                = "C";
+        public static final String ACTION_NEW                                   = "N";
+        public static final String ACTION_DELETE                                = "D";
+    }
+    
+    public class ITCHMBPSideField {
+        public static final String SIDE_BID                                     = "B";
+        public static final String SIDE_ASK                                     = "A";
     }
     
 }

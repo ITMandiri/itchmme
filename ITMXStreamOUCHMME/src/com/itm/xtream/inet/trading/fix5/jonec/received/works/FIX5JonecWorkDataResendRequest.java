@@ -37,17 +37,21 @@ public class FIX5JonecWorkDataResendRequest {
     public void doWork(ITMSocketChannel channel, FIX5IDXBridgeController controller, FIX5JonecDataResendRequest mInputMsgRequest){
         try{
             System.err.println("RESEND REQUEST");
-            
+            long seq = controller.getNextTXSequencedNo();
+            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.INFO, "Resend request, BeginSeqNo=" + mInputMsgRequest.getfBeginSeqNo() + ", EndSeqNo=" + mInputMsgRequest.getfBeginSeqNo() + ", MsgSeqNum="+mInputMsgRequest.getfMsgSeqNum()+".");
             FIX5JonecDataSequenceReset mMsg = new FIX5JonecDataSequenceReset(new HashMap());
             mMsg.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.SEQUENCE_RESET);
-            mMsg.setfMsgSeqNum(controller.getNextTXSequencedNo());
+            //.getfBeginSeqNo = sequence yang harus kita kirim balik
+            mMsg.setfMsgSeqNum(StringHelper.toLong(mInputMsgRequest.getfBeginSeqNo())); 
             mMsg.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
             mMsg.setfSenderSubID(controller.getConnectorCode());
             mMsg.setfSenderCompID(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
-            mMsg.setfPossDupflag("Y");
+//            mMsg.setfPossDupflag("Y");
             
             mMsg.setfGapFillFlag("Y");
-            mMsg.setfNewSeqNo(StringHelper.fromLong(controller.getNextTXSequencedNo() + 1));
+            //.getfMsgSeqNum = sequence terakhir dari bursa, ditambah 1 untuk msg selanjutnya
+            mMsg.setfNewSeqNo(StringHelper.fromLong(controller.getCurrentTXSequencedNo()+1));
+//            controller.setCurrentTXSequencedNo(mInputMsgRequest.getfMsgSeqNum());
             
             String zSeqResetFixMsg = mMsg.msgToString();
             zSeqResetFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zSeqResetFixMsg,true,true,controller.getConnectionName());

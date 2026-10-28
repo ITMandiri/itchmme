@@ -42,7 +42,7 @@ public class ITMTradingServerMain {
         
         System.out.println("*********************************************************");
         System.out.println("/* --------------------------------------------------- */");
-        System.out.println("/* WELCOME TO XTREAM INET TRADING SERVER */");
+        System.out.println("/* WELCOME TO XTREAM MME TRADING SERVER */");
         System.out.println("/* --------------------------------------------------- */");
         System.out.println("/* DEV: PT. INFO TEKNOLOGI MANDIRI */");
         System.out.println("/* CLI: " + ITMFileLoggerVarsConsts.APP_CLIENT_NAME + " */");

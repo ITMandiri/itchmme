@@ -24,7 +24,9 @@ public class ITMTradingServerSyncConnITCHHandler implements ITMSoupBinTCPBridgeS
     @Override
     public void onDisconnected(ITMSoupBinTCPBridgeSocketChannel channel) {
         ///throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        ITMTradingServerSyncConnectionMgr.getInstance.terminateAllClientConnections(false);
+        //.20260717: diremark untuk mencegah putus koneksi mis dari splitter 
+        //.agar mis selalu connect ke splitter walau koneksi splitter putus dengan itch
+//        ITMTradingServerSyncConnectionMgr.getInstance.terminateAllClientConnections(false);
     }
 
     @Override

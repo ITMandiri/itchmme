@@ -91,7 +91,7 @@ public class MARTINSimInputBridge {
                 ///netWriteMsgln("FAILED", channel);
                 bNeedToDisconnect = true;
             }else if ((messageLine != null) && (messageLine.length() > 0)){
-                System.out.println("@client_message=" + messageLine);
+//                System.out.println("@client_message=" + messageLine);
                 IDXMessage mMsg = qriProcessor.processMessage(messageLine, true);
                 if (mMsg == null || mMsg instanceof QRIDataUnknownMessage){
                     ///netWriteMsgln("FAILED", channel);
@@ -197,11 +197,11 @@ public class MARTINSimInputBridge {
                             boolean bFix5Connected = ITMTradingServerSyncConnectionMgr.getInstance.isFix5Connected();
                             boolean bOUCHConnected = ITMTradingServerSyncConnectionMgr.getInstance.isOUCHConnected();
                             mRespondITMMessageRG.setfMsgSubType1("rg");
-                            if (bOUCHConnected){
+                            if (bOUCHConnected || bFix5Connected){ //.20260225: fix5 sekarang bisa order reguler
                                 mRespondITMMessageRG.setfMsgSubValue1(1);
                             }
                             mRespondITMMessageNG.setfMsgSubType1("ng");
-                            if (bOUCHConnected){
+                            if (bOUCHConnected || bFix5Connected){
                                 mRespondITMMessageNG.setfMsgSubValue1(1);
                             }
                             

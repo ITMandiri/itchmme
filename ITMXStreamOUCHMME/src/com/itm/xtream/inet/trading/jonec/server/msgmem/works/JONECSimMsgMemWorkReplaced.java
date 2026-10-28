@@ -77,7 +77,9 @@ public class JONECSimMsgMemWorkReplaced {
                         
                         ORIDataOrderAmend mOriginRequestMsg = ((ORIDataOrderAmend)mOriginRequest.getIdxMessage());
                         
-                        mCalcQty.setQtyOrder(mMessage.getQuantity()); //.???????????????????????????????????
+//                        mCalcQty.setQtyOrder(mMessage.getQuantity()); //.???????????????????????????????????
+                        //.20260424: untuk sekarang dari ouch yang dikirim outstandingnya, sehingga sekarang yang dipakai untuk qtyOrder dari msg asalnya
+                        mCalcQty.setQtyOrder(mOriginRequestMsg.getfOrderQty());
                         if (mPrevCalcQty != null){
                             mCalcQty.setQtyMatch(mPrevCalcQty.getQtyMatch());
                             //. set status baru = status lama
@@ -113,7 +115,9 @@ public class JONECSimMsgMemWorkReplaced {
                         mReplyMsg.setfOrdStatus(ORIDataConst.ORIFieldValue.ORDSTATUS_REPLACED);
                         mReplyMsg.setfSymbol(mOriginRequestMsg.getfSymbol());
                         mReplyMsg.setfSide(mOriginRequestMsg.getfSide());
-                        mReplyMsg.setfOrderQty(mMessage.getQuantity()); //.??????????????????????
+//                        mReplyMsg.setfOrderQty(mMessage.getQuantity()); //.??????????????????????
+                        //.20260424: ambil qtynya dari kalkulasi origin
+                        mReplyMsg.setfOrderQty(mCalcQty.getQtyOrder());
                         mReplyMsg.setfLeavesQty(mCalcQty.getQtyLeave()); 
                         mReplyMsg.setfCumQty(mCalcQty.getQtyMatch());
                         mReplyMsg.setfAvgPx(0);

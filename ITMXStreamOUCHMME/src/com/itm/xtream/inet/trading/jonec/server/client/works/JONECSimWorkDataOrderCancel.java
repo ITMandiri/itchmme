@@ -9,6 +9,7 @@ import com.itm.fix5.data.helpers.FIX5CheckSumHelper;
 import com.itm.fix5.data.helpers.FIX5DateTimeHelper;
 import com.itm.fix5.data.jonec.consts.FIX5JonecDataConst;
 import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataOrderCancelRequest;
+import com.itm.fix5.data.jonec.message.struct.FIX5JonecDataQuoteResponse;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
 import com.itm.fix5.data.message.bridge.FIX5IDXBridgeManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
@@ -22,6 +23,8 @@ import com.itm.ts.ouch.callback.ITMSoupBinTCPOUCHPacketMgr;
 import com.itm.ts.ouch.consts.OUCHConsts;
 import com.itm.ts.ouch.structs.OUCHMsgCancelOrder;
 import com.itm.xtream.inet.trading.consts.ITMTradingServerConsts;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimBrokerRef;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimConnection;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -57,61 +60,134 @@ public class JONECSimWorkDataOrderCancel {
 
                     BookOfJONECSimEveryRequest.getInstance.addOrUpdateSheet(new SheetOfJONECSimEveryRequest(vEveryOrderToken, mInputMsgRequest));
                     
-                    FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
+                    //.20260313: lookup connection name berdasarkan orderan sebelumnya
+                    String ConnName = BookOfJONECSimConnection.getInstance.findConnectionNameByBrokerRef(mInputMsgRequest.getfOrigClOrdID());
+                                        
+                    FIX5IDXBridgeController mTrxCtl = null;
+                    
+                    if (!StringHelper.isNullOrEmpty(ConnName)) {
+                        mTrxCtl = FIX5IDXBridgeManager.getInstance.getFIX5ConnLine(ConnName);
+                        if (mTrxCtl == null) {
+                            mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
+                        }
+                    }
                     
                     if (mTrxCtl != null){
-                        FIX5JonecDataOrderCancelRequest mAdvCancelOrder = new FIX5JonecDataOrderCancelRequest(new HashMap());
-                        mAdvCancelOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.INDICATIVE_QUOTE_CANCEL);
-                        mAdvCancelOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
-                        mAdvCancelOrder.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
-                        mAdvCancelOrder.setfSenderSubID(mTrxCtl.getTraderCode());
-
-//                        mAdvCancelOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
-//                        mAdvCancelOrder.setfOrderID(mInputMsgRequest.getfOrderID());
-//                        mAdvCancelOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
-
-                        mAdvCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol()+ "_" +FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_SUB_TYPE_NG);
-//                        mAdvCancelOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0",""));
-
-//                        mAdvCancelOrder.setfSide(mInputMsgRequest.getfSide());
-//                        mAdvCancelOrder.setfTransactTime(mAdvCancelOrder.getfSendingTime());
+                        //.20260313
+                        BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
                         
-                        mAdvCancelOrder.setfNoPartyIDs(StringHelper.fromInt(2));
-                        //.executing trader
-                        mAdvCancelOrder.setfPartyID1(mTrxCtl.getTraderCode());
-                        mAdvCancelOrder.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
-                        mAdvCancelOrder.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
-                        //.noPartySub
-                        mAdvCancelOrder.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
-                        mAdvCancelOrder.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
-                        if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
-                            mAdvCancelOrder.setfPartySubID(mInputMsgRequest.getfText());
-                        }   
-                        mAdvCancelOrder.setfPartySubIDType(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
-                        //.executing firm
-                        mAdvCancelOrder.setfPartyID2(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
-                        mAdvCancelOrder.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
-                        mAdvCancelOrder.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
-                        //.customer account
-//                        mAdvCancelOrder.setfPartyID3(mInputMsgRequest.getfComplianceID());
-//                        mAdvCancelOrder.setfPartyIDSource3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
-//                        mAdvCancelOrder.setfPartyRole3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_24_CUSTOMER_ACCOUNT);
-                       
-                        mAdvCancelOrder.setfQuoteId(mInputMsgRequest.getfOrigClOrdID());
-                        mAdvCancelOrder.setfQuoteCancelType("5");
-                        mAdvCancelOrder.setfQuoteType("0");
-                        mAdvCancelOrder.setfNoQuoteEntries("1");
+                        //.20260423: OrdQty merupakan handleInst yang dikirim dari ts untuk membedakan sumber cancel dari normal, indicative, response
+                        if (mInputMsgRequest.getfOrderQty() == ORIDataConst.ORIFieldValue.HANDLINST_ADVERTISEMENT) {
+                            //.indicative/advertising cancel
+                            FIX5JonecDataOrderCancelRequest mAdvCancelOrder = new FIX5JonecDataOrderCancelRequest(new HashMap());
+                            mAdvCancelOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.INDICATIVE_QUOTE_CANCEL);
+                            mAdvCancelOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
+                            mAdvCancelOrder.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+                            mAdvCancelOrder.setfSenderSubID(mTrxCtl.getTraderCode());
 
-                        String zAdvCancelOrderFixMsg = mAdvCancelOrder.msgToString();
-                        zAdvCancelOrderFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zAdvCancelOrderFixMsg,true,true,mTrxCtl.getConnectionName());
+    //                        mAdvCancelOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
+    //                        mAdvCancelOrder.setfOrderID(mInputMsgRequest.getfOrderID());
+    //                        mAdvCancelOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
 
-                        if (!mTrxCtl.sendMessageDirect(zAdvCancelOrderFixMsg)){
+                            mAdvCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol()+ "_" +FIX5JonecDataConst.FIX5JonecFieldValue.SECURITY_SUB_TYPE_NG);
+    //                        mAdvCancelOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0",""));
+
+    //                        mAdvCancelOrder.setfSide(mInputMsgRequest.getfSide());
+    //                        mAdvCancelOrder.setfTransactTime(mAdvCancelOrder.getfSendingTime());
+
+                            mAdvCancelOrder.setfNoPartyIDs(StringHelper.fromInt(2));
+                            //.executing trader
+                            mAdvCancelOrder.setfPartyID1(mTrxCtl.getTraderCode());
+                            mAdvCancelOrder.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mAdvCancelOrder.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
+                            //.noPartySub
+                            mAdvCancelOrder.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
+                            mAdvCancelOrder.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
+                            if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+                                mAdvCancelOrder.setfPartySubID(mInputMsgRequest.getfText());
+                            }   
+                            mAdvCancelOrder.setfPartySubIDType(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
+                            //.executing firm
+                            mAdvCancelOrder.setfPartyID2(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
+                            mAdvCancelOrder.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mAdvCancelOrder.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
+                            //.customer account
+    //                        mAdvCancelOrder.setfPartyID3(mInputMsgRequest.getfComplianceID());
+    //                        mAdvCancelOrder.setfPartyIDSource3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+    //                        mAdvCancelOrder.setfPartyRole3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_24_CUSTOMER_ACCOUNT);
+
+                            mAdvCancelOrder.setfQuoteId(mInputMsgRequest.getfOrigClOrdID());
+                            mAdvCancelOrder.setfQuoteCancelType("5");
+                            mAdvCancelOrder.setfQuoteType("0");
+                            mAdvCancelOrder.setfNoQuoteEntries("1");
+
+                            String zAdvCancelOrderFixMsg = mAdvCancelOrder.msgToString();
+                            zAdvCancelOrderFixMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zAdvCancelOrderFixMsg,true,true,mTrxCtl.getConnectionName());
+
+                            if (!mTrxCtl.sendMessageDirect(zAdvCancelOrderFixMsg)){
+                                //.???:
+                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @cannot send");
+                            }
                             //.???:
-                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @cannot send");
-                        }
-                        //.???:
-                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Found route @cancel order as advertisement");
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Found route @cancel order as advertisement");
+                            
+                        } else if (mInputMsgRequest.getfOrderQty() == ORIDataConst.ORIFieldValue.HANDLINST_QUOTE_RESPONSE) {
+                            //.quote response cancel
+                            FIX5JonecDataQuoteResponse mQuoteRes = new FIX5JonecDataQuoteResponse(new HashMap());
+                            mQuoteRes.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.QUOTE_RESPONSE);
+                            mQuoteRes.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
+                            mQuoteRes.setfSendingTime(FIX5DateTimeHelper.getDateTimeFIX5UTCFormatDetail());
+                            mQuoteRes.setfSenderSubID(mTrxCtl.getTraderCode());
+                            
+                            mQuoteRes.setfQuoteRespID(mInputMsgRequest.getfOrigClOrdID());
+                            mQuoteRes.setfQuoteID(mInputMsgRequest.getfOrderID());
+                            mQuoteRes.setfQuoteRespType(FIX5JonecDataConst.FIX5JonecFieldValue.QUOTE_RESPONSE_TYPE_CANCEL);
+//                            mQuoteRes.setfOrderCapacity(FIX5JonecDataConst.FIX5JonecFieldValue.ORDER_CAPACITY_AGENCY);
+                            mQuoteRes.setfNoPartyIDs(StringHelper.fromInt(2));
+                            //.executing trader
+                            mQuoteRes.setfPartyID1(mTrxCtl.getTraderCode());
+                            mQuoteRes.setfPartyIDSource1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mQuoteRes.setfPartyRole1(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_12_EXECUTING_TRADER);
+                            //.noPartySub
+                            mQuoteRes.setfNoPartySubIDs(FIX5JonecDataConst.FIX5JonecFieldValue.NO_PARTY_SUB_IDS_EXECUTING_FIRM);
+                            mQuoteRes.setfPartySubID(OUCHConsts.OUCHValue.ORDER_SOURCE_INDIVIDUAL_INVESTOR_ONLINE.toUpperCase()+"   ");                            
+                            if (!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())){
+//                                mQuoteRes.setfPartySubID(mInputMsgRequest.getfText());
+                                mQuoteRes.setfPartySubID("RZAZ");//????????????????????????????
+                            }   
+                            mQuoteRes.setfPartySubIDType(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_SUB_ID_TYPE);
+                            //.executing firm
+                            mQuoteRes.setfPartyID2(FIX5JonecDataConst.FIX5JonecFieldValue.SENDER_COMP_ID);
+                            mQuoteRes.setfPartyIDSource2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+                            mQuoteRes.setfPartyRole2(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_1_EXECUTING_FIRM);
+                            //.customer account
+                            //.todo: sementara diremark karena dari TS tidak dikirim, case contoh dari bursa dibutuhkan namun saat sekarang dikirim tanpa field ini berhasil
+//                            mQuoteRes.setfPartyID3("IDD140446759414");
+//                            mQuoteRes.setfPartyIDSource3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ID_SOURCE_PARTICIPANT_IDENTIFIER_NEW);
+//                            mQuoteRes.setfPartyRole3(FIX5JonecDataConst.FIX5JonecFieldValue.PARTY_ROLE_24_CUSTOMER_ACCOUNT);
+                            
+                            mQuoteRes.setfSymbol(mInputMsgRequest.getfSymbol()+"_NG");
+//                            mQuoteRes.setfSecurityID(mInputMsgRequest.getfSecurityID());
+                            mQuoteRes.setfSecurityIDSource("M");
+//                            mQuoteRes.setfSettlMethod("1");
+//                            mQuoteRes.setfOrderQty("1200");
+//                            mQuoteRes.setfSide("1");
+                            mQuoteRes.setfOrdType("D");
+//                            mQuoteRes.setfText((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfText())) ? mInputMsgRequest.getfText() : "Advertisement Response");
+//                            mQuoteRes.setfPrice("2300");
+                            
+                            String zQuoteResMsg = mQuoteRes.msgToString();
+                            zQuoteResMsg = FIX5CheckSumHelper.repackMessageWithChecksum(zQuoteResMsg,true,true,mTrxCtl.getConnectionName());
 
+                            if (!mTrxCtl.sendMessageDirect(zQuoteResMsg)){
+                                //.???:
+                                ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "No route @cannot send");
+                            }
+                            //.???:
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Found route @cancel order as response quote");
+
+                        }
+                        
                     }else{
                         //.???:
                         ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.ERROR, "Found route @cancel order as advertisement but no controller");
@@ -133,6 +209,16 @@ public class JONECSimWorkDataOrderCancel {
                         FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
 
                         if (mTrxCtl != null){
+                            //.20260313
+                            BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
+                            //.20260423: cek brokerRef ori apakah menggunakan sequence (handle order retry), jika ada di memory maka pakai brokerRef ori yang menggunakan sequence
+                            String newBrokerRef = mInputMsgRequest.getfOrigClOrdID();
+                            if (BookOfJONECSimBrokerRef.getInstance.hasBrokerRef(mInputMsgRequest.getfOrigClOrdID())) {
+                                if (BookOfJONECSimBrokerRef.getInstance.findSeqBrokerRef(mInputMsgRequest.getfOrigClOrdID()) > 0) {
+                                    newBrokerRef += "_" + BookOfJONECSimBrokerRef.getInstance.findSeqBrokerRef(mInputMsgRequest.getfOrigClOrdID());
+                                }
+                            }    
+                            
                             FIX5JonecDataOrderCancelRequest mNormalCancelOrder = new FIX5JonecDataOrderCancelRequest(new HashMap());
                             mNormalCancelOrder.setfMsgType(FIX5JonecDataConst.FIX5JonecMsgType.ORDER_CANCEL_REQUEST);
                             mNormalCancelOrder.setfMsgSeqNum(mTrxCtl.getNextTXSequencedNo());
@@ -141,10 +227,13 @@ public class JONECSimWorkDataOrderCancel {
 
                             mNormalCancelOrder.setfClOrdID(mInputMsgRequest.getfClOrdID());
                             mNormalCancelOrder.setfOrderID(mInputMsgRequest.getfOrderID());
-                            mNormalCancelOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
+//                            mNormalCancelOrder.setfOrigClOrdID(mInputMsgRequest.getfOrigClOrdID());
+                            //.20260423: menggunakan metode brokerRef ori yang baru
+                            mNormalCancelOrder.setfOrigClOrdID(newBrokerRef);
 
-                            mNormalCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol()+"_RG");
-                            mNormalCancelOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0",""));
+//                            mNormalCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol()+"_RG");
+                            mNormalCancelOrder.setfSymbol(mInputMsgRequest.getfSymbol() + mInputMsgRequest.getfSymbolSfx().replace("0", "_"));
+//                            mNormalCancelOrder.setfSecuritySubType(mInputMsgRequest.getfSymbolSfx().replace("0",""));
 
                             mNormalCancelOrder.setfSide(mInputMsgRequest.getfSide());
                             mNormalCancelOrder.setfTransactTime(mNormalCancelOrder.getfSendingTime());

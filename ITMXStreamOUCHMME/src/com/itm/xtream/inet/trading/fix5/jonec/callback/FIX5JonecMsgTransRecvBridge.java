@@ -36,6 +36,8 @@ import com.itm.fix5.data.message.bridge.FIX5IDXBridgeController;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerManager;
 import com.itm.generic.engine.filelogger.setup.ITMFileLoggerVarsConsts;
 import com.itm.generic.engine.socket.setup.ITMSocketChannel;
+import com.itm.xtream.inet.trading.dcsplitter.bridge.DCSplitterServerInputBridge;
+import com.itm.xtream.inet.trading.dcsplitter.callback.DCSplitterServerCallbackController;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataBusinessMessageReject;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataExecutionReport;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataHeartbeat;
@@ -60,6 +62,7 @@ import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTe
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTradeCaptureReport;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTradeCaptureReportAck;
 import com.itm.xtream.inet.trading.fix5.jonec.received.works.FIX5JonecWorkDataTradeCaptureReportRequestAck;
+import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 
 /**
  *
@@ -164,6 +167,16 @@ public class FIX5JonecMsgTransRecvBridge {
             if (bNeedToDisconnect){
                 channel.StopChannel();
             }
+            
+            //.20260708: jalan sebagai splitter
+            if (ITMTradingServerSettingsMgr.getInstance.isDropCopySplitter() && !(messageObject instanceof FIX5JonecDataLogoutReply)) {
+                for(DCSplitterServerCallbackController.DCSplitterServerChannel ch : DCSplitterServerCallbackController.getInstance.getAllChannels().values()) {
+                    ch.sendMessageDirect(messageLine);
+                }
+            }
+            
+            //.20260922: update prev sequence
+            controller.setfPrevRXSequencedNo(controller.getCurrentRXSequencedNo());
         }
         return mOut;
     }

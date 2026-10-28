@@ -66,6 +66,9 @@ public class FIX5JonecMsgTransRecvHandler implements FIX5IDXBridgeListener {
                 BookOfFIX5JonecRequest.getInstance.backupProcessorRecv.backupMapObjectToFile2(mMsgHdr.getfMsgSeqNum(), mSheet, ConnectionName);//.20251128: tambahan connection name untuk backup map object
             }
         }
+//        if (mMsgHdr != null && !mMsgHdr.getfMsgType().equalsIgnoreCase("0")) {
+//            System.out.println("FIX5-RECEIVED# Type=" + mMsgHdr.getfMsgType() + " "  + ConnectionName + "=\t" + channel.getChannelID() + "\t" + messageLine);
+//        }
         
         FIX5JonecMsgTransRecvBridge.getInstance.processMessage(channel, controller, messageLine, messageObject);
         

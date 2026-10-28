@@ -20,6 +20,7 @@ import com.itm.idx.data.ori.message.struct.ORIDataNegotiationDeal;
 import com.itm.idx.data.ori.message.struct.ORIDataNegotiationDealCancel;
 import com.itm.idx.data.qri.message.struct.QRIDataNegDealListMessage;
 import com.itm.ts.ouch.consts.OUCHConsts;
+import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimConnection;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimEveryRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimOriginRequest;
 import com.itm.xtream.inet.trading.jonec.server.books.BookOfJONECSimToken;
@@ -61,8 +62,23 @@ public class JONECSimWorkDataNegotiationDealCancel {
                         
                         FIX5JonecDataTradeCaptureReport mFixMsg;
                         String zFixMsg = "";
-                        FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
+                        
+                        //.20260313: lookup connection name berdasarkan orderan sebelumnya
+                        String ConnName = BookOfJONECSimConnection.getInstance.findConnectionNameByBrokerRef(mInputMsgRequest.getfOrigClOrdID());
+
+                        FIX5IDXBridgeController mTrxCtl = null;
+
+                        if (!StringHelper.isNullOrEmpty(ConnName)) {
+                            mTrxCtl = FIX5IDXBridgeManager.getInstance.getFIX5ConnLine(ConnName);
+                            if (mTrxCtl == null) {
+                                mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
+                            }
+                        }
+//                        FIX5IDXBridgeController mTrxCtl = FIX5IDXBridgeManager.getInstance.getNextActiveFIX5JonecLine();
                         if (mTrxCtl != null){
+                            //.20260313
+                            BookOfJONECSimConnection.getInstance.addToMemory(mInputMsgRequest.getfClOrdID(), mTrxCtl.getConnectionName());
+
                             QRIDataNegDealListMessage mNGList = BookOfMARTINNegDealList.getInstance.retrieveSheet(StringHelper.toLong(mInputMsgRequest.getfOrderID()));
                             
                             mFixMsg = new FIX5JonecDataTradeCaptureReport(new HashMap());

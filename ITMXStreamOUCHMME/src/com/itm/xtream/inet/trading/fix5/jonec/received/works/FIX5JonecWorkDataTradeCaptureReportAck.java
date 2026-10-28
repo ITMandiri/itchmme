@@ -181,7 +181,7 @@ public class FIX5JonecWorkDataTradeCaptureReportAck {
                                     mNegDealListMsg.setfSide(mOriginRequestMsg.getfSide());
                                     mNegDealListMsg.setfPrice(mOriginRequestMsg.getfPrice());
 //                                    mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                                    mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mOriginRequestMsg.getfTransactTime()));
+                                    mNegDealListMsg.setfEffectiveTime(mOriginRequestMsg.getfTransactTime());
 //                                    mNegDealListMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
                                     mNegDealListMsg.setfLeavesQty(0);
 //                                    if ((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfTrdMatchID())) && (!mInputMsgRequest.getfTrdMatchID().equalsIgnoreCase("0"))){
@@ -383,7 +383,7 @@ public class FIX5JonecWorkDataTradeCaptureReportAck {
                                 mNegDealListMsg.setfSide(mOriginRequestMsg.getfSide());
                                 mNegDealListMsg.setfPrice(mOriginRequestMsg.getfPrice());
 //                                    mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mInputMsgRequest.getfTransactTime()));
-                                mNegDealListMsg.setfEffectiveTime(FIX5DateTimeHelper.getServerIDXDateTimeStrFromFIX5UTCFormatDetail(mOriginRequestMsg.getfTransactTime()));
+                                mNegDealListMsg.setfEffectiveTime(mOriginRequestMsg.getfTransactTime());
 //                                    mNegDealListMsg.setfLastPx(StringHelper.toLong(mInputMsgRequest.getfLastPx()));
                                 mNegDealListMsg.setfLeavesQty(0);
 //                                    if ((!StringHelper.isNullOrEmpty(mInputMsgRequest.getfTrdMatchID())) && (!mInputMsgRequest.getfTrdMatchID().equalsIgnoreCase("0"))){

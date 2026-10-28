@@ -6,6 +6,7 @@ package com.itm.generic.engine.socket.setup;
 
 import com.itm.generic.engine.socket.setup.ITMSocketVarsConsts.SocketSetup;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
+import static com.sun.corba.se.impl.util.Utility.printStackTrace;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -684,22 +685,24 @@ public class ITMSocketChannel {
                                             byte[] arr = buffer.toByteArray();
                                             int len = arr.length;
 
-                                            // FIX message minimal punya "10=XYZ<SOH>"
-                                            if (len < 7) continue;
+                                            // FIX message minimal punya "<SOH>10=XYZ<SOH>"
+                                            if (len < 8) continue;
 
-                                            // Cari pola "10=nnn<SOH>"
-                                            for (int i = 0; i < len - 6; i++) {
+                                            // Cari pola "<SOH>10=nnn<SOH>"
+                                            for (int i = 0; i < len - 7; i++) {
                                                 // cek "10="
-                                                if (arr[i] == '1' && arr[i+1] == '0' && arr[i+2] == '=') {
+                                                //.20260513: terjadi bug jika ada tag 110= atau ?10= dan diikuti 3 digit akan mengakibatkan message corrupt
+                                                //.20260513: jadi, cara ceknya diganti <SOH>10=
+                                                if (arr[i] == 0x01 && arr[i+1] == '1' && arr[i+2] == '0' && arr[i+3] == '=') {
 
                                                     // cek checksum fixed 3 digit
-                                                    if (isDigit(arr[i+3]) && isDigit(arr[i+4]) && isDigit(arr[i+5])) {
+                                                    if (isDigit(arr[i+4]) && isDigit(arr[i+5]) && isDigit(arr[i+6])) {
 
                                                         // cek SOH
-                                                        if (arr[i+6] == 0x01) {
+                                                        if (arr[i+7] == 0x01) {
 
                                                             // -> message FIX sempurna ditemukan
-                                                            int msgLength = i + 7;
+                                                            int msgLength = i + 8;
 
                                                             byte[] msgBytes = Arrays.copyOfRange(arr, 0, msgLength);
                                                             String msg = new String(msgBytes, StandardCharsets.US_ASCII);
@@ -731,6 +734,7 @@ public class ITMSocketChannel {
                         }catch(IOException ex0){
                             //.EXXX.
                             System.err.println(ex0);
+                            printStackTrace();
                             raiseOnError(ex0);
                             //.berhenti:
                             break;

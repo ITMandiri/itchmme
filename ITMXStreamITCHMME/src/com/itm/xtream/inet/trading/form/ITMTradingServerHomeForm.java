@@ -17,6 +17,7 @@ import com.itm.xtream.inet.trading.consts.ITMTradingServerConsts.DispTextSetup;
 import com.itm.xtream.inet.trading.sync.connection.ITMTradingServerSyncConnectionMgr;
 import com.itm.xtream.inet.trading.viewer.ITMComponentLayoutHelper;
 import com.itm.xtream.inet.trading.viewer.ITMSoupBinTCPViewFrame;
+import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -29,8 +30,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -76,7 +79,7 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
 //            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(AppClientCode.CLIENT_RELI_LS)){
 //                this.setTitle(ITMTradingServerConsts.SVR_APP_CUSTOM_CAPTION);
 //            }else{
-                this.setTitle("X-stream INET Trading Server" + " [" + ITMTradingServerConsts.SVR_APP_VERSION_BUILD + "] - " + ITMFileLoggerVarsConsts.APP_CLIENT_CODE);
+                this.setTitle("X-stream MME Trading Server" + " [" + ITMTradingServerConsts.SVR_APP_VERSION_BUILD + "] - " + ITMFileLoggerVarsConsts.APP_CLIENT_CODE);
             //}
 
             //.perbaikan:
@@ -258,6 +261,8 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
 //                    }
 //                }
 //            }
+            //.20260925: sesuaikan lebar kolom berdasarkan lebar teks
+            autoResizeColumns(this.jTableIdxConnectionList); 
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
         }
@@ -397,6 +402,41 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
         }
     }
     
+    //.20260925: sesuaikan lebar kolom berdasarkan lebar teks
+    private void autoResizeColumns(JTable table) {
+        try{
+            FontMetrics fm = table.getFontMetrics(table.getFont());
+
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                int width = 0;
+
+                // Header
+                width = fm.stringWidth(table.getColumnName(col));
+
+                // Isi tabel
+                for (int row = 0; row < table.getRowCount(); row++) {
+                    Object value = table.getValueAt(row, col);
+                    if (value != null) {
+                        width = Math.max(width, fm.stringWidth(value.toString()));
+                    }
+                }
+
+                // Padding kiri + kanan
+                width += 20;
+
+                TableColumn column = table.getColumnModel().getColumn(col);
+                //.kecualikan kolom message
+                if (table.getColumnName(col).equalsIgnoreCase(Z_REF_TABLE_COLUMN_MESSAGE)) {
+                    column.setMinWidth(width);
+                }
+                column.setMaxWidth(width + 150);
+                
+            }
+        }catch(Exception ex0){
+            ITMFileLoggerManager.getInstance.insertLog(this, logSource.XTTS, logLevel.ERROR, ex0);
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -454,6 +494,7 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableIdxConnectionList.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         jTableIdxConnectionList.setRowHeight(22);
         jTableIdxConnectionList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -465,13 +506,24 @@ public class ITMTradingServerHomeForm extends javax.swing.JFrame {
         });
         jScrollPanelList.setViewportView(jTableIdxConnectionList);
         if (jTableIdxConnectionList.getColumnModel().getColumnCount() > 0) {
-            jTableIdxConnectionList.getColumnModel().getColumn(0).setResizable(false);
-            jTableIdxConnectionList.getColumnModel().getColumn(0).setPreferredWidth(30);
+            jTableIdxConnectionList.getColumnModel().getColumn(0).setMinWidth(50);
+            jTableIdxConnectionList.getColumnModel().getColumn(0).setPreferredWidth(50);
+            jTableIdxConnectionList.getColumnModel().getColumn(0).setMaxWidth(50);
+            jTableIdxConnectionList.getColumnModel().getColumn(1).setMinWidth(130);
             jTableIdxConnectionList.getColumnModel().getColumn(1).setPreferredWidth(130);
-            jTableIdxConnectionList.getColumnModel().getColumn(2).setPreferredWidth(40);
+            jTableIdxConnectionList.getColumnModel().getColumn(1).setMaxWidth(300);
+            jTableIdxConnectionList.getColumnModel().getColumn(2).setMinWidth(60);
+            jTableIdxConnectionList.getColumnModel().getColumn(2).setPreferredWidth(60);
+            jTableIdxConnectionList.getColumnModel().getColumn(2).setMaxWidth(100);
+            jTableIdxConnectionList.getColumnModel().getColumn(3).setMinWidth(90);
             jTableIdxConnectionList.getColumnModel().getColumn(3).setPreferredWidth(90);
+            jTableIdxConnectionList.getColumnModel().getColumn(3).setMaxWidth(120);
+            jTableIdxConnectionList.getColumnModel().getColumn(4).setMinWidth(40);
             jTableIdxConnectionList.getColumnModel().getColumn(4).setPreferredWidth(40);
-            jTableIdxConnectionList.getColumnModel().getColumn(5).setPreferredWidth(60);
+            jTableIdxConnectionList.getColumnModel().getColumn(4).setMaxWidth(70);
+            jTableIdxConnectionList.getColumnModel().getColumn(5).setMinWidth(80);
+            jTableIdxConnectionList.getColumnModel().getColumn(5).setPreferredWidth(80);
+            jTableIdxConnectionList.getColumnModel().getColumn(5).setMaxWidth(120);
             jTableIdxConnectionList.getColumnModel().getColumn(6).setPreferredWidth(180);
         }
 

@@ -205,13 +205,13 @@ public class FIX5JonecDataHeader extends FIX5IDXMessage {
             sb.append(getfMsgSeqNum()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             
             //.?????
-            if (!StringHelper.isNullOrEmpty(getfPossDupflag())) {
-                sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-                sb.append(getfPossDupflag()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
-            } else {
-                sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-                sb.append("N").append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
-            }
+//            if (!StringHelper.isNullOrEmpty(getfPossDupflag())) {
+//                sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+//                sb.append(getfPossDupflag()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+//            } else {
+//                sb.append(FIX5JonecFieldTag.POSSDUPFLAG).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+//                sb.append("N").append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+//            }
             
             
             sb.append(FIX5JonecFieldTag.SENDINGTIME).append(FIX5JonecFieldFmt.KV_SEPARATOR);

@@ -64,8 +64,8 @@ public class MARTINSimCallbackHandler implements ITMSocketListener {
 
     @Override
     public void onMessage(ITMSocketChannel channel, String messageLine) {
-        MARTINSimInputBridge.getInstance.processMessage(channel, messageLine);
-    }
+            MARTINSimInputBridge.getInstance.processMessage(channel, messageLine);
+        }
 
     @Override
     public void onSent(ITMSocketChannel channel, String messageLine) {

@@ -25,7 +25,8 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
     private final ConcurrentHashMap<String, Integer> chmSheetsFlagCount = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Boolean> chmSheetsFlagPrevWithdraw = new ConcurrentHashMap<>();
     //. 20211227 : untuk menentukan suatu OrderNumber terakhir dapat message OrderReplace/AddOrder agar tahu Quantity yang dipakai    
-    private final ConcurrentHashMap<Long, Integer> chmSheetsFlagAddOrderVsOrderReplace = new ConcurrentHashMap<>();
+    //.20261026: saat ini tidak dipakai lagi
+//    private final ConcurrentHashMap<Long, Integer> chmSheetsFlagAddOrderVsOrderReplace = new ConcurrentHashMap<>();
     
     public BookOfITCHAddOrder() {
         //.nothing todo here :)
@@ -43,10 +44,12 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
                 if (mSheet.getMessage().getOrderId() > 0){
                     if (chmSheets.containsKey(mSheet.getMessage().getOrderId())){
                         chmSheets.replace(mSheet.getMessage().getOrderId(), mSheet);
-                        chmSheetsFlagAddOrderVsOrderReplace.replace(mSheet.getMessage().getOrderId(), 1);
+                        //.20261026: saat ini tidak dipakai lagi
+//                        chmSheetsFlagAddOrderVsOrderReplace.replace(mSheet.getMessage().getOrderId(), 1);
                     }else{
                         chmSheets.put(mSheet.getMessage().getOrderId(), mSheet);
-                        chmSheetsFlagAddOrderVsOrderReplace.put(mSheet.getMessage().getOrderId(), 1);
+                        //.20261026: saat ini tidak dipakai lagi
+//                        chmSheetsFlagAddOrderVsOrderReplace.put(mSheet.getMessage().getOrderId(), 1);
                     }
                 }
             }
@@ -58,10 +61,12 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
     
     
     //. 20211227 : menentukan Message AddOrder/OrderReplace yang datang terakhir sebagai Quantity
+    //.20261026: saat ini tidak dipakai lagi
     public int retrieveSheetFlagAddOrderVsOrderReplace(Long vOrderNumberId){
         Integer mOut = 0;
         try{
-            mOut = this.chmSheetsFlagAddOrderVsOrderReplace.get(vOrderNumberId);
+            //.20261026: saat ini tidak dipakai lagi
+//            mOut = this.chmSheetsFlagAddOrderVsOrderReplace.get(vOrderNumberId);
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
         }
@@ -69,15 +74,17 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
     }
     
     //. 20211227 : ketika ada OrderReplace (ganti qty)
+    //.20261026: saat ini tidak dipakai lagi
     public int reduceSheetFlagAddOrderVsOrderReplace(Long vOrderNumberId){
         int mOut = 0;
         try{
-            if (chmSheetsFlagAddOrderVsOrderReplace.containsKey(vOrderNumberId)){
-                chmSheetsFlagAddOrderVsOrderReplace.replace(vOrderNumberId, 0);
-            }else{
-                chmSheetsFlagAddOrderVsOrderReplace.put(vOrderNumberId, 0);
-            }
-            mOut = chmSheetsFlagAddOrderVsOrderReplace.get(vOrderNumberId);
+            //.20261026: saat ini tidak dipakai lagi
+//            if (chmSheetsFlagAddOrderVsOrderReplace.containsKey(vOrderNumberId)){
+//                chmSheetsFlagAddOrderVsOrderReplace.replace(vOrderNumberId, 0);
+//            }else{
+//                chmSheetsFlagAddOrderVsOrderReplace.put(vOrderNumberId, 0);
+//            }
+//            mOut = chmSheetsFlagAddOrderVsOrderReplace.get(vOrderNumberId);
             
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);
@@ -181,7 +188,8 @@ public class BookOfITCHAddOrder extends BookOfITCHBase {
             this.chmSheets.clear();
             this.chmSheetsFlagCount.clear();
             this.chmSheetsFlagPrevWithdraw.clear();
-            this.chmSheetsFlagAddOrderVsOrderReplace.clear();
+            //.20261026: saat ini tidak dipakai lagi
+//            this.chmSheetsFlagAddOrderVsOrderReplace.clear();
             mOut = this.lstSheets.isEmpty();
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.ITCH, logLevel.ERROR, ex0);

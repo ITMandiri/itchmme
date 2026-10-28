@@ -46,6 +46,7 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
     private String fQuoteCancelType = "";
     private String fQuoteType = "";
     private String fNoQuoteEntries = "";
+    private String fSecurityIDSource = "";
 
     public FIX5JonecDataOrderCancelRequest(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -251,6 +252,14 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
     public void setfNoQuoteEntries(String fNoQuoteEntries) {
         this.fNoQuoteEntries = fNoQuoteEntries;
     }
+
+    public String getfSecurityIDSource() {
+        return fSecurityIDSource;
+    }
+
+    public void setfSecurityIDSource(String fSecurityIDSource) {
+        this.fSecurityIDSource = fSecurityIDSource;
+    }
     
     
     //.process:
@@ -334,6 +343,9 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
                                 break;
                             case FIX5JonecFieldTag.NOQUOTEENTRIES:
                                 setfNoQuoteEntries(zValue);
+                                break;
+                            case FIX5JonecFieldTag.IDSOURCE:
+                                setfSecurityIDSource(zValue);
                                 break;
                             default:
                                 break;
@@ -456,6 +468,10 @@ public class FIX5JonecDataOrderCancelRequest extends FIX5JonecDataHeader {
             if (!StringHelper.isNullOrEmpty(getfPartyRole3())){
                 sb.append(FIX5JonecFieldTag.PARTYROLE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
                 sb.append(getfPartyRole3()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfSecurityIDSource())){
+                sb.append(FIX5JonecFieldTag.IDSOURCE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfSecurityIDSource()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }
             zOut = sb.toString();
         }catch(Exception ex0){

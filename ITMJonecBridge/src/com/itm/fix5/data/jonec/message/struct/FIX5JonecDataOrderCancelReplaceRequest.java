@@ -45,6 +45,15 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
     private String fNoPartySubIDs = "";
     private String fPartySubID = "";
     private String fPartySubIDType = "";
+    //.tambahan
+    private String fMinQty = "";
+    private String fSelfMatchPreventionID = "";
+    private String fDisplayQty = "";
+    private String fSecurityIDSource = "";
+    private String fPegOffsetValue = "";
+    private String fPegMoveType = "";
+    private String fExpireDate = "";
+    private String fPositionEffect = "";
 
     public FIX5JonecDataOrderCancelReplaceRequest(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -250,6 +259,70 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
     public void setfPartySubIDType(String fPartySubIDType) {
         this.fPartySubIDType = fPartySubIDType;
     }
+
+    public String getfMinQty() {
+        return fMinQty;
+    }
+
+    public void setfMinQty(String fMinQty) {
+        this.fMinQty = fMinQty;
+    }
+
+    public String getfSelfMatchPreventionID() {
+        return fSelfMatchPreventionID;
+    }
+
+    public void setfSelfMatchPreventionID(String fSelfMatchPreventionID) {
+        this.fSelfMatchPreventionID = fSelfMatchPreventionID;
+    }
+
+    public String getfDisplayQty() {
+        return fDisplayQty;
+    }
+
+    public void setfDisplayQty(String fDisplayQty) {
+        this.fDisplayQty = fDisplayQty;
+    }
+
+    public String getfSecurityIDSource() {
+        return fSecurityIDSource;
+    }
+
+    public void setfSecurityIDSource(String fSecurityIDSource) {
+        this.fSecurityIDSource = fSecurityIDSource;
+    }
+
+    public String getfPegOffsetValue() {
+        return fPegOffsetValue;
+    }
+
+    public void setfPegOffsetValue(String fPegOffsetValue) {
+        this.fPegOffsetValue = fPegOffsetValue;
+    }
+
+    public String getfPegMoveType() {
+        return fPegMoveType;
+    }
+
+    public void setfPegMoveType(String fPegMoveType) {
+        this.fPegMoveType = fPegMoveType;
+    }
+
+    public String getfExpireDate() {
+        return fExpireDate;
+    }
+
+    public void setfExpireDate(String fExpireDate) {
+        this.fExpireDate = fExpireDate;
+    }
+
+    public String getfPositionEffect() {
+        return fPositionEffect;
+    }
+
+    public void setfPositionEffect(String fPositionEffect) {
+        this.fPositionEffect = fPositionEffect;
+    }
     
     
     //.process:
@@ -340,6 +413,30 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
                             case FIX5JonecFieldTag.PARTYSUBIDTYPE:
                                 setfPartySubIDType(zValue);
                                 break;
+                            case FIX5JonecFieldTag.MINQTY:
+                                setfMinQty(zValue);
+                                break;
+                            case FIX5JonecFieldTag.SELFMATCHPREVENTIONID:
+                                setfSelfMatchPreventionID(zValue);
+                                break;
+                            case FIX5JonecFieldTag.DISPLAYQTY:
+                                setfDisplayQty(zValue);
+                                break;
+                            case FIX5JonecFieldTag.IDSOURCE:
+                                setfSecurityIDSource(zValue);
+                                break;
+                            case FIX5JonecFieldTag.PEGDIFFERENCE:
+                                setfPegOffsetValue(zValue);
+                                break;
+                            case FIX5JonecFieldTag.PEGMOVETYPE:
+                                setfPegMoveType(zValue);
+                                break;
+                            case FIX5JonecFieldTag.EXPIREDATE:
+                                setfExpireDate(zValue);
+                                break;
+                            case FIX5JonecFieldTag.OPENCLOSE:
+                                setfPositionEffect(zValue);
+                                break;
                             default:
                                 break;
                         }
@@ -367,8 +464,8 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
             sb.append(getfSide()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.SYMBOL).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfSymbol()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
-            sb.append(FIX5JonecFieldTag.SECURITYSUBTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-            sb.append(getfSecuritySubType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+//            sb.append(FIX5JonecFieldTag.SECURITYSUBTYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+//            sb.append(getfSecuritySubType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
 //            sb.append(FIX5JonecFieldTag.SECURITYID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
 //            sb.append(getfSecurityID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.NOPARTYIDS).append(FIX5JonecFieldFmt.KV_SEPARATOR);
@@ -428,10 +525,45 @@ public class FIX5JonecDataOrderCancelReplaceRequest extends FIX5JonecDataHeader 
             sb.append(getfPrice()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
             sb.append(FIX5JonecFieldTag.TRANSACTTIME).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfTransactTime()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
-            sb.append(FIX5JonecFieldTag.TIMEINFORCE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
-            sb.append(getfTimeInForce()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            if (!StringHelper.isNullOrEmpty(getfTimeInForce())) {
+                sb.append(FIX5JonecFieldTag.TIMEINFORCE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfTimeInForce()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
             sb.append(FIX5JonecFieldTag.TEXT).append(FIX5JonecFieldFmt.KV_SEPARATOR);
             sb.append(getfText()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            //.tambahan
+            if (!StringHelper.isNullOrEmpty(getfMinQty())){
+                sb.append(FIX5JonecFieldTag.MINQTY).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfMinQty()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfSelfMatchPreventionID())){
+                sb.append(FIX5JonecFieldTag.SELFMATCHPREVENTIONID).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfSelfMatchPreventionID()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfDisplayQty())){
+                sb.append(FIX5JonecFieldTag.DISPLAYQTY).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfDisplayQty()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfSecurityIDSource())){
+                sb.append(FIX5JonecFieldTag.IDSOURCE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfSecurityIDSource()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfPegOffsetValue())){
+                sb.append(FIX5JonecFieldTag.PEGDIFFERENCE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfPegOffsetValue()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfPegMoveType())){
+                sb.append(FIX5JonecFieldTag.PEGMOVETYPE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfPegMoveType()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfExpireDate())){
+                sb.append(FIX5JonecFieldTag.EXPIREDATE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfExpireDate()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
+            if (!StringHelper.isNullOrEmpty(getfPositionEffect())){
+                sb.append(FIX5JonecFieldTag.OPENCLOSE).append(FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfPositionEffect()).append(FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }
             zOut = sb.toString();
         }catch(Exception ex0){
             //.EXXX.

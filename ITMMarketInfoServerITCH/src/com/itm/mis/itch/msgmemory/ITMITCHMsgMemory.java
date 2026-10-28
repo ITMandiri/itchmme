@@ -132,34 +132,39 @@ public class ITMITCHMsgMemory {
                 if (itchMessage instanceof ITCHMsgUnknown){
                     //... .
                 } else if (itchMessage instanceof ITCHMsgSystemEvent){
+                    //.20260908: tidak perlu disimpan dimemori, sudah dipakai mdf
                     ITCHMsgSystemEvent mMsg = (ITCHMsgSystemEvent)itchMessage;
-                    if (ITCHValue.SYSTEM_EVENT_CODE_FIRST_OF_MESSAGE.equals(mMsg.getEvent())){
-//                        clearAllBooks();
-                    }else if (ITCHValue.SYSTEM_EVENT_CODE_LAST_OF_MESSAGE.equals(mMsg.getEvent())){
-                        //... .
-                    }
+//                    if (ITCHValue.SYSTEM_EVENT_CODE_FIRST_OF_MESSAGE.equals(mMsg.getEvent())){
+////                        clearAllBooks();
+//                    }else if (ITCHValue.SYSTEM_EVENT_CODE_LAST_OF_MESSAGE.equals(mMsg.getEvent())){
+//                        //... .
+//                    }
                     SheetOfITCHSystemEvent mSheet = new SheetOfITCHSystemEvent(mMsg);
-                    BookOfITCHSystemEvent.getInstance.addSheet(mSheet);
+//                    BookOfITCHSystemEvent.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgTickSizeTable){
+                    //.20260908: tidak perlu disimpan dimemori, tidak ada yang pakai
                     ITCHMsgTickSizeTable mMsg = (ITCHMsgTickSizeTable)itchMessage;
                     SheetOfITCHTickSizeTable mSheet = new SheetOfITCHTickSizeTable(mMsg);
-                    BookOfITCHTickSizeTable.getInstance.addSheet(mSheet);
+//                    BookOfITCHTickSizeTable.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgOrderBookDirectory){
+                    //.20260908: tidak perlu disimpan dimemori, sudah dipakai mdf
                     ITCHMsgOrderBookDirectory mMsg = (ITCHMsgOrderBookDirectory)itchMessage;
                     SheetOfITCHOrderBookDirectory mSheet = new SheetOfITCHOrderBookDirectory(mMsg);
-                    BookOfITCHOrderBookDirectory.getInstance.addOrUpdateSheet(mSheet);
+//                    BookOfITCHOrderBookDirectory.getInstance.addOrUpdateSheet(mSheet);
                     mSheetBase = mSheet;
                 }  else if (itchMessage instanceof ITCHMsgEquilibriumPrice) {
+                    //.20261027: tidak perlu disimpan dimemori
                     ITCHMsgEquilibriumPrice mMsg = (ITCHMsgEquilibriumPrice) itchMessage;
                     SheetOfITCHEquilibriumPrice mSheet = new SheetOfITCHEquilibriumPrice(mMsg);
-                    BookOfITCHEquilibriumPrice.getInstance.addOrUpdateSheet(mSheet);
+//                    BookOfITCHEquilibriumPrice.getInstance.addOrUpdateSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgOrderBookState) {
+                    //.20260908: tidak perlu disimpan dimemori, sudah dipakai mdf
                     ITCHMsgOrderBookState mMsg = (ITCHMsgOrderBookState) itchMessage;
                     SheetOfITCHOrderBookState mSheet = new SheetOfITCHOrderBookState(mMsg);
-                    BookOfITCHOrderBookState.getInstance.addOrUpdateSheet(mSheet);
+//                    BookOfITCHOrderBookState.getInstance.addOrUpdateSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgAddOrder) {
                     ITCHMsgAddOrder mMsg = (ITCHMsgAddOrder) itchMessage;
@@ -169,32 +174,38 @@ public class ITMITCHMsgMemory {
                 } else if (itchMessage instanceof ITCHMsgOrderExecuted) {
                     ITCHMsgOrderExecuted mMsg = (ITCHMsgOrderExecuted) itchMessage;
                     SheetOfITCHOrderExecuted mSheet = new SheetOfITCHOrderExecuted(mMsg);
-                    BookOfITCHOrderExecuted.getInstance.addSheet(mSheet);
+                    //.20261026: message order executed tidak disimpan lagi
+//                    BookOfITCHOrderExecuted.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgOrderExecutedWithPrice) {
-                    ITCHMsgOrderExecutedWithPrice mMsg = (ITCHMsgOrderExecutedWithPrice) itchMessage;
-                    SheetOfITCHOrderExecutedWithPrice mSheet = new SheetOfITCHOrderExecutedWithPrice(mMsg);
-                    BookOfITCHOrderExecutedWithPrice.getInstance.addSheet(mSheet);
-                    mSheetBase = mSheet;
+                    //.20261027: update versi 5 sudah tidak dipakai/diremove
+//                    ITCHMsgOrderExecutedWithPrice mMsg = (ITCHMsgOrderExecutedWithPrice) itchMessage;
+//                    SheetOfITCHOrderExecutedWithPrice mSheet = new SheetOfITCHOrderExecutedWithPrice(mMsg);
+//                    BookOfITCHOrderExecutedWithPrice.getInstance.addSheet(mSheet);
+//                    mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgTrade) {
+                    //.20261027: tidak perlu disimpan dimemori
                     ITCHMsgTrade mMsg = (ITCHMsgTrade) itchMessage;
                     SheetOfITCHTrade mSheet = new SheetOfITCHTrade(mMsg);
-                    BookOfITCHTrade.getInstance.addSheet(mSheet);
+//                    BookOfITCHTrade.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgOrderDelete) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgOrderDelete mMsg = (ITCHMsgOrderDelete) itchMessage;
                     SheetOfITCHOrderDelete mSheet = new SheetOfITCHOrderDelete(mMsg);
-                    BookOfITCHOrderDelete.getInstance.addSheet(mSheet);
+//                    BookOfITCHOrderDelete.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgOrderBookClear) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgOrderBookClear mMsg = (ITCHMsgOrderBookClear) itchMessage;
                     SheetOfITCHOrderBookClear mSheet = new SheetOfITCHOrderBookClear(mMsg);
-                    BookOfITCHOrderBookClear.getInstance.addSheet(mSheet);
+//                    BookOfITCHOrderBookClear.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgGlimpseSnapshot) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgGlimpseSnapshot mMsg = (ITCHMsgGlimpseSnapshot) itchMessage;
                     SheetOfITCHGlimpseSnapshot mSheet = new SheetOfITCHGlimpseSnapshot(mMsg);
-                    BookOfITCHGlimpseSnapshot.getInstance.addSheet(mSheet);
+//                    BookOfITCHGlimpseSnapshot.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgSecond){
                     ITCHMsgSecond mMsg = (ITCHMsgSecond)itchMessage;
@@ -242,9 +253,10 @@ public class ITMITCHMsgMemory {
                     BookOfITCHSystemEvent.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgTickSizeTable){
+                    //.20260908: tidak perlu disimpan dimemori, tidak ada yang pakai
                     ITCHMsgTickSizeTable mMsg = (ITCHMsgTickSizeTable)itchMessage;
                     SheetOfITCHTickSizeTable mSheet = new SheetOfITCHTickSizeTable(mMsg);
-                    BookOfITCHTickSizeTable.getInstance.addSheet(mSheet);
+//                    BookOfITCHTickSizeTable.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgIssuerDirectory){
                     ITCHMsgIssuerDirectory mMsg = (ITCHMsgIssuerDirectory)itchMessage;
@@ -257,14 +269,16 @@ public class ITMITCHMsgMemory {
                     BookOfITCHOrderBookDirectoryMDF.getInstance.addOrUpdateSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgIndexPrice){
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgIndexPrice mMsg = (ITCHMsgIndexPrice)itchMessage;
                     SheetOfITCHIndexPrice mSheet = new SheetOfITCHIndexPrice(mMsg);
-                    BookOfITCHIndexPrice.getInstance.addSheet(mSheet);
+//                    BookOfITCHIndexPrice.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 }  else if (itchMessage instanceof ITCHMsgEquilibriumPrice) {
+                    //.20260908: tidak perlu disimpan dimemori, sudah dipakai itch
                     ITCHMsgEquilibriumPrice mMsg = (ITCHMsgEquilibriumPrice) itchMessage;
                     SheetOfITCHEquilibriumPrice mSheet = new SheetOfITCHEquilibriumPrice(mMsg);
-                    BookOfITCHEquilibriumPrice.getInstance.addOrUpdateSheet(mSheet);
+//                    BookOfITCHEquilibriumPrice.getInstance.addOrUpdateSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgOrderBookState) {
                     ITCHMsgOrderBookState mMsg = (ITCHMsgOrderBookState) itchMessage;
@@ -277,19 +291,21 @@ public class ITMITCHMsgMemory {
                     BookOfITCHParticipantDirectory.getInstance.addOrUpdateSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgReferencePrice) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgReferencePrice mMsg = (ITCHMsgReferencePrice) itchMessage;
                     SheetOfITCHReferencePrice mSheet = new SheetOfITCHReferencePrice(mMsg);
-                    BookOfITCHReferencePrice.getInstance.addSheet(mSheet);
+//                    BookOfITCHReferencePrice.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgExchangeDirectory) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgExchangeDirectory mMsg = (ITCHMsgExchangeDirectory) itchMessage;
                     SheetOfITCHExchangeDirectory mSheet = new SheetOfITCHExchangeDirectory(mMsg);
-                    BookOfITCHExchangeDirectory.getInstance.addSheet(mSheet);
+//                    BookOfITCHExchangeDirectory.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgMarketDirectory) {
                     ITCHMsgMarketDirectory mMsg = (ITCHMsgMarketDirectory) itchMessage;
                     SheetOfITCHMarketDirectory mSheet = new SheetOfITCHMarketDirectory(mMsg);
-                    BookOfITCHMarketDirectory.getInstance.addSheet(mSheet);
+//                    BookOfITCHMarketDirectory.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgMarketSegmentDirectory) {
                     ITCHMsgMarketSegmentDirectory mMsg = (ITCHMsgMarketSegmentDirectory) itchMessage;
@@ -297,34 +313,40 @@ public class ITMITCHMsgMemory {
                     BookOfITCHMarketSegmentDirectory.getInstance.addOrUpdateSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgMarketByPrice) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgMarketByPrice mMsg = (ITCHMsgMarketByPrice) itchMessage;
                     SheetOfITCHMarketByPrice mSheet = new SheetOfITCHMarketByPrice(mMsg);
-                    BookOfITCHMarketByPrice.getInstance.addSheet(mSheet);
+//                    BookOfITCHMarketByPrice.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgTradeStatistics) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgTradeStatistics mMsg = (ITCHMsgTradeStatistics) itchMessage;
                     SheetOfITCHTradeStatistics mSheet = new SheetOfITCHTradeStatistics(mMsg);
-                    BookOfITCHTradeStatistics.getInstance.addSheet(mSheet);
+//                    BookOfITCHTradeStatistics.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgTradeTicker) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgTradeTicker mMsg = (ITCHMsgTradeTicker) itchMessage;
                     SheetOfITCHTradeTicker mSheet = new SheetOfITCHTradeTicker(mMsg);
-                    BookOfITCHTradeTicker.getInstance.addSheet(mSheet);
+//                    BookOfITCHTradeTicker.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgPriceLimits) {
+                    //.20260908: memori tidak ada yang pakai
                     ITCHMsgPriceLimits mMsg = (ITCHMsgPriceLimits) itchMessage;
                     SheetOfITCHPriceLimits mSheet = new SheetOfITCHPriceLimits(mMsg);
-                    BookOfITCHPriceLimits.getInstance.addSheet(mSheet);
+//                    BookOfITCHPriceLimits.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgCircuitBreakerTrigger) {
-                    ITCHMsgCircuitBreakerTrigger mMsg = (ITCHMsgCircuitBreakerTrigger) itchMessage;
-                    SheetOfITCHCircuitBreakerTrigger mSheet = new SheetOfITCHCircuitBreakerTrigger(mMsg);
-                    BookOfITCHCircuitBreakerTrigger.getInstance.addSheet(mSheet);
-                    mSheetBase = mSheet;
+                    //.20260908: memori tidak ada yang pakai
+//                    ITCHMsgCircuitBreakerTrigger mMsg = (ITCHMsgCircuitBreakerTrigger) itchMessage;
+//                    SheetOfITCHCircuitBreakerTrigger mSheet = new SheetOfITCHCircuitBreakerTrigger(mMsg);
+//                    BookOfITCHCircuitBreakerTrigger.getInstance.addSheet(mSheet);
+//                    mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgIndicativeQuote) {
+                    //.20261027: tidak perlu disimpan di memori
                     ITCHMsgIndicativeQuote mMsg = (ITCHMsgIndicativeQuote) itchMessage;
                     SheetOfITCHIndicativeQuote mSheet = new SheetOfITCHIndicativeQuote(mMsg);
-                    BookOfITCHIndicativeQuote.getInstance.addSheet(mSheet);
+//                    BookOfITCHIndicativeQuote.getInstance.addSheet(mSheet);
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgSecond){
                     ITCHMsgSecond mMsg = (ITCHMsgSecond)itchMessage;

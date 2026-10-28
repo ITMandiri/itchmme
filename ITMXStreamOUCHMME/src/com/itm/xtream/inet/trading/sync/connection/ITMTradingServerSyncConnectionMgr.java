@@ -17,6 +17,7 @@ import com.itm.xtream.inet.trading.jonec.server.callback.JONECSimCallbackControl
 import com.itm.xtream.inet.trading.jonec.server.callback.JONECSimCallbackProcessor;
 import com.itm.xtream.inet.trading.martin.server.callback.MARTINSimCallbackController;
 import com.itm.xtream.inet.trading.martin.server.callback.MARTINSimCallbackProcessor;
+import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class ITMTradingServerSyncConnectionMgr {
     
     public final static boolean ENABLE_SYNC_CONNECT                             = true;
     public final static boolean ENABLE_SYNC_CONNECT_OUCH                        = true;
-    public final static boolean ENABLE_SYNC_CONNECT_FIX5                        = false;
+    public final static boolean ENABLE_SYNC_CONNECT_FIX5                        = true; //.20260225
     
     private Timer hTmrITCHCheckEndTime;
     
@@ -81,7 +82,7 @@ public class ITMTradingServerSyncConnectionMgr {
                 }
                 
                 if (ENABLE_SYNC_CONNECT_OUCH == true && ENABLE_SYNC_CONNECT_FIX5 == true){      
-                    mOut = (bIs_OUCH_Ok && bIs_FIX5_Ok);
+                    mOut = (bIs_OUCH_Ok || bIs_FIX5_Ok); //.20260225: agar ts bisa connect antara fix5 only atau ouch only 
                 }else if (ENABLE_SYNC_CONNECT_OUCH == true){   
                     mOut = (bIs_OUCH_Ok);
                 }else if (ENABLE_SYNC_CONNECT_FIX5 == true){
@@ -213,6 +214,21 @@ public class ITMTradingServerSyncConnectionMgr {
                         }
                         
                         mChannel.sendMessageDirect(mRespondITMMessageNG.msgToString());
+                        
+                        if(ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.fix5_only) {
+                            QRIDataITMMessage mRespondITMMessageRG = new QRIDataITMMessage(new HashMap());
+
+                            mRespondITMMessageRG.setfConnName(mProcessor.getConnName());
+
+                            mRespondITMMessageRG.setfITMMsgType("servstat");
+
+                            mRespondITMMessageRG.setfMsgSubType1("rg");
+                            if (bConnect){
+                                mRespondITMMessageRG.setfMsgSubValue1(1);
+                            }
+
+                            mChannel.sendMessageDirect(mRespondITMMessageRG.msgToString());
+                        }
                     }
                 }
             }catch(Exception ex0){

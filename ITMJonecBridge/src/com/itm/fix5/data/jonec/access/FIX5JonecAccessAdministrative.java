@@ -51,7 +51,7 @@ public class FIX5JonecAccessAdministrative {
             mMsg.setfHeartBtInt(StringHelper.fromInt(FIX5JonecFieldValue.ADMIN_HEARTBEAT_TIME));
             mMsg.setfUsername(this.zConnectorCode);
             mMsg.setfPassword(this.zPassword1);
-//            mMsg.setfResetSeqNumFlag("Y");
+            mMsg.setfResetSeqNumFlag("N");
             if (this.zPassword2 == null ? this.zPassword1 != null : !this.zPassword2.equals(this.zPassword1)){
                 mMsg.setfNewPassword(this.zPassword2);
             }

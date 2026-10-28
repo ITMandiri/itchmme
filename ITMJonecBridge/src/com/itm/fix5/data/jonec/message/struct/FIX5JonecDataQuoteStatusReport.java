@@ -31,6 +31,7 @@ public class FIX5JonecDataQuoteStatusReport extends FIX5JonecDataHeader {
     private String fQuoteStatus = ""; //.
     private String fQuoteRejectReason = ""; //.
     private String fRejectText = ""; //.    
+    private String fQuoteRespNo = ""; //.20260312 
 
     public FIX5JonecDataQuoteStatusReport(Map<String, ArrayList<String>> inputMsgFields) {
         super(inputMsgFields);
@@ -164,6 +165,14 @@ public class FIX5JonecDataQuoteStatusReport extends FIX5JonecDataHeader {
     public void setfRejectText(String fRejectText) {
         this.fRejectText = fRejectText;
     }
+
+    public String getfQuoteRespNo() {
+        return fQuoteRespNo;
+    }
+
+    public void setfQuoteRespNo(String fQuoteRespNo) {
+        this.fQuoteRespNo = fQuoteRespNo;
+    }
     
     //.process:
     public boolean assignMessage(){
@@ -226,6 +235,9 @@ public class FIX5JonecDataQuoteStatusReport extends FIX5JonecDataHeader {
                                 break;
                             case FIX5JonecDataConst.FIX5JonecFieldTag.REJECTTEXT:
                                 setfRejectText(zValue);
+                                break;
+                            case FIX5JonecDataConst.FIX5JonecFieldTag.QUOTERESPNO:
+                                setfQuoteRespNo(zValue);
                                 break;
                             default:
                                 break;
@@ -307,6 +319,10 @@ public class FIX5JonecDataQuoteStatusReport extends FIX5JonecDataHeader {
             if (!StringHelper.isNullOrEmpty(getfRejectText())){
                 sb.append(FIX5JonecDataConst.FIX5JonecFieldTag.REJECTTEXT).append(FIX5JonecDataConst.FIX5JonecFieldFmt.KV_SEPARATOR);
                 sb.append(getfRejectText()).append(FIX5JonecDataConst.FIX5JonecFieldFmt.FIELD_SEPARATOR);
+            }  
+            if (!StringHelper.isNullOrEmpty(getfQuoteRespNo())){
+                sb.append(FIX5JonecDataConst.FIX5JonecFieldTag.QUOTERESPNO).append(FIX5JonecDataConst.FIX5JonecFieldFmt.KV_SEPARATOR);
+                sb.append(getfQuoteRespNo()).append(FIX5JonecDataConst.FIX5JonecFieldFmt.FIELD_SEPARATOR);
             }   
             zOut = sb.toString();
         }catch(Exception ex0){

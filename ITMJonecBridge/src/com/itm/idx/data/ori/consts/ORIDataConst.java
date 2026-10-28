@@ -236,6 +236,10 @@ public class ORIDataConst {
         public static final int EXECTYPE_CANCELLED                                      = 4;
         public static final int EXECTYPE_REPLACEMENT                                    = 5;
         public static final int EXECTYPE_REJECTED                                       = 8;
+        public static final String EXECTYPE_EXPIRED                                     = "C";
+        public static final String EXECTYPE_RESTATED                                    = "D";
+        public static final String EXECTYPE_TRADE                                       = "F";
+        public static final String EXECTYPE_TRIGGERED_OR_ACTIVATED_BY_SYSTEM            = "L";
         
         public static final int ORDSTATUS_NEW                                           = 0;
         public static final int ORDSTATUS_PARTIALLY_MATCH                               = 1;
@@ -252,7 +256,9 @@ public class ORIDataConst {
         
         public static final long ORDERQTY_WITHDRAW_NORMAL_ORDER                         = 1;
         public static final long ORDERQTY_WITHDRAW_ADVERTISEMENT                        = 2;
-        public static final long ORDERQTY_WITHDRAW_NEGDEAL                              = 2;
+        //.20260429: update nilai, sesuaikan dengan handlinst
+        public static final long ORDERQTY_WITHDRAW_NEGDEAL                              = 3;
+        public static final long ORDERQTY_WITHDRAW_QUOTE_RESPONSE                       = 4;
         
         public static final String MASSWITHDRAWREQUESTTYPE_CANCEL_ORDER_FOR_SECURITY                = "1";
         public static final String MASSWITHDRAWREQUESTTYPE_CANCEL_ORDER_FOR_UNDERLYING_SECURITY     = "2"; //.unused.

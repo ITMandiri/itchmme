@@ -206,7 +206,13 @@ public class JONECSimMsgMemWorkAccepted {
                             mOrderListMsg.setfSide(mOriginRequestMsg.getfSide());
                             mOrderListMsg.setfOrderQty(mCalcQty.getQtyOrder());
                             mOrderListMsg.setfOrderType(StringUtil.toInteger(mOriginRequestMsg.getfOrdType()));
-                            mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
+                            //.20260402: jika ada harga dari accepted, maka update harganya (untuk khasus market to limit)
+                            if (mMessage.getPrice() > 0) {
+                                mOrderListMsg.setfPrice(mMessage.getPrice());
+                            } else {
+                                mOrderListMsg.setfPrice(mOriginRequestMsg.getfPrice());
+                            }
+                            
                             mOrderListMsg.setfTimeInForce(mOriginRequestMsg.getfTimeInForce());
                             mOrderListMsg.setfExpiredDate(mOriginRequestMsg.getfExpireDate());
                             mOrderListMsg.setfExecInst(mOriginRequestMsg.getfExecInst());

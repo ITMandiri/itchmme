@@ -140,6 +140,30 @@ public class OUCHMsgOrderRejected extends OUCHMsgBase {
             case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_MARKET_MAKER_PROTECTION:
                 zOut = "(" + rejectCode + ")reason: Market Maker Protection triggered on underlying";
                 break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_LONG_CONSUMPTION_ACCOUNT:
+                zOut = "(" + rejectCode + ")reason: Available long quantity is less than the current consumption for the account.";
+                break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_LONG_CONSUMPTION_INVESTOR:
+                zOut = "(" + rejectCode + ")reason: Available long quantity is less than the current consumption for the investor.";
+                break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_SHORT_CONSUMPTION_ACCOUNT:
+                zOut = "(" + rejectCode + ")reason: Available loan quantity is less than the current consumption for the account.";
+                break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_SHORT_CONSUMPTION_INVESTOR:
+                zOut = "(" + rejectCode + ")reason: Available loan quantity is less than the current consumption for the investor.";
+                break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_DELTA_FACTOR:
+                zOut = "(" + rejectCode + ")reason: Invalid delta factor.";
+                break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_DELTA_ORDERBOOK:
+                zOut = "(" + rejectCode + ")reason: Delta protection is applicable for option/future/forward only.";
+                break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_VEGA_FACTOR:
+                zOut = "(" + rejectCode + ")reason: Invalid vega factor.";
+                break;
+            case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_INVALID_VEGA_ORDERBOOK:
+                zOut = "(" + rejectCode + ")reason: Vega protection is applicable for options only.";
+                break;
             case OUCHConsts.OUCHValue.REJECTED_ORDER_REASON_ME_MATCH_BID_ASK:
                 zOut = "(" + rejectCode + ")reason: Order must specify bid or ask";
                 break;
