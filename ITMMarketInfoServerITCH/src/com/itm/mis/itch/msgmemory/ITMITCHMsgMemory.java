@@ -267,7 +267,7 @@ public class ITMITCHMsgMemory {
                 } else if (itchMessage instanceof ITCHMsgOrderBookDirectoryMDF){
                     ITCHMsgOrderBookDirectoryMDF mMsg = (ITCHMsgOrderBookDirectoryMDF)itchMessage;
                     SheetOfITCHOrderBookDirectoryMDF mSheet = new SheetOfITCHOrderBookDirectoryMDF(mMsg);
-                    //.20261029: hanya financial product tertentu saja yang disimpan 
+                    //.20261029: hanya financial product tertentu saja yang diproses
                     if (mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY || 
                             mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_WARRANT ||
                             mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_RIGHT) {

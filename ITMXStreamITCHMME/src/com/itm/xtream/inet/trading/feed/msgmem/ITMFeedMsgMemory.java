@@ -11,6 +11,7 @@ import com.itm.generic.engine.socket.setup.ITMSocketChannel;
 import com.itm.generic.engine.socket.uhelpers.StringHelper;
 import com.itm.idx.data.helpers.DateTimeHelper;
 import com.itm.idx.data.qri.consts.QRIDataConst;
+import com.itm.idx.data.qri.util.StringUtil;
 import com.itm.mis.itch.books.BookOfITCHAddOrder;
 import com.itm.mis.itch.books.BookOfITCHEquilibriumPrice;
 import com.itm.mis.itch.books.BookOfITCHIssuerDirectory;
@@ -88,6 +89,7 @@ import com.itm.xtream.inet.trading.feed.structs.FEEDMsgMarketByPrice;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -97,9 +99,10 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
     public final static ITMFeedMsgMemory getInstance = new ITMFeedMsgMemory();
     
     private ConcurrentHashMap<String, Boolean> chmSessionState = new ConcurrentHashMap<>();
-    private ArrayList<FEEDMsgBase> lstFeedMsg = new ArrayList<>();
-    private ArrayList<String> lstFeedStr = new ArrayList<>();
-    private int iSequenceSize = 0; 
+    //.20261029: datafeed tidak lagi disimpan di ArrayList<String> di memori, melainkan di file (lihat ITMFeedMsgFile).
+    //.iSequenceSize = sequence datafeed yang sedang digenerate pada sesi ini (mulai 0 setiap start / resetData).
+    //.Sequence <= ITMFeedMsgFile.size() sudah tersimpan di file (misal dari sesi sebelum restart), jadi diabaikan.
+    private int iSequenceSize = 0;
     
     private String zLastSentDateDFEndSendingRecord = "";
     private String zLastRunningTrade = "";
@@ -117,11 +120,12 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         }
     }
     
-    public void resetData(){
-        lstFeedMsg.clear();
-        lstFeedStr.clear();
+    public synchronized void resetData(){
+        //.sequence yang digenerate mulai dari awal lagi. File datafeed TIDAK dihapus:
+        //.baris dengan sequence yang sudah tersimpan diabaikan, dan penyimpanan dilanjutkan setelah melewatinya.
+        //.Jika sudah berganti hari, file untuk tanggal hari ini yang dipakai (mulai kosong).
         iSequenceSize = 0;
-        ITMFeedMsgFile.getInstance.resetFileMemory();
+        ITMFeedMsgFile.getInstance.switchToTodayFile();
         //XCHSplitterServerInputBridge.getInstance.clearXCHMessages();
     }
     private ITMFeedMsgMemory() {
@@ -131,12 +135,47 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         
     }
 
-    public ArrayList<FEEDMsgBase> getLstFeedMsg() {
-        return lstFeedMsg;
+    /**
+     * @return jumlah datafeed yang tersimpan (= sequence datafeed terakhir yang tersedia untuk client).
+     */
+    public int getFeedCount() {
+        return ITMFeedMsgFile.getInstance.size();
     }
-    
-    public ArrayList<String> getLstFeedStr() {
-        return lstFeedStr;
+
+    /**
+     * @param iSequence sequence datafeed (mulai 1)
+     * @return baris datafeed, atau null jika di luar jangkauan.
+     */
+    public String getFeedLine(int iSequence) {
+        return ITMFeedMsgFile.getInstance.get(iSequence);
+    }
+
+    /**
+     * Ambil beberapa baris datafeed berurutan (lebih efisien daripada getFeedLine berulang).
+     */
+    public List<String> getFeedLines(int iFromSequence, int iMaxLines) {
+        return ITMFeedMsgFile.getInstance.getRange(iFromSequence, iMaxLines);
+    }
+
+    /**
+     * Versi sinyal bangun-paksa; ambil SEBELUM memeriksa kondisi, lalu berikan ke awaitNewFeed().
+     */
+    public long getFeedSignalVersion() {
+        return ITMFeedMsgFile.getInstance.getSignalVersion();
+    }
+
+    /**
+     * Tunggu sampai datafeed dengan sequence iNextSeq tersedia, atau dibangunkan paksa, atau timeout.
+     */
+    public void awaitNewFeed(long lVersion, int iNextSeq, long lTimeoutMs) throws InterruptedException {
+        ITMFeedMsgFile.getInstance.awaitNewData(lVersion, iNextSeq, lTimeoutMs);
+    }
+
+    /**
+     * Bangunkan semua thread yang sedang menunggu di awaitNewFeed().
+     */
+    public void wakeFeedWaiters() {
+        ITMFeedMsgFile.getInstance.wakeWaiters();
     }
     
     public boolean processMsgITCH(ITCHMsgBase itchMessage, SheetOfITCHBase mSheet){
@@ -147,6 +186,39 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     //... .
                 } else if (itchMessage instanceof ITCHMsgSystemEvent){
                     //...
+                    ITCHMsgSystemEvent mMsg = (ITCHMsgSystemEvent)itchMessage;
+                    if (ITCHConsts.ITCHValue.SYSTEM_EVENT_CODE_FIRST_OF_MESSAGE.equals(mMsg.getEvent())){
+                    
+                    }else if (ITCHConsts.ITCHValue.SYSTEM_EVENT_CODE_LAST_OF_MESSAGE.equals(mMsg.getEvent())){
+                        //... .
+                    }          
+                    // . FEEDMsgTradingStatus
+                    FEEDMsgTradingStatus fMsg = new FEEDMsgTradingStatus();
+                    switch (String.valueOf(mMsg.getEvent())) {
+                        //.20261102: untuk begin sending record menggunakan message dari mdf
+//                        case ITCHConsts.ITCHValue.SYSTEM_EVENT_CODE_FIRST_OF_MESSAGE:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SENDING_RECORDS);
+//                            fMsg.setMessage(FeedConsts.TradingStatusDesc.TRADINGSTATUS_STATUS_BEGIN_SENDING_RECORDS);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            ITMFeedMsgMemory.getInstance.resetData();
+//                            //. reset dari awal
+//                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                            zLastSentDateDFEndSendingRecord = "";
+//                            break;
+                        case ITCHConsts.ITCHValue.SYSTEM_EVENT_CODE_LAST_OF_MESSAGE:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
+                            fMsg.setMessage(FeedConsts.TradingStatusDesc.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                            zLastSentDateDFEndSendingRecord = DateTimeHelper.getDateSVRTRXFormat();
+                            break;
+                        default:
+                            break;
+                    }
                 } else if (itchMessage instanceof ITCHMsgAddOrder){
                     //. fraksi wajib untuk mengkonversi price
                     long lPriceDecimals = 0;
@@ -155,6 +227,11 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     
                     SheetOfITCHOrderBookDirectoryMDF sheetOD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
                         
+                    if (StringHelper.fromLong(mMsg.getOrderId()).contains("821604016549902947") 
+                            || StringHelper.fromLong(mMsg.getOrderId()).contains("821604016549956677")
+                            || StringHelper.fromLong(mMsg.getOrderId()).contains("821604016550005060")) {
+                        System.out.println(mMsg.getOrderBookId()+" => "+mMsg.getOrderId());
+                    }
                     if (sheetOD != null && mMsg.getOrderId()> 0){ //. new order
 //                        System.out.println(mMsg);
                         long lQtyTraded = 0;
@@ -180,6 +257,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             zStockCode = arrSymbol[0];
                             zBoardCode = arrSymbol[1];
                         }
+                        
                         fMsg.setOrderTime(ITMSoupBinTCPBridgePacketFormat.getTimeDataFeedFormatFromDate(mSheet.getMessageDate())); //. ???
                         fMsg.setOrderCommand(String.valueOf(mOrderVerb));
                         
@@ -462,6 +540,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
                     } else {
                         System.out.println("Tidak dapat lookup SheetOfITCHAddOrder no="+mLastOrderNumber);
+                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Tidak dapat lookup SheetOfITCHAddOrder no="+mLastOrderNumber);
                     }
                 } else if (itchMessage instanceof ITCHMsgOrderExecuted){
                     ITCHMsgOrderExecuted mMsg = (ITCHMsgOrderExecuted)itchMessage;
@@ -545,7 +624,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             }   
                         }   
                     } else {
-                        System.out.println("ITCHMsgOrderDelete. Order Executed empty id, orderid="+ mMsg.getOrderId());
+                        System.out.println("ITCHMsgOrderExecuted. Order Executed empty id, orderid="+ mMsg.getOrderId());
+                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "ITCHMsgOrderExecuted. Order Executed empty id, orderid="+ mMsg.getOrderId());
                     }
                     
                 } else if (itchMessage instanceof ITCHMsgOrderExecutedWithPrice){ //.20261026: diversi 5 sudah tidak ada message ini
@@ -704,15 +784,16 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
                             zLastSentDateDFEndSendingRecord = "";
                             break;
-                        case ITCHConsts.ITCHValue.SYSTEM_EVENT_CODE_LAST_OF_MESSAGE:
-                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
-                            fMsg.setMessage(FeedConsts.TradingStatusDesc.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
-                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
-                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
-                            fMsg.setSession(0);
-                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
-                            zLastSentDateDFEndSendingRecord = DateTimeHelper.getDateSVRTRXFormat();
-                            break;
+                            //.20261102: untuk end sending record menggunakan message dari itch
+//                        case ITCHConsts.ITCHValue.SYSTEM_EVENT_CODE_LAST_OF_MESSAGE:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
+//                            fMsg.setMessage(FeedConsts.TradingStatusDesc.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                            zLastSentDateDFEndSendingRecord = DateTimeHelper.getDateSVRTRXFormat();
+//                            break;
                         default:
                             break;
                     }
@@ -960,9 +1041,6 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                             DbRiskMgtWriteStockData.getInstance.insertOrUpdateStockData(mCmpRec);
                         }
                     }
-                    
-//                    
-                    
                 } else if (itchMessage instanceof ITCHMsgOrderBookState){
                     ITCHMsgOrderBookState mMsg = (ITCHMsgOrderBookState)itchMessage;
                     
@@ -1081,16 +1159,17 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                                 chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CLOSE_TN + szTimeWithoutSecond, true);
                             }
                             break;
-                        case ITCHConsts.ITCHStateField.STATE_END_OF_DAY:
-                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
-                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_END_OF_DAY);
-                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
-                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
-                            fMsg.setSession(0);
-                            if (mMsg.getOrderBookId() <= 0) {
-                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
-                            }
-                            break;
+                            //.20261102: untuk end of day menggunakan message dari system event
+//                        case ITCHConsts.ITCHStateField.STATE_END_OF_DAY:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
+//                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_END_OF_DAY);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            if (mMsg.getOrderBookId() <= 0) {
+//                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                            }
+//                            break;
                         case ITCHConsts.ITCHStateField.STATE_MATCHING_CALL_AUCTION:
                             fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_MATCHING_CA);
                             fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_MATCHING_CALL_AUCTION);
@@ -1458,15 +1537,15 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
 //                                processSuspendReleaseStock(sheetOBD, mSheet, false);
 //                            }
                             break;
-                        case ITCHConsts.ITCHStateField.STATE_SOBD:
-                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SENDING_RECORDS);
-                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SOBD);
-                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
-                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
-                            fMsg.setSession(0);
-                            //.20250807: tidak dipakai
-//                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
-                            break;
+//                        case ITCHConsts.ITCHStateField.STATE_SOBD:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SENDING_RECORDS);
+//                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SOBD);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            //.20250807: tidak dipakai
+////                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                            break;
                         case ITCHConsts.ITCHStateField.STATE_SUSPEND:
                             fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_TRADING_SUSPENSION);
                             fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SUSPEND);
@@ -2067,8 +2146,14 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
     
     public synchronized void addToMemory(FEEDMsgBase o, SheetOfITCHBase m) {
         this.iSequenceSize++;
-         
-        o.setSeq(FEEDMsgHelper.getInstance.fmtSeq(lstFeedStr.size() + 1));
+
+        //.20261029: sequence ini sudah tersimpan di file datafeed (sesi sebelum restart): abaikan.
+        //.Penyimpanan dilanjutkan setelah sequence yang digenerate melewati sequence terakhir yang tersimpan.
+        if (this.iSequenceSize <= ITMFeedMsgFile.getInstance.size()){
+            return;
+        }
+
+        o.setSeq(FEEDMsgHelper.getInstance.fmtSeq(this.iSequenceSize));
         o.setDate(ITMSoupBinTCPBridgePacketFormat.getDateDataFeedFormatFromDate(m.getMessageDate()));
         o.setTime(ITMSoupBinTCPBridgePacketFormat.getTimeDataFeedFormatFromDate(m.getMessageDate()));
         
@@ -2108,9 +2193,12 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                 System.err.println("addToMemory dapat object = NULL");
             }
         }
-        //. ke memory string
-        lstFeedStr.add(_msg);
-        
+        //. ke file datafeed
+        if (!ITMFeedMsgFile.getInstance.append(_msg)){
+            //.gagal tersimpan: batalkan nomor sequence agar tidak ada lubang pada urutan datafeed.
+            this.iSequenceSize--;
+        }
+
 //        try
 //        {
 //            //System.out.println(_msg);
@@ -2144,8 +2232,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                 int cTme = getCurTimeHHmm();
                 
                 if ((cTme >= 858 && cTme <= 912) || (cTme >= 1457 && cTme <= 1515)){
-                    int iCount = lstFeedStr.size();
-                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "lstFeedStr.size = " + iCount + ", Speed = " + (iCount - mPrevSize));
+                    int iCount = getFeedCount();
+                    ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "feedCount = " + iCount + ", Speed = " + (iCount - mPrevSize));
                     ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "Last RNTD = " + zLastRunningTrade);
 
                     mPrevSize = iCount;
@@ -2159,16 +2247,19 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
         boolean mOut = false;
         try{
             String zCurDate = DateTimeHelper.getDateSVRTRXFormat();
+            //.20261029: selama sequence yang digenerate belum menyamai yang sudah tersimpan di file (masih proses load
+            //.ulang setelah restart), jangan menyisipkan record manual agar urutan sequence tidak bergeser.
+            if (this.iSequenceSize < ITMFeedMsgFile.getInstance.size()){
+                return false;
+            }
             if (!zCurDate.equalsIgnoreCase(zLastSentDateDFEndSendingRecord)){
                 zLastSentDateDFEndSendingRecord = zCurDate;
                 FEEDMsgTradingStatus fMsg = new FEEDMsgTradingStatus();
                 fMsg.setStatus("7");
                 fMsg.setMessage("End sending records");
                 
-                this.iSequenceSize++;
-                
-                fMsg.setSeq(FEEDMsgHelper.getInstance.fmtSeq(lstFeedStr.size() + 1));
-                
+                fMsg.setSeq(FEEDMsgHelper.getInstance.fmtSeq(this.iSequenceSize + 1));
+
                 Date dtMsg = new Date();
                 fMsg.setDate(DateTimeHelper.getDateIDXTRXFormat(dtMsg));
                 fMsg.setTime(DateTimeHelper.getTimeSVRTRXFormatFromDate(dtMsg).replaceAll(":", ""));
@@ -2180,8 +2271,10 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     }
                     ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "@ManualSend:EndSendingRecord=" + zSendMsg);
                     
-                    lstFeedStr.add(zSendMsg);
-                    
+                    if (ITMFeedMsgFile.getInstance.append(zSendMsg)){
+                        this.iSequenceSize++;
+                    }
+
                     ConcurrentHashMap<ITMSocketChannel, FeedServerCallbackProcessor> chmClientProcs = FeedServerCallbackController.getInstance.getAllChannelsProcessorsList();
                     
                     if (!chmClientProcs.isEmpty()){
