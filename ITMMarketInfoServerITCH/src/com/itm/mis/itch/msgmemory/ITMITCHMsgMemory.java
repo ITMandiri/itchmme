@@ -64,6 +64,7 @@ import com.itm.mis.itch.books.SheetOfITCHTrade;
 import com.itm.mis.itch.books.SheetOfITCHTradeStatistics;
 import com.itm.mis.itch.books.SheetOfITCHTradeTicker;
 import com.itm.mis.itch.bridge.ITMITCHMsgMemoryMgr;
+import com.itm.mis.itch.consts.ITCHConsts;
 import com.itm.mis.itch.consts.ITCHConsts.ITCHValue;
 import com.itm.mis.itch.msgparser.ITMSoupBinTCPITCHMDFMsgParser;
 import com.itm.mis.itch.msgparser.ITMSoupBinTCPITCHMsgParser;
@@ -266,7 +267,12 @@ public class ITMITCHMsgMemory {
                 } else if (itchMessage instanceof ITCHMsgOrderBookDirectoryMDF){
                     ITCHMsgOrderBookDirectoryMDF mMsg = (ITCHMsgOrderBookDirectoryMDF)itchMessage;
                     SheetOfITCHOrderBookDirectoryMDF mSheet = new SheetOfITCHOrderBookDirectoryMDF(mMsg);
-                    BookOfITCHOrderBookDirectoryMDF.getInstance.addOrUpdateSheet(mSheet);
+                    //.20261029: hanya financial product tertentu saja yang disimpan 
+                    if (mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY || 
+                            mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_WARRANT ||
+                            mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_RIGHT) {
+                        BookOfITCHOrderBookDirectoryMDF.getInstance.addOrUpdateSheet(mSheet);
+                    }
                     mSheetBase = mSheet;
                 } else if (itchMessage instanceof ITCHMsgIndexPrice){
                     //.20260908: memori tidak ada yang pakai
