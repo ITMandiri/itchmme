@@ -37,7 +37,10 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
     }
 
     public long getOrderId() {
-        return orderId;
+//        return orderId;
+        //.20261030: orderId sekarang dikombinasi dengan side
+        long lNewOrderId = Long.parseLong(String.valueOf(getSideInt()) + String.valueOf(orderId));
+        return lNewOrderId;
     }
 
     public void setOrderId(long orderId) {
@@ -54,6 +57,16 @@ public class ITCHMsgAddOrder extends ITCHMsgBase {
 
     public String getSide() {
         return side;
+    }
+    //.20261030
+    public int getSideInt() {
+        int sideInt = 1;
+        if (side.equalsIgnoreCase("B")){
+            sideInt = 1;
+        }else if (side.equalsIgnoreCase("S")){
+            sideInt = 2;
+        }
+        return sideInt;
     }
 
     public void setSide(String side) {

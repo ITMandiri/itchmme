@@ -50,13 +50,28 @@ public class ITCHMsgIndicativeQuote extends ITCHMsgBase {
     }
 
     public long getIndicativeQuoteId() {
-        return indicativeQuoteId;
+//        return indicativeQuoteId;
+        //.20261030: orderId sekarang dikombinasi dengan side
+        long lNewOrderId = Long.parseLong(String.valueOf(getSideInt()) + String.valueOf(indicativeQuoteId));
+        return lNewOrderId;
     }
 
     public void setIndicativeQuoteId(long indicativeQuoteId) {
         this.indicativeQuoteId = indicativeQuoteId;
     }
-
+    
+    //.20261030
+    public int getSideInt() {
+        String zSide = String.valueOf((char)side);
+        int sideInt = 1;
+        if (zSide.equalsIgnoreCase("B")){
+            sideInt = 1;
+        }else if (zSide.equalsIgnoreCase("A")){
+            sideInt = 2;
+        }
+        return sideInt;
+    }
+    
     public byte getSide() {
         return side;
     }

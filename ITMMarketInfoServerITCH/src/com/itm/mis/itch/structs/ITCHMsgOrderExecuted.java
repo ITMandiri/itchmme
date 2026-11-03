@@ -33,9 +33,17 @@ public class ITCHMsgOrderExecuted extends ITCHMsgBase {
     public void setNanos(int nanos) {
         this.nanos = nanos;
     }
+    //.20261030: untuk order number dummy yang masih masuk dalam scope tipe long
+    public long dummyOrderNumber() {
+        long lNewOrderId = Long.parseLong(String.valueOf(3) + String.valueOf(orderId));
+        return lNewOrderId;
+    }
 
     public long getOrderId() {
-        return orderId;
+//        return orderId;
+        //.20261030: orderId sekarang dikombinasi dengan side
+        long lNewOrderId = Long.parseLong(String.valueOf(getSideInt()) + String.valueOf(orderId));
+        return lNewOrderId;
     }
 
     public void setOrderId(long orderId) {
@@ -48,6 +56,18 @@ public class ITCHMsgOrderExecuted extends ITCHMsgBase {
 
     public void setOrderBookId(int orderBookId) {
         this.orderBookId = orderBookId;
+    }
+    
+    //.20261030
+    public int getSideInt() {
+        String zSide = String.valueOf((char)side);
+        int sideInt = 1;
+        if (zSide.equalsIgnoreCase("B")){
+            sideInt = 1;
+        }else if (zSide.equalsIgnoreCase("S")){
+            sideInt = 2;
+        }
+        return sideInt;
     }
 
     public byte getSide() {

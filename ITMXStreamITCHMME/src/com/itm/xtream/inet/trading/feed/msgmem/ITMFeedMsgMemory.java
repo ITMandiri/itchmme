@@ -533,10 +533,13 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                                 //. 20211130 - override investor type dari SheetOfITCHAddOrder
                                 if (sheetAO.getMessage().getSide()!= null && sheetAO.getMessage().getSide().equalsIgnoreCase("B")){
                                     fMsg.setBuyerOrderNo(String.valueOf(mLastOriginalOrderNumber));
-                                    fMsg.setSellerOrderNo(String.valueOf(mLastOriginalOrderNumber) + "1"); //("0");
+//                                    fMsg.setSellerOrderNo(String.valueOf(mLastOriginalOrderNumber) + "1"); //("0");
+                                    //.20261030: sekarang menggunakan fill dummy 
+                                    fMsg.setSellerOrderNo(String.valueOf(mMsg.dummyOrderNumber())); 
                                 }else if (sheetAO.getMessage().getSide()!= null && sheetAO.getMessage().getSide().equalsIgnoreCase("S")){
                                     fMsg.setSellerOrderNo(String.valueOf(mLastOriginalOrderNumber));
-                                    fMsg.setBuyerOrderNo(String.valueOf(mLastOriginalOrderNumber) + "1");
+//                                    fMsg.setBuyerOrderNo(String.valueOf(mLastOriginalOrderNumber) + "1");
+                                    fMsg.setBuyerOrderNo(String.valueOf(mMsg.dummyOrderNumber())); 
                                 }
                                 ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
                             }   
