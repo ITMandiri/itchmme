@@ -91,19 +91,20 @@ public class ITMSoupBinTCPBridgeBackupMgr {
     public boolean saveAsDUMPRecord(String refSource, boolean isOutput, long recordNo, byte[] arbMessage){
         boolean mOut = false; //.all;
         try{
-            if (!ITMSoupBinTCPBridgePacketFormat.isNullOrEmpty(refSource)){
-                CSB_Backup_Record mRecord = new CSB_Backup_Record(new Date(), isOutput, recordNo, arbMessage);
-                ITMSoupBinTCPBridgeBackupSaver mSaver = null;
-                    if (!this.chmBackupSavers.containsKey(refSource)){
-                        mSaver = new ITMSoupBinTCPBridgeBackupSaver(refSource);
-                        this.chmBackupSavers.put(refSource, mSaver);
-                    }else{
-                        mSaver = this.chmBackupSavers.get(refSource);
-                    }
-                if (mSaver != null){
-                    mSaver.saveAsDUMPRecord(mRecord);
-                }
-            }
+            //.20261106: untuk DUMP sudah tidak disimpan lagi
+//            if (!ITMSoupBinTCPBridgePacketFormat.isNullOrEmpty(refSource)){
+//                CSB_Backup_Record mRecord = new CSB_Backup_Record(new Date(), isOutput, recordNo, arbMessage);
+//                ITMSoupBinTCPBridgeBackupSaver mSaver = null;
+//                    if (!this.chmBackupSavers.containsKey(refSource)){
+//                        mSaver = new ITMSoupBinTCPBridgeBackupSaver(refSource);
+//                        this.chmBackupSavers.put(refSource, mSaver);
+//                    }else{
+//                        mSaver = this.chmBackupSavers.get(refSource);
+//                    }
+//                if (mSaver != null){
+//                    mSaver.saveAsDUMPRecord(mRecord);
+//                }
+//            }
         }catch(Exception ex0){
             ITMFileLoggerManager.getInstance.insertLog(this, logSource.SOUPBINTCP, logLevel.ERROR, ex0);
         }
