@@ -80,7 +80,8 @@ public class FeedServerCallbackHandler implements ITMSocketListener {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         //.20260717: diremark untuk mencegah putus koneksi mis dari splitter 
         //.agar mis selalu connect ke splitter walau koneksi splitter putus dengan itch
-//        headCtrl.destroyChannelProcessor(channel);
+        //.20261105: dikembalikan lagi
+        headCtrl.destroyChannelProcessor(channel);
         
         ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.XTTS, ITMFileLoggerVarsConsts.logLevel.WARNING, "client channel disconnected:" + channel + " > id:" + channel.getChannelID());
         
