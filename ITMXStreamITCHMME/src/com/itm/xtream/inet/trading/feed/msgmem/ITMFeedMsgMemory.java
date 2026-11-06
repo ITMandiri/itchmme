@@ -86,6 +86,7 @@ import com.itm.mis.itch.structs.ITCHMsgSecond;
 import com.itm.xtream.inet.trading.feed.server.callback.FeedServerCallbackController;
 import com.itm.xtream.inet.trading.feed.server.callback.FeedServerCallbackProcessor;
 import com.itm.xtream.inet.trading.feed.structs.FEEDMsgMarketByPrice;
+import com.itm.xtream.inet.trading.settings.ITMTradingServerSettingsMgr;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
@@ -738,7 +739,579 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                 } else if (itchMessage instanceof ITCHMsgTickSizeTable){
                     //...
                 } else if (itchMessage instanceof ITCHMsgOrderBookState){
-                    //...
+                    //.20261104
+                    ITCHMsgOrderBookState mMsg = (ITCHMsgOrderBookState)itchMessage;
+                    
+                    SheetOfITCHOrderBookDirectoryMDF sheetOBD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
+                    if (sheetOBD != null){
+                        //.20260727: log dev
+                        ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.SOUPBINTCP, ITMFileLoggerVarsConsts.logLevel.INFO, sheetOBD.getMessage().getSymbol() +" = "+mMsg.getStateName() + " -> " + ITMSoupBinTCPBridgePacketFormat.getTimeDataFeedFormatFromDate(mSheet.getMessageDate()));
+                    }
+                    //.20260730: ambil jam dan menitnya untuk key pada session state
+                    String szTimeWithoutSecond = ITMSoupBinTCPBridgePacketFormat.getTimeWithoutSecond(mSheet.getMessageDate());
+
+                    // . FEEDMsgTradingStatus
+                    FEEDMsgTradingStatus fMsg = new FEEDMsgTradingStatus();
+                    switch (mMsg.getStateName().trim()) {
+                        case ITCHConsts.ITCHStateField.STATE_BREAK:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BREAK);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_BREAK);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_BREAK + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_BREAK + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_BREAK_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BREAK_CALL);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_BREAK_CALL);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_BREAK_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_BREAK_CALL + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_CALL_RANDOM_CLOSE:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CALL_RANDOM_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CALL_RANDOM_CLOSE);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CALL_RANDOM_CLOSE + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CALL_RANDOM_CLOSE + szTimeWithoutSecond, true);
+                            }
+                            break;
+                            //.20260625
+//                        case ITCHConsts.ITCHStateField.STATE_CLOSE_CALL_AUCTION:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CLOSE);
+//                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CLOSE_CALL_AUCTION);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CLOSE_CALL_AUCTION + szTimeWithoutSecond)) {
+//                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CLOSE_CALL_AUCTION + szTimeWithoutSecond, true);
+//                            }
+//                            break;
+                        case ITCHConsts.ITCHStateField.STATE_CLOSE_NG:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CLOSE_NG);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Close - NG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_NG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CLOSE_NG + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CLOSE_NG + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_CLOSE_RF:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CLOSE_RF);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RF);
+                            fMsg.setSession(0);
+                            //.20260731: request dari SH, state ini diskip
+                            if (!ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {   
+                                if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CLOSE_RF + szTimeWithoutSecond)) {
+                                    ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                    chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CLOSE_RF + szTimeWithoutSecond, true);
+                                }
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_CLOSE_RG:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CLOSE_RG);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Close - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CLOSE_RG + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CLOSE_RG + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_CLOSE_TN:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CLOSE_TN);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Close - TN");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_TN);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CLOSE_TN + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CLOSE_TN + szTimeWithoutSecond, true);
+                            }
+                            break;
+                            //.20261102: untuk end of day menggunakan message dari system event
+//                        case ITCHConsts.ITCHStateField.STATE_END_OF_DAY:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_END_SENDING_RECORDS);
+//                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_END_OF_DAY);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            if (mMsg.getOrderBookId() <= 0) {
+//                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                            }
+//                            break;
+                        case ITCHConsts.ITCHStateField.STATE_MATCHING_CALL_AUCTION:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_MATCHING_CA);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_MATCHING_CALL_AUCTION);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_MATCHING_CALL_AUCTION + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_MATCHING_CALL_AUCTION + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_MATCHING_CLOSE:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_MATCHING_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_MATCHING_CLOSE);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_MATCHING_CLOSE + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_MATCHING_CLOSE + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_MATCHING_PRE_OPEN:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_MATCHING_PRE_OPEN);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_MATCHING_PRE_OPEN);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_MATCHING_PRE_OPEN + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_MATCHING_PRE_OPEN + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_NON_CANCEL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_NON_CANCELLATION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_NON_CANCEL);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_NON_CANCEL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_NON_CANCEL + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_POST_TRADE:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_POST_TRADING);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_POST_TRADE);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_POST_TRADE + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_POST_TRADE + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_PRE_CLOSE:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_PRE_CLOSING);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_PRE_CLOSE);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_PRE_CLOSE + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_PRE_CLOSE + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_PRE_OPEN:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_PRE_OPENING);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_PRE_OPEN);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_PRE_OPEN + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_PRE_OPEN + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_RANDOM_CLOSE:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_RANDOM_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_RANDOM_CLOSE);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Random Closing at Pre-closing");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_RANDOM_CLOSE + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_RANDOM_CLOSE + szTimeWithoutSecond, true);
+                            }
+                            
+                            //.20260123: sebagai ganti trading state lama yang masih pakai status end preclosing, pakai end preclosing pada state ini
+                            FEEDMsgTradingStatus fMsg2 = new FEEDMsgTradingStatus();
+                            fMsg2.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_END_PRE_CLOSING);
+                            fMsg2.setMessage(ITCHConsts.ITCHStateDesc.STATE_END_PRE_CLOSE);
+                            fMsg2.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg2.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg2.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_END_PRE_CLOSE + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg2, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_END_PRE_CLOSE + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_1_NG:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_FIRST_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_1_NG);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_NG);
+                            fMsg.setSession(1);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_1_NG + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_1_NG + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_1_RF:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_FIRST_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_1_RF);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RF);
+                            fMsg.setSession(1);
+                            //.20260731: request dari SH, state ini diskip
+                            if (!ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_1_RF + szTimeWithoutSecond)) {
+                                    ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                    chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_1_RF + szTimeWithoutSecond, true);
+                                }
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_1_RG:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_FIRST_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_1_RG);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Session 1 - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(1);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_1_RG + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_1_RG + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_1_RG_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_FIRST_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_1_RG_CALL);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Call Auction Session 1 - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(1);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_1_RG_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_1_RG_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_1_TN:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_FIRST_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_1_TN);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Session 1 - TN");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_TN);
+                            fMsg.setSession(1);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_1_TN + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_1_TN + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_1_TN_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_FIRST_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_1_TN_CALL);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_TN);
+                            fMsg.setSession(1);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_1_TN_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_1_TN_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_2_NG:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_2_NG);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_NG);
+                            fMsg.setSession(2);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_2_NG + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_2_NG + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_2_RF:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_2_RF);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RF);
+                            fMsg.setSession(2);
+                            //.20260731: request dari SH, state ini diskip
+                            if (!ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {   
+                                if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_2_RF + szTimeWithoutSecond)) {
+                                    ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                    chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_2_RF + szTimeWithoutSecond, true);
+                                }
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_2_RG:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_2_RG);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Session 2 - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_NON_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(2);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_2_RG + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_2_RG + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_2_RG_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_2_RG_CALL);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Call Auction Session 2 - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(2);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_2_RG_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_2_RG_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_2_TN_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_2_TN_CALL);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_TN);
+                            fMsg.setSession(2);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_2_TN_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_2_TN_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_3_RG_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_3_RG_CALL);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Call Auction Session 3 - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(3);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_3_RG_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_3_RG_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_3_TN_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_3_TN_CALL);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_TN);
+                            fMsg.setSession(3);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_3_TN_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_3_TN_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_4_RG_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_4_RG_CALL);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Call Auction Session 4 - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(4);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_4_RG_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_4_RG_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SESSION_5_RG_CALL:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SECOND_SESSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SESSION_5_RG_CALL);
+                            //.20260731: request deskripsi dari SH
+                            if (ITMFileLoggerVarsConsts.APP_CLIENT_CODE.equalsIgnoreCase(ITMFileLoggerVarsConsts.AppClientCode.CLIENT_ASET_SH)) {
+                                fMsg.setMessage("Call Auction Session 5 - RG");
+                            }
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_CALL_AUCTION);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(5);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_SESSION_5_RG_CALL + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_SESSION_5_RG_CALL + szTimeWithoutSecond, true);
+                            }
+//                            if (sheetOBD != null){
+//                                //. berlaku untuk masing" stock
+//                                processSuspendReleaseStock(sheetOBD, mSheet, false);
+//                            }
+                            break;
+//                        case ITCHConsts.ITCHStateField.STATE_SOBD:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_BEGIN_SENDING_RECORDS);
+//                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SOBD);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            //.20250807: tidak dipakai
+////                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                            break;
+                        case ITCHConsts.ITCHStateField.STATE_SUSPEND:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_TRADING_SUSPENSION);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_SUSPEND);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (sheetOBD != null){
+                                //. berlaku untuk masing" stock
+                                processSuspendReleaseStock(sheetOBD, mSheet, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_TRADING_HALT:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_TRADING_HALT);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_TRADING_HALT);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_TRADING_HALT + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_TRADING_HALT + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_CALCULATE_CP:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CALCULATE_CP);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CALCULATE_CP);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CALCULATE_CP + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CALCULATE_CP + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_OPEN:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_OPEN);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_OPEN);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_OPEN + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_OPEN + szTimeWithoutSecond, true);
+                            }
+                            break;
+                        case ITCHConsts.ITCHStateField.STATE_CLOSE_INDEX:
+                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_CLOSE);
+                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_CLOSE_INDEX);
+                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+                            fMsg.setSession(0);
+                            if (!chmSessionState.containsKey(ITCHConsts.ITCHStateField.STATE_CLOSE_INDEX + szTimeWithoutSecond)) {
+                                ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+                                chmSessionState.put(ITCHConsts.ITCHStateField.STATE_CLOSE_INDEX + szTimeWithoutSecond, true);
+                            }
+                            break;
+                            //.20260625
+//                        case ITCHConsts.ITCHStateField.STATE_UNSUSPEND:
+//                            fMsg.setStatus(FeedConsts.TradingStatusConsts.TRADINGSTATUS_STATUS_TRADING_ACTIVATION);
+//                            fMsg.setMessage(ITCHConsts.ITCHStateDesc.STATE_UNSUSPEND);
+//                            fMsg.setType(FeedConsts.TradingStatusType.TRADINGSTATUS_TYPE_MSG_ALL);
+//                            fMsg.setType2(FeedConsts.TradingStatusType2.TRADINGSTATUS_TYPE_MSG_RG);
+//                            fMsg.setSession(0);
+//                            ITMFeedMsgMemory.getInstance.addToMemory(fMsg, mSheet);
+//                            break;
+                        default:
+                            ITMFileLoggerManager.getInstance.insertLog(this, ITMFileLoggerVarsConsts.logSource.ITCH, ITMFileLoggerVarsConsts.logLevel.INFO, "Orderbook State "+mMsg.getStateName() + " -> " + ITMSoupBinTCPBridgePacketFormat.getTimeDataFeedFormatFromDate(mSheet.getMessageDate()));
+                            break;
+                    }  
                 } else if (itchMessage instanceof ITCHMsgSecond){
                     //.??????????????????????????????????????????
                     ITCHMsgSecond mMsg = (ITCHMsgSecond)itchMessage;
@@ -827,10 +1400,11 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
 //                        System.err.println("IOException: " + ioe.getMessage());
 //                    }
                     
-                    //. hanya proses stock yang equity
+                    //. hanya proses stock yang equity, warran, right, index
                     if (mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY || 
                             mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_WARRANT ||
-                            mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_RIGHT) {
+                            mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_RIGHT ||
+                            mMsg.getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_INDEX) {
                         String zSymbol = mMsg.getSymbol().trim();
                         String arrSymbol[] = zSymbol.split("_");
                         String zStockCode = zSymbol;
@@ -925,6 +1499,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                                     break;
                             //                            ITMFeedMsgMemory.getInstance.addToMemory(fIndicesMsg, mSheet);
                                 case ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_INDEX:
+                                    System.out.println("Financial product code="+zStockCode+" => "+mMsg.getFinancialProduct());
                                     break;
                                 default:
                                     System.out.println("Financial product stock="+zStockCode+" => "+mMsg.getFinancialProduct());
@@ -1042,6 +1617,8 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                         }
                     }
                 } else if (itchMessage instanceof ITCHMsgOrderBookState){
+                    //.20261104: untuk orderbookstate jadinya pake itch, karena itch diload terakhir ketika reload
+                    if (1 == 1) return mOut;
                     ITCHMsgOrderBookState mMsg = (ITCHMsgOrderBookState)itchMessage;
                     
                     SheetOfITCHOrderBookDirectoryMDF sheetOBD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
@@ -1724,6 +2301,9 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                 } else if (itchMessage instanceof ITCHMsgIssuerDirectory){
                     //...
                 } else if (itchMessage instanceof ITCHMsgMarketByPrice){
+                    if (!ITMTradingServerSettingsMgr.getInstance.getSettings().server_settings.mbp_message) {
+                        return mOut;
+                    }
                     ITCHMsgMarketByPrice mMsg = (ITCHMsgMarketByPrice)itchMessage;
                     SheetOfITCHOrderBookDirectoryMDF sheetOD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
                     if (sheetOD != null) {
@@ -1956,7 +2536,7 @@ public class ITMFeedMsgMemory implements ITMITCHMsgMemoryListener{
                     SheetOfITCHOrderBookDirectoryMDF sheetOD = BookOfITCHOrderBookDirectoryMDF.getInstance.retrieveSheet(mMsg.getOrderBookId());
                     
                     if (sheetOD != null) {
-                        //. hanya proses stock yang equity
+                        //. hanya proses stock yang equity, warrant, right, index
                         if (sheetOD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_EQUITY || 
                                 sheetOD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_WARRANT ||
                                 sheetOD.getMessage().getFinancialProduct() == ITCHConsts.ITCHFinancialProductField.FINANCIAL_PRODUCT_ENTITLEMENT_RIGHT ||
