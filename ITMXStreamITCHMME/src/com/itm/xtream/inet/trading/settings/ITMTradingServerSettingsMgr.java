@@ -49,6 +49,7 @@ public class ITMTradingServerSettingsMgr {
         public int socket_recv_buffer = 6400;
         public boolean socket_send_autoflush = false;
         public String data_end_time = "";
+        public boolean mbp_message = true;
         public boolean order_racing_enable = false;
         public int order_reply_timeout = 0;
         public int order_racing_mode = 1; //. 1 = single order, 2 = all order
